@@ -5,11 +5,14 @@ import SwiftUI
 struct HomeView: View {
 
     @Environment(AppState.self) private var appState
+    @Environment(AppRouter.self) private var router
     @State private var model = HomeViewModel()
     @State private var showsSettings = false
 
     var body: some View {
-        NavigationStack {
+        @Bindable var router = router
+
+        return NavigationStack(path: $router.path) {
             ScrollView {
                 VStack(spacing: 28) {
                     heroCard
@@ -31,8 +34,13 @@ struct HomeView: View {
                     .tint(.white)
                 }
             }
-            .navigationDestination(item: $model.importedAsset) { asset in
-                VideoImportView(asset: asset)
+            .navigationDestination(for: Route.self) { route in
+                switch route {
+                case let .importVideo(asset):
+                    VideoImportView(asset: asset)
+                case let .processing(asset, language):
+                    ProcessingView(asset: asset, language: language)
+                }
             }
             .sheet(isPresented: $showsSettings) {
                 SettingsView()
@@ -56,6 +64,12 @@ struct HomeView: View {
             }
             .onChange(of: model.pickerItem) { _, newValue in
                 model.handlePickerSelection(newValue)
+            }
+            .onChange(of: model.importedAsset) { _, asset in
+                guard let asset else { return }
+                router.push(.importVideo(asset))
+                // The route owns the asset now; clearing avoids pushing it twice.
+                model.importedAsset = nil
             }
         }
         .tint(AppTheme.accent)
@@ -178,11 +192,13 @@ struct HomeView: View {
 #Preview("Empty") {
     HomeView()
         .environment(AppState.previewEmpty)
+        .environment(AppRouter())
         .preferredColorScheme(.dark)
 }
 
 #Preview("With projects") {
     HomeView()
         .environment(AppState.previewPopulated)
+        .environment(AppRouter())
         .preferredColorScheme(.dark)
 }

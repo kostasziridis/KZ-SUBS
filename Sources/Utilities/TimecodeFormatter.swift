@@ -48,8 +48,14 @@ enum TimecodeFormatter {
         return String(format: "%02d:%02d:%02d,%03d", hours, minutes, secs, millis)
     }
 
-    /// "Edited 2 hours ago"
+    /// "2 hours ago", or "Just now" for anything recent.
+    ///
+    /// Without the guard, a date saved a moment ago formats as "in 0 seconds": the
+    /// clock ticks past it between writing and rendering, so the phrasing goes future.
     static func relative(_ date: Date) -> String {
+        let interval = Date().timeIntervalSince(date)
+        guard interval >= 60 else { return "Just now" }
+
         let formatter = RelativeDateTimeFormatter()
         formatter.unitsStyle = .full
         return formatter.localizedString(for: date, relativeTo: Date())

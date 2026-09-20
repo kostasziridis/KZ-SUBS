@@ -1,4 +1,3 @@
-import AVFoundation
 import Foundation
 import WhisperKit
 
@@ -92,19 +91,33 @@ actor WhisperService {
             chunkingStrategy: .vad
         )
 
-        // Whisper reads audio in 30-second windows; the window index is the honest
-        // measure of how far along it is.
-        let totalWindows = max(1.0, (audioDuration(of: audioURL) / 30.0).rounded(.up))
+        // Load the samples ourselves so progress can be reported against the audio's
+        // own timeline. Transcribing by file path would load the whole array anyway,
+        // so this costs no extra memory and buys a meaningful progress number.
+        let samples: [Float]
+        do {
+            samples = try AudioProcessor.loadAudioAsFloatArray(fromPath: audioURL.path)
+        } catch {
+            AppLog.speech.error("Could not read extracted audio: \(error.localizedDescription, privacy: .public)")
+            throw AppError.unableToGenerateSubtitles
+        }
+
+        let totalSeconds = Double(samples.count) / Self.engineSampleRate
 
         let results: [TranscriptionResult]
         do {
             results = try await whisperKit.transcribe(
-                audioPath: audioURL.path,
+                audioArray: samples,
                 decodeOptions: options,
-                callback: { progress in
-                    onProgress(min(0.99, Double(progress.windowId) / totalWindows))
+                callback: { _ in
                     // Returning false asks WhisperKit to stop early.
-                    return !Task.isCancelled
+                    !Task.isCancelled
+                },
+                segmentCallback: { discovered in
+                    // Each segment carries its end time, so the furthest one is exactly
+                    // how much of the audio has been heard.
+                    guard totalSeconds > 0, let furthest = discovered.map(\.end).max() else { return }
+                    onProgress(min(0.99, max(0, Double(furthest) / totalSeconds)))
                 }
             )
         } catch {
@@ -157,11 +170,6 @@ actor WhisperService {
         )
     }
 
-    private func audioDuration(of url: URL) -> Double {
-        // Cheap and good enough to scale progress; a wrong guess only affects the bar.
-        guard let file = try? AVAudioFile(forReading: url) else { return 30 }
-        let frames = Double(file.length)
-        let rate = file.fileFormat.sampleRate
-        return rate > 0 ? frames / rate : 30
-    }
+    /// The rate the engine works at, and the rate `AudioExtractor` writes.
+    private static let engineSampleRate: Double = 16_000
 }

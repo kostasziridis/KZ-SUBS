@@ -5,6 +5,7 @@ import SwiftUI
 struct KZSubsApp: App {
 
     @State private var appState = AppState()
+    @State private var router = AppRouter()
 
     init() {
         configureAudioSession()
@@ -14,6 +15,7 @@ struct KZSubsApp: App {
         WindowGroup {
             HomeView()
                 .environment(appState)
+                .environment(router)
                 .preferredColorScheme(.dark)
                 .tint(AppTheme.accent)
                 .task {

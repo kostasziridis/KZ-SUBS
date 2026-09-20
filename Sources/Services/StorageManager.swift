@@ -27,6 +27,13 @@ enum StorageManager {
         containerDirectory.appendingPathComponent("Models", isDirectory: true)
     }
 
+    /// The system's own cache inside our container - where Core ML writes the
+    /// specialized model it builds when loading. We never write here, but it counts
+    /// against the app in iOS Settings, so any honest storage figure must include it.
+    static var systemCacheDirectory: URL? {
+        FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first
+    }
+
     /// Scratch space for extracted audio and in-flight exports. Safe to wipe at launch.
     static var workingDirectory: URL {
         FileManager.default.temporaryDirectory.appendingPathComponent("KZSubsWork", isDirectory: true)
@@ -114,10 +121,13 @@ enum StorageManager {
         return Int64(size)
     }
 
-    /// Total bytes used by everything the app stores.
+    /// Total bytes charged to the app, including the system cache Core ML fills.
     static func usedBytes() -> Int64 {
-        [videosDirectory, thumbnailsDirectory, modelsDirectory, workingDirectory]
-            .reduce(0) { $0 + directorySize(of: $1) }
+        var directories = [videosDirectory, thumbnailsDirectory, modelsDirectory, workingDirectory]
+        if let systemCacheDirectory {
+            directories.append(systemCacheDirectory)
+        }
+        return directories.reduce(0) { $0 + directorySize(of: $1) }
     }
 
     static func directorySize(of directory: URL) -> Int64 {

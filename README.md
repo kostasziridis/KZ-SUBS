@@ -50,7 +50,7 @@ Rules the codebase holds to:
 |-------|-------|-------|
 | 1 | Navigation, Home, video picker, preview, playback, metadata | **Done** — builds and verified on simulator |
 | 2 | WhisperKit via SPM, speech service | **Done** — Greek and English verified on simulator |
-| 3 | Audio extraction | Not started |
+| 3 | Audio extraction → transcription → saved project | **Done** — verified on simulator |
 | 4 | Timestamps → subtitle segments over the player | Not started |
 | 5 | Subtitle timeline | Not started |
 | 6 | Subtitle editing | Not started |
@@ -75,6 +75,30 @@ name: both the `.en` suffix and the whole `distil-whisper` family, which is
 English-only despite carrying no suffix.
 
 A DEBUG-only "Speech check" screen under Settings runs this test on device.
+
+Phase 3 joins it up: `AudioExtractor` streams a video's soundtrack to 16 kHz mono
+WAV through `AVAssetReader`/`AVAssetWriter` (the video track is never touched and
+memory stays flat), `TranscriptionViewModel` drives model prep → extraction →
+transcription with cancellation at every step, and `ProcessingView` reports each
+stage in its own words. A finished run saves a `SubtitleProject`, so Recent Projects
+is now real.
+
+Verified end to end on the simulator with a 16s portrait clip of Greek speech and
+the language left on Auto Detect: Greek identified unaided, 5 subtitles on sentence
+boundaries, 3 of 5 lines word-perfect, one variant spelling and one compound word
+split. 26s of transcription on simulator CPU, reproduced across two runs.
+
+### A warning about testing this on the Simulator
+
+The Simulator has no Neural Engine, so Core ML compiles bulky CPU/GPU variants of
+the model on every load and writes them to `Library/Caches/<bundle id>` inside the
+app container - roughly 3 GB per run, which reached 6.8 GB here. Fill the disk and
+the failures look nothing like their cause: a `SIGBUS` inside libBNNS on
+memory-mapped weights, a corrupted simulator dyld cache that stops the app
+launching at all, and a `SIGSEGV` inside WhisperKit's tokenizer. All three cleared
+up once there was space. Keep several GB free, and clear that cache directory
+between runs. On device this does not happen - Core ML targets the Neural Engine
+and the artifacts are far smaller.
 
 ## Privacy
 

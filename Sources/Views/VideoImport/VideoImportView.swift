@@ -5,10 +5,10 @@ import SwiftUI
 struct VideoImportView: View {
 
     @Environment(\.dismiss) private var dismiss
+    @Environment(AppRouter.self) private var router
 
     @State private var model: VideoImportViewModel
     @State private var player = VideoPlayerViewModel()
-    @State private var showsUnavailableNotice = false
 
     init(asset: VideoAsset) {
         _model = State(initialValue: VideoImportViewModel(asset: asset))
@@ -46,11 +46,6 @@ struct VideoImportView: View {
         }
         .onDisappear {
             player.teardown()
-        }
-        .alert("Subtitles are coming next", isPresented: $showsUnavailableNotice) {
-            Button("OK", role: .cancel) { }
-        } message: {
-            Text("On-device subtitle generation is not part of this build yet.")
         }
     }
 
@@ -119,7 +114,7 @@ struct VideoImportView: View {
         VStack(spacing: 12) {
             Button {
                 player.pause()
-                showsUnavailableNotice = true
+                router.push(.processing(asset: model.asset, language: model.language))
             } label: {
                 Label("Generate Subtitles", systemImage: "wand.and.sparkles")
             }
@@ -144,5 +139,6 @@ struct VideoImportView: View {
     NavigationStack {
         VideoImportView(asset: .sample)
     }
+    .environment(AppRouter())
     .preferredColorScheme(.dark)
 }

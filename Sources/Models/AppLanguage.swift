@@ -29,6 +29,15 @@ enum AppLanguage: String, Codable, CaseIterable, Identifiable, Hashable {
         }
     }
 
+    /// Maps a code the speech engine reported back onto a case we know.
+    init?(languageCode: String) {
+        switch languageCode.lowercased() {
+        case "el": self = .greek
+        case "en": self = .english
+        default: return nil
+        }
+    }
+
     var symbolName: String {
         switch self {
         case .automatic: return "wand.and.stars"
