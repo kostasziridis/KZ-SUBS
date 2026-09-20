@@ -148,9 +148,14 @@ struct SubtitleEditorView: View {
     private var subtitleSection: some View {
         VStack(spacing: 0) {
             HStack {
-                Text("\(model.segments.count) subtitles")
-                    .font(.footnote.weight(.medium))
-                    .foregroundStyle(AppTheme.secondaryText)
+                VStack(alignment: .leading, spacing: 1) {
+                    Text("\(model.segments.count) subtitles")
+                        .font(.footnote.weight(.medium))
+                        .foregroundStyle(AppTheme.secondaryText)
+                    Text("Tap to jump · hold to edit")
+                        .font(.caption2)
+                        .foregroundStyle(AppTheme.tertiaryText)
+                }
                 Spacer()
                 Button {
                     let created = model.addSegment(at: player.currentTime, limit: max(player.duration, model.project.duration))
@@ -168,14 +173,19 @@ struct SubtitleEditorView: View {
                 ScrollView {
                     SubtitleListView(
                         segments: model.segments,
-                        activeSegmentID: model.activeSegmentID
-                    ) { segment in
-                        model.selectedSegmentID = segment.id
-                        // Land just inside the subtitle: seeking to its exact start can
-                        // settle a hair before it, leaving the caption off screen.
-                        player.seek(to: segment.startTime + 0.05, precise: true)
-                        editingSegment = segment
-                    }
+                        activeSegmentID: model.activeSegmentID,
+                        onSelect: { segment in
+                            model.selectedSegmentID = segment.id
+                            // Land just inside the subtitle: seeking to its exact start
+                            // can settle a hair before it, leaving the caption off screen.
+                            player.seek(to: segment.startTime + 0.05, precise: true)
+                        },
+                        onEdit: { segment in
+                            model.selectedSegmentID = segment.id
+                            player.seek(to: segment.startTime + 0.05, precise: true)
+                            editingSegment = segment
+                        }
+                    )
                     .padding(.horizontal, 20)
                     .padding(.bottom, 24)
                 }

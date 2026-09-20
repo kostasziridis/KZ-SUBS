@@ -5,22 +5,24 @@ import SwiftUI
 struct SubtitleListView: View {
     let segments: [SubtitleSegment]
     var activeSegmentID: SubtitleSegment.ID?
+    /// A tap moves the playhead to this subtitle. Nothing else - jumping around the
+    /// video is the common action, so it gets the cheap gesture.
     var onSelect: ((SubtitleSegment) -> Void)?
+    /// A press and hold opens it for editing.
+    var onEdit: ((SubtitleSegment) -> Void)?
 
     var body: some View {
         LazyVStack(spacing: 8) {
             ForEach(Array(segments.enumerated()), id: \.element.id) { index, segment in
-                Button {
-                    onSelect?(segment)
-                } label: {
-                    SubtitleRow(
-                        index: index + 1,
-                        segment: segment,
-                        isActive: segment.id == activeSegmentID
-                    )
-                }
-                .buttonStyle(.plain)
-                .disabled(onSelect == nil)
+                SubtitleRow(
+                    index: index + 1,
+                    segment: segment,
+                    isActive: segment.id == activeSegmentID
+                )
+                .contentShape(Rectangle())
+                .onTapGesture { onSelect?(segment) }
+                .onLongPressGesture(minimumDuration: 0.35) { onEdit?(segment) }
+                .accessibilityAddTraits(.isButton)
             }
         }
     }
