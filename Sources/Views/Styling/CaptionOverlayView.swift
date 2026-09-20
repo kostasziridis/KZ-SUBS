@@ -33,7 +33,12 @@ struct CaptionOverlayView: View {
                     )
                     .frame(maxWidth: proxy.size.width * CaptionLayout.maximumWidthFraction)
                     .background { sizeReader }
-                    .overlay { adjustingOutline },
+                    .overlay { adjustingOutline }
+                    .overlay { smallCaptionHint }
+                    // A small caption is a small target. The padding is symmetric, so
+                    // it grows what can be grabbed without moving what is drawn.
+                    .padding(editing != nil ? 22 : 0)
+                    .contentShape(Rectangle()),
                     in: proxy.size
                 )
             }
@@ -63,6 +68,17 @@ struct CaptionOverlayView: View {
             Color.clear.preference(key: CaptionSizeKey.self, value: proxy.size)
         }
         .onPreferenceChange(CaptionSizeKey.self) { captionSize = $0 }
+    }
+
+    /// Once the caption is small it stops looking like something you can grab, so it
+    /// is given a faint outline to aim at.
+    @ViewBuilder
+    private var smallCaptionHint: some View {
+        if editing != nil, !isAdjusting, captionSize.height > 0, captionSize.height < 46 {
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .strokeBorder(Color.white.opacity(0.22), style: StrokeStyle(lineWidth: 1, dash: [4, 3]))
+                .padding(-10)
+        }
     }
 
     @ViewBuilder

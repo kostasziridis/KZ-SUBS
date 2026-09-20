@@ -32,14 +32,20 @@ struct CaptionBlockView: View {
 
     @ViewBuilder
     private var content: some View {
-        if needsPerWordRendering, let words = segment.words {
-            CaptionFlowLayout(
-                alignment: style.alignment,
-                spacing: fontSize * 0.04,
-                lineSpacing: fontSize * 0.1
-            ) {
-                ForEach(words) { word in
-                    wordView(word)
+        if needsPerWordRendering {
+            // One row per line the user wrote, so a hand-placed break survives even
+            // when words are drawn individually for highlighting.
+            VStack(alignment: stackAlignment, spacing: fontSize * 0.1) {
+                ForEach(Array(wordLines.enumerated()), id: \.offset) { _, line in
+                    CaptionFlowLayout(
+                        alignment: style.alignment,
+                        spacing: fontSize * 0.04,
+                        lineSpacing: fontSize * 0.1
+                    ) {
+                        ForEach(line) { word in
+                            wordView(word)
+                        }
+                    }
                 }
             }
         } else {
@@ -48,6 +54,44 @@ struct CaptionBlockView: View {
                 .multilineTextAlignment(style.alignment.swiftUI)
                 .lineSpacing(fontSize * 0.12)
         }
+    }
+
+    private var stackAlignment: HorizontalAlignment {
+        switch style.alignment {
+        case .leading: return .leading
+        case .center: return .center
+        case .trailing: return .trailing
+        }
+    }
+
+    /// Groups the words into the lines the text is broken into.
+    ///
+    /// The words carry timings but no notion of layout, so the line structure comes
+    /// from the text: each line takes as many words as it has. If the two disagree -
+    /// after heavy retyping, say - everything left over joins the last line rather
+    /// than being dropped.
+    private var wordLines: [[SubtitleWord]] {
+        guard let words = segment.words, !words.isEmpty else { return [] }
+
+        let lines = segment.text
+            .components(separatedBy: "\n")
+            .map { $0.split(separator: " ").count }
+            .filter { $0 > 0 }
+
+        guard lines.count > 1 else { return [words] }
+
+        var result: [[SubtitleWord]] = []
+        var index = 0
+        for count in lines {
+            guard index < words.count else { break }
+            let end = min(index + count, words.count)
+            result.append(Array(words[index..<end]))
+            index = end
+        }
+        if index < words.count, !result.isEmpty {
+            result[result.count - 1].append(contentsOf: words[index...])
+        }
+        return result
     }
 
     /// Words only need laying out one by one when something distinguishes them.

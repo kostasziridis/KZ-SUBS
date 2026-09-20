@@ -47,10 +47,13 @@
 		8F88EC02C5CE087AACE84349 /* ModelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AECE6B1A0E3FB728E69E4391 /* ModelManager.swift */; };
 		A10D2DCDC27FB0578E5DC8C3 /* FileHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11D27845E8523BAD37DC9251 /* FileHelpers.swift */; };
 		A1E03C37E1EAA68BDB881FDE /* WhisperService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B45129D3F6D522F096BC5780 /* WhisperService.swift */; };
+		A4BB1DCAF0E29D52574F85A2 /* KZ_SUBS_appicon.svg in Resources */ = {isa = PBXBuildFile; fileRef = 686DF46A98FCEFFEFFFCF609 /* KZ_SUBS_appicon.svg */; };
 		AAB2DD147E21B311E4B5EEB8 /* CaptionStylePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0953262834819B5A5DAEB365 /* CaptionStylePickerView.swift */; };
 		AAB75A58B3EEBA62A063F6F3 /* VideoImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF4FEA4A02EBB64AC885ED01 /* VideoImportView.swift */; };
 		B12E2DE02D09D5E895611482 /* VideoExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B2970E93580346070C4DB52 /* VideoExporter.swift */; };
+		B16B64284601B72729894F4E /* CaptionSizeSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6F68DAF361F6949F4B8C785 /* CaptionSizeSlider.swift */; };
 		B6C6A7F9C55210339C47AE4D /* PrivacyBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230DFEFB5C7C8DA5C4491C92 /* PrivacyBadge.swift */; };
+		B985BBDD5ED94581E9A3491D /* KZ_SUBS_logo_vector.svg in Resources */ = {isa = PBXBuildFile; fileRef = 06FC4C0A692737C1F3171A41 /* KZ_SUBS_logo_vector.svg */; };
 		C20294216ED9B57B63E5D709 /* WhisperKit in Frameworks */ = {isa = PBXBuildFile; productRef = 46774DD9F39F76DA0F14D322 /* WhisperKit */; };
 		C744CD288E48BDCD848D3C89 /* VideoDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A3EE9D6CC6E3CB4F7E4786 /* VideoDetailsView.swift */; };
 		CAF0A2BF18833335E8A89AF4 /* ProjectCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7AC70134DB4D3082312D23E /* ProjectCard.swift */; };
@@ -79,6 +82,7 @@
 		016F169B147EF57064F19F75 /* TranscriptionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptionState.swift; sourceTree = "<group>"; };
 		01AF81F238339687AE6B0F33 /* SubtitleSegment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtitleSegment.swift; sourceTree = "<group>"; };
 		03DFCB2891D7E39A3DDF2DB8 /* CaptionStyleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionStyleView.swift; sourceTree = "<group>"; };
+		06FC4C0A692737C1F3171A41 /* KZ_SUBS_logo_vector.svg */ = {isa = PBXFileReference; path = KZ_SUBS_logo_vector.svg; sourceTree = "<group>"; };
 		08B3615F28C1FBC47C5D7EA2 /* SubtitleEditorViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtitleEditorViewModel.swift; sourceTree = "<group>"; };
 		0953262834819B5A5DAEB365 /* CaptionStylePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionStylePickerView.swift; sourceTree = "<group>"; };
 		0AD7751E00BE245005F4DC29 /* test-english.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "test-english.wav"; sourceTree = "<group>"; };
@@ -107,6 +111,7 @@
 		591D3381A6D4E4C196AA911D /* KZSubs.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = KZSubs.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		605479A04469AFEF9FAA831E /* PreviewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewData.swift; sourceTree = "<group>"; };
 		60E157757014BF9E9B5D346F /* SubtitleListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtitleListView.swift; sourceTree = "<group>"; };
+		686DF46A98FCEFFEFFFCF609 /* KZ_SUBS_appicon.svg */ = {isa = PBXFileReference; path = KZ_SUBS_appicon.svg; sourceTree = "<group>"; };
 		75EA5DDAEB3766F45CB9F6C0 /* VideoPlayerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayerViewModel.swift; sourceTree = "<group>"; };
 		7D878D98F57F5A22A32AF8DC /* CaptionStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionStyle.swift; sourceTree = "<group>"; };
 		7D9EAB09E40C988162B09046 /* AppError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppError.swift; sourceTree = "<group>"; };
@@ -133,6 +138,7 @@
 		D1E6F4CAB10291C058697721 /* VideoImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoImporter.swift; sourceTree = "<group>"; };
 		D576C8CE5D5BB9097367E81F /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
 		D6614EE230D9E968E3E09C9E /* AppLanguage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLanguage.swift; sourceTree = "<group>"; };
+		D6F68DAF361F6949F4B8C785 /* CaptionSizeSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionSizeSlider.swift; sourceTree = "<group>"; };
 		D7F134845C22DB8696E190F1 /* KZSubsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KZSubsApp.swift; sourceTree = "<group>"; };
 		DAABAF8958A49FEFD952EE41 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E247EAF876864EE731EEFDC1 /* CaptionFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionFlowLayout.swift; sourceTree = "<group>"; };
@@ -227,6 +233,8 @@
 			isa = PBXGroup;
 			children = (
 				DAABAF8958A49FEFD952EE41 /* Assets.xcassets */,
+				686DF46A98FCEFFEFFFCF609 /* KZ_SUBS_appicon.svg */,
+				06FC4C0A692737C1F3171A41 /* KZ_SUBS_logo_vector.svg */,
 				0AD7751E00BE245005F4DC29 /* test-english.wav */,
 				428B396D749BFE179137BF65 /* test-greek.wav */,
 			);
@@ -321,6 +329,7 @@
 		C5A101DCBC297A636D892314 /* Editor */ = {
 			isa = PBXGroup;
 			children = (
+				D6F68DAF361F6949F4B8C785 /* CaptionSizeSlider.swift */,
 				8360728997C0E83D4B396253 /* SubtitleEditorView.swift */,
 				FA89D7D12CBC0AB8BBCDAD82 /* SubtitleEditSheet.swift */,
 				60E157757014BF9E9B5D346F /* SubtitleListView.swift */,
@@ -448,6 +457,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				EE824AE267710344B65683E7 /* Assets.xcassets in Resources */,
+				A4BB1DCAF0E29D52574F85A2 /* KZ_SUBS_appicon.svg in Resources */,
+				B985BBDD5ED94581E9A3491D /* KZ_SUBS_logo_vector.svg in Resources */,
 				E952DCFB055C69610038A00E /* test-english.wav in Resources */,
 				6C57A19E9345CAF666969319 /* test-greek.wav in Resources */,
 			);
@@ -471,6 +482,7 @@
 				090FA6283EF4FC1E93CA64A2 /* CaptionColor.swift in Sources */,
 				E6DB435FF76DDA971409A40D /* CaptionFlowLayout.swift in Sources */,
 				76B437F9702D64022497F086 /* CaptionOverlayView.swift in Sources */,
+				B16B64284601B72729894F4E /* CaptionSizeSlider.swift in Sources */,
 				23F4B1884FAE3C3CE2475A36 /* CaptionStyle.swift in Sources */,
 				AAB2DD147E21B311E4B5EEB8 /* CaptionStylePickerView.swift in Sources */,
 				D01465E9C7111BFC737317BB /* CaptionStylePreview.swift in Sources */,

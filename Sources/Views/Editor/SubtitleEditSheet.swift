@@ -68,7 +68,29 @@ struct SubtitleEditSheet: View {
                     .focused($isEditingText)
                     .onChange(of: text) { _, _ in commit() }
 
-                Text("Keep it to two short lines so it stays readable.")
+                HStack(spacing: 10) {
+                    Button {
+                        // Break it where the two lines come out closest in length.
+                        text = SubtitleSegmenter.splitInTwo(text.replacingOccurrences(of: "\n", with: " "))
+                        commit()
+                    } label: {
+                        Label("Split in two", systemImage: "text.append")
+                            .font(.caption.weight(.medium))
+                    }
+                    .disabled(text.split(separator: " ").count < 2)
+
+                    Button {
+                        text = text.replacingOccurrences(of: "\n", with: " ")
+                        commit()
+                    } label: {
+                        Label("One line", systemImage: "text.aligncenter")
+                            .font(.caption.weight(.medium))
+                    }
+                    .disabled(!text.contains("\n"))
+                }
+                .tint(AppTheme.accent)
+
+                Text("Return starts a new line. Two short lines read best.")
                     .font(.caption2)
                     .foregroundStyle(AppTheme.tertiaryText)
             }

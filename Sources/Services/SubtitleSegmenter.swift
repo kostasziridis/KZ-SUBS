@@ -192,8 +192,15 @@ enum SubtitleSegmenter {
     }
 
     static func wrap(_ text: String, rules: Rules = .default) -> String {
+        guard text.count > rules.maxCharactersPerLine else { return text }
+        return splitInTwo(text)
+    }
+
+    /// Breaks the text into two lines at the most balanced word boundary, whatever its
+    /// length. Asked for by hand, so length is not a reason to refuse.
+    static func splitInTwo(_ text: String) -> String {
         let words = text.split(separator: " ").map(String.init)
-        guard words.count > 1, text.count > rules.maxCharactersPerLine else { return text }
+        guard words.count > 1 else { return text }
 
         // Find the split point closest to the middle, so the two lines look balanced.
         let target = text.count / 2

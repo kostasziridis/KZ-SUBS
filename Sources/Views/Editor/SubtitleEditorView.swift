@@ -113,10 +113,21 @@ struct SubtitleEditorView: View {
             // nothing else on this screen.
             CaptionLayer(player: player, model: model)
         }
+        .overlay(alignment: .trailing) {
+            CaptionSizeSlider(
+                value: Binding(
+                    get: { model.captionStyle.referenceFontSize },
+                    set: { model.captionStyle.referenceFontSize = $0 }
+                ),
+                range: 24...140
+            )
+            .frame(height: 170)
+            .padding(.trailing, 12)
+        }
         .padding(.horizontal, 20)
         .padding(.top, 8)
 
-        Text("Drag the caption to move it · pinch to resize")
+        Text("Drag the caption to move it · pinch or use the slider to resize")
             .font(.caption2)
             .foregroundStyle(AppTheme.tertiaryText)
             .frame(maxWidth: .infinity)
