@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="brand" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#19A7FF"/>
+      <stop offset="52%" stop-color="#246BFF"/>
+      <stop offset="100%" stop-color="#6C2BFF"/>
+    </linearGradient>
+    <linearGradient id="inner" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B63D6"/>
+      <stop offset="100%" stop-color="#4A17C7"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="1024" fill="url(#brand)"/>
+  <g transform="translate(-112,42) scale(0.78)">
+    <rect x="325" y="225" width="950" height="650" rx="145" fill="#FFFFFF"/>
+    <path d="M 525 860 L 525 955 Q 525 980 548 964 L 690 860 Z" fill="#FFFFFF"/>
+    <path d="M 670 365 Q 646 349 620 364 Q 595 379 595 410 L 595 605 Q 595 636 620 651 Q 646 666 670 650 L 860 532 Q 885 516 885 493 Q 885 470 860 454 Z" fill="url(#inner)"/>
+    <rect x="470" y="690" width="660" height="38" rx="19" fill="url(#inner)"/>
+    <rect x="470" y="772" width="460" height="38" rx="19" fill="url(#inner)"/>
+  </g>
+</svg>
