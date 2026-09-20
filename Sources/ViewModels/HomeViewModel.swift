@@ -1,6 +1,7 @@
 import Foundation
 import Observation
 import PhotosUI
+import SwiftUI
 
 /// Drives the home screen: picking a video, importing it, surfacing failures.
 @MainActor

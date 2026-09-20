@@ -2,6 +2,7 @@ import AVFoundation
 import CoreTransferable
 import Foundation
 import PhotosUI
+import SwiftUI
 import UniformTypeIdentifiers
 
 /// A movie handed over by the photo picker, already copied into our own storage.
