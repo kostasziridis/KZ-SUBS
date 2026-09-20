@@ -19,6 +19,11 @@ struct CaptionOverlayView: View {
     var text: Binding<String>?
     /// Called when in-place typing starts, so playback can be stopped.
     var onBeginTextEditing: (() -> Void)?
+    /// The video's shape. Without it the caption is laid out in the whole view, which
+    /// for a pillarboxed clip is wider than the picture - so the preview wraps the text
+    /// differently from the export and the two stop matching. Nil means the view is
+    /// the picture, which is what the style previews want.
+    var contentAspectRatio: CGFloat?
 
     @State private var captionSize: CGSize = .zero
     @State private var positionAtDragStart: CGPoint?
@@ -28,17 +33,19 @@ struct CaptionOverlayView: View {
 
     var body: some View {
         GeometryReader { proxy in
+            let content = contentRect(in: proxy.size)
+
             if let segment, !segment.text.isEmpty {
                 interactive(
                     CaptionBlockView(
                         segment: segment,
                         style: style,
                         currentTime: currentTime,
-                        frameHeight: proxy.size.height,
+                        frameHeight: content.height,
                         editingText: isEditingText ? text : nil,
                         onEndEditing: { isEditingText = false }
                     )
-                    .frame(maxWidth: proxy.size.width * CaptionLayout.maximumWidthFraction)
+                    .frame(maxWidth: content.width * CaptionLayout.maximumWidthFraction)
                     .background { sizeReader }
                     .overlay { adjustingOutline }
                     .overlay { smallCaptionHint }
@@ -47,7 +54,7 @@ struct CaptionOverlayView: View {
                     // it grows what can be grabbed without moving what is drawn.
                     .padding(editing != nil ? 22 : 0)
                     .contentShape(Rectangle()),
-                    in: proxy.size
+                    in: content
                 )
             }
         }
@@ -58,17 +65,40 @@ struct CaptionOverlayView: View {
 
     // MARK: - Placement
 
+    /// Where the picture actually sits inside the view, once letterboxing or
+    /// pillarboxing is taken into account.
+    private func contentRect(in size: CGSize) -> CGRect {
+        guard let aspect = contentAspectRatio, aspect > 0, size.width > 0, size.height > 0 else {
+            return CGRect(origin: .zero, size: size)
+        }
+
+        if size.width / size.height > aspect {
+            // Bars at the sides: the picture is limited by height.
+            let width = size.height * aspect
+            return CGRect(x: (size.width - width) / 2, y: 0, width: width, height: size.height)
+        } else {
+            // Bars above and below: limited by width.
+            let height = size.width / aspect
+            return CGRect(x: 0, y: (size.height - height) / 2, width: size.width, height: height)
+        }
+    }
+
+    private func placement(in rect: CGRect) -> CGPoint {
+        let center = CaptionLayout.center(style: style, captionSize: captionSize, frameSize: rect.size)
+        return CGPoint(x: rect.minX + center.x, y: rect.minY + center.y)
+    }
+
     @ViewBuilder
-    private func interactive(_ content: some View, in size: CGSize) -> some View {
+    private func interactive(_ content: some View, in rect: CGRect) -> some View {
         if let editing, !isEditingText {
             content
-                .position(CaptionLayout.center(style: style, captionSize: captionSize, frameSize: size))
+                .position(placement(in: rect))
                 // One combined gesture, not two competing ones: a separate
                 // `onTapGesture` claims the touch before the drag can start, which
                 // leaves the caption unmovable. Exclusively means the drag is tried
                 // first and the tap only runs when the finger did not travel.
                 .gesture(
-                    dragGesture(in: size, style: editing)
+                    dragGesture(in: rect.size, style: editing)
                         .exclusively(before: TapGesture().onEnded { beginTextEditing() })
                 )
                 .simultaneousGesture(pinchGesture(style: editing))
@@ -76,7 +106,7 @@ struct CaptionOverlayView: View {
             // While the words are being typed, moving and resizing would only get in
             // the way - and would fight the keyboard for the same drags.
             content
-                .position(CaptionLayout.center(style: style, captionSize: captionSize, frameSize: size))
+                .position(placement(in: rect))
         }
     }
 

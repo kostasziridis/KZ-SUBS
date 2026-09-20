@@ -72,11 +72,11 @@ struct CaptionStylePickerView: View {
             model: player,
             aspectRatio: aspectRatio,
             maxVideoHeight: project.pixelSize.height > project.pixelSize.width ? 380 : nil,
-            showsControls: false
+            showsControls: false,
+            videoOverlay: {
+                StyleLoopLayer(player: player, project: project, style: style, loop: loop, aspectRatio: aspectRatio)
+            }
         )
-        .overlay {
-            StyleLoopLayer(player: player, project: project, style: style, loop: loop)
-        }
         .padding(.horizontal, 20)
         .padding(.top, 8)
         .padding(.bottom, 16)
@@ -185,12 +185,14 @@ private struct StyleLoopLayer: View {
     let project: SubtitleProject
     let style: CaptionStyle
     let loop: ClosedRange<TimeInterval>
+    let aspectRatio: CGFloat
 
     var body: some View {
         CaptionOverlayView(
             segment: segment(at: player.currentTime),
             style: style,
-            currentTime: player.currentTime
+            currentTime: player.currentTime,
+            contentAspectRatio: aspectRatio
         )
         .onChange(of: player.currentTime) { _, time in
             if time >= loop.upperBound || time < loop.lowerBound - 0.5 {

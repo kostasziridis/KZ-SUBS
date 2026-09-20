@@ -109,13 +109,13 @@ struct SubtitleEditorView: View {
         VideoPreviewView(
             model: player,
             aspectRatio: aspectRatio,
-            maxVideoHeight: isPortrait ? 360 : nil
+            maxVideoHeight: isPortrait ? 360 : nil,
+            videoOverlay: {
+                // Its own view, so 30 time updates a second redraw the captions and
+                // nothing else on this screen.
+                CaptionLayer(player: player, model: model, aspectRatio: aspectRatio)
+            }
         )
-        .overlay {
-            // Its own view, so 30 time updates a second redraw the captions and
-            // nothing else on this screen.
-            CaptionLayer(player: player, model: model)
-        }
         .overlay(alignment: .trailing) {
             CaptionSizeSlider(
                 value: Binding(
@@ -224,6 +224,7 @@ struct SubtitleEditorView: View {
 private struct CaptionLayer: View {
     let player: VideoPlayerViewModel
     let model: SubtitleEditorViewModel
+    let aspectRatio: CGFloat
 
     var body: some View {
         let current = model.segment(at: player.currentTime)
@@ -248,7 +249,8 @@ private struct CaptionLayer: View {
                     }
                 )
             },
-            onBeginTextEditing: { player.pause() }
+            onBeginTextEditing: { player.pause() },
+            contentAspectRatio: aspectRatio
         )
         .onChange(of: player.currentTime) { _, time in
             // Only writes when the subtitle actually changes.

@@ -4,13 +4,17 @@ import SwiftUI
 ///
 /// Captions are drawn by the caller with `.overlay`, which keeps this view free of
 /// any subtitle knowledge.
-struct VideoPreviewView: View {
+struct VideoPreviewView<Overlay: View>: View {
 
     @Bindable var model: VideoPlayerViewModel
     var aspectRatio: CGFloat = 16.0 / 9.0
     /// Caps how tall a portrait video may grow inside a scrolling layout.
     var maxVideoHeight: CGFloat? = nil
     var showsControls: Bool = true
+    /// Drawn over the picture itself rather than over the whole component. Captions
+    /// have to be positioned against the video; measuring them against the transport
+    /// bar as well puts them lower than they will be in the exported file.
+    @ViewBuilder var videoOverlay: Overlay
 
     @State private var controlsVisible = true
     @State private var hideTask: Task<Void, Never>?
@@ -46,6 +50,7 @@ struct VideoPreviewView: View {
         // its shape. Portrait clips letterbox inside it; `maxVideoHeight` decides how
         // tall that stage gets, and so how wide a portrait video ends up.
         .frame(maxWidth: .infinity, maxHeight: maxVideoHeight)
+        .overlay { videoOverlay }
         .background(Color.black)
         .clipShape(AppTheme.cardShape(AppTheme.cardRadius))
         .overlay {
@@ -120,5 +125,22 @@ struct VideoPreviewView: View {
             guard !Task.isCancelled else { return }
             withAnimation(.easeOut(duration: 0.25)) { controlsVisible = false }
         }
+    }
+}
+
+extension VideoPreviewView where Overlay == EmptyView {
+    init(
+        model: VideoPlayerViewModel,
+        aspectRatio: CGFloat = 16.0 / 9.0,
+        maxVideoHeight: CGFloat? = nil,
+        showsControls: Bool = true
+    ) {
+        self.init(
+            model: model,
+            aspectRatio: aspectRatio,
+            maxVideoHeight: maxVideoHeight,
+            showsControls: showsControls,
+            videoOverlay: { EmptyView() }
+        )
     }
 }
