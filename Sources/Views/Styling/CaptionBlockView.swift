@@ -60,12 +60,13 @@ struct CaptionBlockView: View {
                 }
                 .toolbar {
                     ToolbarItemGroup(placement: .keyboard) {
+
                         Button {
                             editingText.wrappedValue = SubtitleSegmenter.splitInTwo(
                                 editingText.wrappedValue.replacingOccurrences(of: "\n", with: " ")
                             )
                         } label: {
-                            Label("Split in two", systemImage: "text.append")
+                            Label("Split in two", systemImage: "text.append").font(.body)
                         }
                         .disabled(editingText.wrappedValue.split(separator: " ").count < 2)
 
@@ -73,14 +74,19 @@ struct CaptionBlockView: View {
                             editingText.wrappedValue = editingText.wrappedValue
                                 .replacingOccurrences(of: "\n", with: " ")
                         } label: {
-                            Label("One line", systemImage: "text.aligncenter")
+                            Label("One line", systemImage: "text.aligncenter").font(.body)
                         }
                         .disabled(!editingText.wrappedValue.contains("\n"))
 
                         Spacer()
 
-                        Button("Done") { isFieldFocused = false }
-                            .fontWeight(.semibold)
+                        Button {
+                            isFieldFocused = false
+                        } label: {
+                            // Stated explicitly: the caption's font is in the
+                            // environment here, and the bar would grow with it.
+                            Text("Done").font(.body.weight(.semibold))
+                        }
                     }
                 }
         } else if needsPerWordRendering {

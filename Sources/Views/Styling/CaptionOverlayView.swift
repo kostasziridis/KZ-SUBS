@@ -63,8 +63,14 @@ struct CaptionOverlayView: View {
         if let editing, !isEditingText {
             content
                 .position(CaptionLayout.center(style: style, captionSize: captionSize, frameSize: size))
-                .onTapGesture { beginTextEditing() }
-                .gesture(dragGesture(in: size, style: editing))
+                // One combined gesture, not two competing ones: a separate
+                // `onTapGesture` claims the touch before the drag can start, which
+                // leaves the caption unmovable. Exclusively means the drag is tried
+                // first and the tap only runs when the finger did not travel.
+                .gesture(
+                    dragGesture(in: size, style: editing)
+                        .exclusively(before: TapGesture().onEnded { beginTextEditing() })
+                )
                 .simultaneousGesture(pinchGesture(style: editing))
         } else {
             // While the words are being typed, moving and resizing would only get in
