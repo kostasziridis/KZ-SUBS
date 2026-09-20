@@ -206,6 +206,7 @@ private struct CaptionSizeKey: PreferenceKey {
     }
 }
 
+#if DEBUG
 #Preview("Styles") {
     VStack(spacing: 12) {
         ForEach(CaptionStyle.Preset.allCases) { preset in
@@ -234,3 +235,4 @@ private struct CaptionSizeKey: PreferenceKey {
     .appBackground()
     .preferredColorScheme(.dark)
 }
+#endif

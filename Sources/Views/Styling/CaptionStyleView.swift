@@ -324,6 +324,8 @@ struct CaptionStyleView: View {
     }
 }
 
+#if DEBUG
 #Preview {
     CaptionStyleView(style: .constant(.preset(.karaoke)), sampleSegment: nil)
 }
+#endif

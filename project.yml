@@ -55,6 +55,8 @@ targets:
         Release:
           SWIFT_OPTIMIZATION_LEVEL: "-O"
           SWIFT_COMPILATION_MODE: wholemodule
+          # Fixtures for the DEBUG-only speech check; no reason to ship them.
+          EXCLUDED_SOURCE_FILE_NAMES: "test-greek.wav test-english.wav"
     info:
       path: Sources/Info.plist
       properties:

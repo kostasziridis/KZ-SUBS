@@ -28,6 +28,7 @@ struct SubtitleListView: View {
     }
 }
 
+#if DEBUG
 #Preview {
     ScrollView {
         SubtitleListView(
@@ -39,3 +40,4 @@ struct SubtitleListView: View {
     .appBackground()
     .preferredColorScheme(.dark)
 }
+#endif

@@ -275,6 +275,7 @@ private struct CaptionLayer: View {
     }
 }
 
+#if DEBUG
 #Preview {
     NavigationStack {
         SubtitleEditorView(project: .sample) { _ in }
@@ -282,3 +283,4 @@ private struct CaptionLayer: View {
     .environment(AppState.previewEmpty)
     .preferredColorScheme(.dark)
 }
+#endif

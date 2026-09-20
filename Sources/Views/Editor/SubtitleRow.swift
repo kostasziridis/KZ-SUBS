@@ -37,6 +37,7 @@ struct SubtitleRow: View {
     }
 }
 
+#if DEBUG
 #Preview {
     VStack(spacing: 10) {
         SubtitleRow(index: 1, segment: SubtitleSegment.samples[0])
@@ -46,3 +47,4 @@ struct SubtitleRow: View {
     .appBackground()
     .preferredColorScheme(.dark)
 }
+#endif

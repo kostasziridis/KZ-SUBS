@@ -34,6 +34,7 @@ struct PrivacyCard: View {
     }
 }
 
+#if DEBUG
 #Preview {
     VStack(spacing: 20) {
         PrivacyBadge()
@@ -43,3 +44,4 @@ struct PrivacyCard: View {
     .appBackground()
     .preferredColorScheme(.dark)
 }
+#endif

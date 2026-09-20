@@ -141,6 +141,7 @@ struct KZSubsWordmark: View {
     }
 }
 
+#if DEBUG
 #Preview {
     VStack(spacing: 30) {
         KZSubsMark().frame(width: 220)
@@ -151,3 +152,4 @@ struct KZSubsWordmark: View {
     .appBackground()
     .preferredColorScheme(.dark)
 }
+#endif

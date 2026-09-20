@@ -204,6 +204,7 @@ struct HomeView: View {
     }
 }
 
+#if DEBUG
 #Preview("Empty") {
     HomeView()
         .environment(AppState.previewEmpty)
@@ -217,3 +218,4 @@ struct HomeView: View {
         .environment(AppRouter())
         .preferredColorScheme(.dark)
 }
+#endif

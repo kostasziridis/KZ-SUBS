@@ -65,6 +65,7 @@ struct CaptionSizeSlider: View {
     }
 }
 
+#if DEBUG
 #Preview {
     CaptionSizeSlider(value: .constant(60), range: 24...140)
         .frame(height: 200)
@@ -72,3 +73,4 @@ struct CaptionSizeSlider: View {
         .appBackground()
         .preferredColorScheme(.dark)
 }
+#endif

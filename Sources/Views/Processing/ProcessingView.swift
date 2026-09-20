@@ -273,6 +273,7 @@ struct ProcessingView: View {
     }
 }
 
+#if DEBUG
 #Preview {
     NavigationStack {
         ProcessingView(asset: .sample, language: .greek)
@@ -281,3 +282,4 @@ struct ProcessingView: View {
     .environment(AppRouter())
     .preferredColorScheme(.dark)
 }
+#endif

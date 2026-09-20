@@ -8,3 +8,5 @@ xcuserdata/
 *.hmap
 *.ipa
 *.dSYM.zip
+build/
+DerivedDataRelease/

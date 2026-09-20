@@ -328,6 +328,7 @@ struct SubtitleEditSheet: View {
     }
 }
 
+#if DEBUG
 #Preview {
     SubtitleEditSheet(
         segment: SubtitleSegment.samples[1],
@@ -336,3 +337,4 @@ struct SubtitleEditSheet: View {
         onChange: { _ in }, onDelete: {}, onPrevious: {}, onNext: {}, onSeek: { _ in }
     )
 }
+#endif

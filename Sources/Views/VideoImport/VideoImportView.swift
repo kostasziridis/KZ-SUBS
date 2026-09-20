@@ -140,6 +140,7 @@ struct VideoImportView: View {
     }
 }
 
+#if DEBUG
 #Preview {
     NavigationStack {
         VideoImportView(asset: .sample)
@@ -147,3 +148,4 @@ struct VideoImportView: View {
     .environment(AppRouter())
     .preferredColorScheme(.dark)
 }
+#endif

@@ -67,9 +67,11 @@ private extension String {
     }
 }
 
+#if DEBUG
 #Preview {
     ProjectCard(project: .sample)
         .padding()
         .appBackground()
         .preferredColorScheme(.dark)
 }
+#endif

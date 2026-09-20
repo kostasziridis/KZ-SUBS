@@ -135,6 +135,7 @@ struct ModelSetupView: View {
     }
 }
 
+#if DEBUG
 #Preview {
     NavigationStack {
         ModelSetupView(asset: .sample, language: .greek)
@@ -142,3 +143,4 @@ struct ModelSetupView: View {
     .environment(AppRouter())
     .preferredColorScheme(.dark)
 }
+#endif

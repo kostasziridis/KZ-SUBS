@@ -42,9 +42,11 @@ struct WaveformView: View {
     }
 }
 
+#if DEBUG
 #Preview {
     WaveformView()
         .padding()
         .appBackground()
         .preferredColorScheme(.dark)
 }
+#endif

@@ -216,9 +216,11 @@ private extension ExportState {
     }
 }
 
+#if DEBUG
 #Preview {
     NavigationStack {
         ExportView(project: .sample)
     }
     .preferredColorScheme(.dark)
 }
+#endif

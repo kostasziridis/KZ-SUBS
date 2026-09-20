@@ -207,6 +207,7 @@ private struct StyleLoopLayer: View {
     }
 }
 
+#if DEBUG
 #Preview {
     NavigationStack {
         CaptionStylePickerView(project: .sample)
@@ -215,3 +216,4 @@ private struct StyleLoopLayer: View {
     .environment(AppRouter())
     .preferredColorScheme(.dark)
 }
+#endif

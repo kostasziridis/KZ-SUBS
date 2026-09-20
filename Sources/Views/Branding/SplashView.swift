@@ -97,7 +97,9 @@ struct SplashView: View {
     }
 }
 
+#if DEBUG
 #Preview {
     SplashView { }
         .preferredColorScheme(.dark)
 }
+#endif
