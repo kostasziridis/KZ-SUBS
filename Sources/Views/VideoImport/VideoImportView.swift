@@ -114,7 +114,12 @@ struct VideoImportView: View {
         VStack(spacing: 12) {
             Button {
                 player.pause()
-                router.push(.processing(asset: model.asset, language: model.language))
+                // Explain the one-time download first, unless a model is already here.
+                if ModelManager.isReady() {
+                    router.push(.processing(asset: model.asset, language: model.language))
+                } else {
+                    router.push(.modelSetup(asset: model.asset, language: model.language))
+                }
             } label: {
                 Label("Generate Subtitles", systemImage: "wand.and.sparkles")
             }

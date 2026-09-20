@@ -38,8 +38,12 @@ struct HomeView: View {
                 switch route {
                 case let .importVideo(asset):
                     VideoImportView(asset: asset)
+                case let .modelSetup(asset, language):
+                    ModelSetupView(asset: asset, language: language)
                 case let .processing(asset, language):
                     ProcessingView(asset: asset, language: language)
+                case let .stylePicker(project):
+                    CaptionStylePickerView(project: project)
                 case let .editor(project):
                     SubtitleEditorView(project: project) { edited in
                         await appState.save(edited)

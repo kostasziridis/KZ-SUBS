@@ -76,6 +76,10 @@ English-only despite carrying no suffix.
 
 A DEBUG-only "Speech check" screen under Settings runs this test on device.
 
+The flow is: choose a video → one-time setup (only when no model is on the device
+yet, explaining the size, the rough time and that it happens once) → generating →
+choose a style → editor.
+
 Phase 3 joins it up: `AudioExtractor` streams a video's soundtrack to 16 kHz mono
 WAV through `AVAssetReader`/`AVAssetWriter` (the video track is never touched and
 memory stays flat), `TranscriptionViewModel` drives model prep → extraction →

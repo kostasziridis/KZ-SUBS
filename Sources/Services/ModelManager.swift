@@ -40,6 +40,15 @@ enum ModelManager {
             }
         }
 
+        /// Roughly how long the one-time setup takes, download plus first preparation.
+        var estimatedSetupTime: String {
+            switch self {
+            case .fast: return "about 1-2 minutes"
+            case .balanced: return "about 3-5 minutes"
+            case .accurate: return "about 5-8 minutes"
+            }
+        }
+
         /// Candidates for this choice, best first.
         var variants: [String] {
             switch self {
@@ -75,6 +84,14 @@ enum ModelManager {
     /// True once this variant has been downloaded and is still on disk.
     static func isDownloaded(_ variant: String) -> Bool {
         cachedFolder(for: variant) != nil
+    }
+
+    /// Whether a model for this choice is already on the device.
+    ///
+    /// Checked without the network, because the point is to decide whether to warn the
+    /// user about a download before anything starts.
+    static func isReady(for choice: Choice = ModelManager.choice) -> Bool {
+        choice.variants.contains { isDownloaded($0) }
     }
 
     /// Variants we would pick when the user has expressed no preference, best first.
@@ -128,19 +145,72 @@ enum ModelManager {
     private static func defaultsKey(for variant: String) -> String { "modelFolder.\(variant)" }
 
     /// The folder a previous download left behind, if it is still there.
+    ///
+    /// A remembered path is only a hint. iOS hands an app a new container path after
+    /// some installs and restores, so a path recorded earlier can point nowhere while
+    /// the model itself is sitting in the new container - and believing it would mean
+    /// downloading hundreds of megabytes that are already on the device. When the hint
+    /// misses, the model is searched for instead.
     static func cachedFolder(for variant: String) -> URL? {
-        guard let path = UserDefaults.standard.string(forKey: defaultsKey(for: variant)) else { return nil }
-        let url = URL(fileURLWithPath: path)
-        // The folder can vanish: the OS prunes caches, and the container path can change.
-        guard FileManager.default.fileExists(atPath: url.path) else {
-            UserDefaults.standard.removeObject(forKey: defaultsKey(for: variant))
-            return nil
+        if let remembered = rememberedFolder(for: variant) { return remembered }
+
+        if let found = locateDownloadedFolder(for: variant) {
+            rememberFolder(found, for: variant)
+            return found
         }
-        return url
+
+        UserDefaults.standard.removeObject(forKey: defaultsKey(for: variant))
+        return nil
+    }
+
+    private static func rememberedFolder(for variant: String) -> URL? {
+        guard let stored = UserDefaults.standard.string(forKey: defaultsKey(for: variant)) else { return nil }
+
+        // Stored relative to the models directory, so it survives a container move.
+        let url = stored.hasPrefix("/")
+            ? URL(fileURLWithPath: stored)
+            : StorageManager.modelsDirectory.appendingPathComponent(stored)
+
+        return isUsableModelFolder(url) ? url : nil
+    }
+
+    /// Searches the models directory for a complete copy of this variant.
+    static func locateDownloadedFolder(for variant: String) -> URL? {
+        let fileManager = FileManager.default
+        guard let walker = fileManager.enumerator(
+            at: StorageManager.modelsDirectory,
+            includingPropertiesForKeys: [.isDirectoryKey]
+        ) else { return nil }
+
+        for case let url as URL in walker where url.lastPathComponent == variant {
+            if isUsableModelFolder(url) { return url }
+        }
+        return nil
+    }
+
+    /// A folder only counts when the model files are actually in it. A download that
+    /// stopped half way leaves the directory behind, and loading that crashes deep
+    /// inside Core ML rather than failing cleanly.
+    private static func isUsableModelFolder(_ url: URL) -> Bool {
+        let fileManager = FileManager.default
+        var isDirectory: ObjCBool = false
+        guard fileManager.fileExists(atPath: url.path, isDirectory: &isDirectory), isDirectory.boolValue else {
+            return false
+        }
+
+        return ["MelSpectrogram.mlmodelc", "AudioEncoder.mlmodelc", "TextDecoder.mlmodelc"].allSatisfy {
+            fileManager.fileExists(atPath: url.appendingPathComponent($0).path)
+        }
     }
 
     static func rememberFolder(_ url: URL, for variant: String) {
-        UserDefaults.standard.set(url.path, forKey: defaultsKey(for: variant))
+        let base = StorageManager.modelsDirectory.path
+        let path = url.path
+        let relative = path.hasPrefix(base)
+            ? String(path.dropFirst(base.count)).trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+            : path
+
+        UserDefaults.standard.set(relative, forKey: defaultsKey(for: variant))
     }
 
     /// Downloads the variant unless it is already on disk.

@@ -4,7 +4,9 @@ import Observation
 /// Where a screen can go.
 enum Route: Hashable {
     case importVideo(VideoAsset)
+    case modelSetup(asset: VideoAsset, language: AppLanguage)
     case processing(asset: VideoAsset, language: AppLanguage)
+    case stylePicker(SubtitleProject)
     case editor(SubtitleProject)
 }
 

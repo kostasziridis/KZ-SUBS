@@ -188,12 +188,12 @@ struct ProcessingView: View {
 
             Button {
                 if let project = model.producedProject {
-                    router.replaceStack(with: .editor(project))
+                    router.replaceStack(with: .stylePicker(project))
                 } else {
                     router.popToRoot()
                 }
             } label: {
-                Label("Edit subtitles", systemImage: "slider.horizontal.3")
+                Label("Choose a style", systemImage: "textformat")
             }
             .buttonStyle(PrimaryButtonStyle())
         }
