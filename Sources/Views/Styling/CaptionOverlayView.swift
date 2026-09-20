@@ -15,11 +15,16 @@ struct CaptionOverlayView: View {
     /// writing the new position and size back. Left nil, the caption is inert - which
     /// is what playback, the style preview and the export all want.
     var editing: Binding<CaptionStyle>?
+    /// Supply this and tapping the caption edits its words in place, on the video.
+    var text: Binding<String>?
+    /// Called when in-place typing starts, so playback can be stopped.
+    var onBeginTextEditing: (() -> Void)?
 
     @State private var captionSize: CGSize = .zero
     @State private var positionAtDragStart: CGPoint?
     @State private var fontSizeAtPinchStart: Double?
     @State private var isAdjusting = false
+    @State private var isEditingText = false
 
     var body: some View {
         GeometryReader { proxy in
@@ -29,12 +34,15 @@ struct CaptionOverlayView: View {
                         segment: segment,
                         style: style,
                         currentTime: currentTime,
-                        frameHeight: proxy.size.height
+                        frameHeight: proxy.size.height,
+                        editingText: isEditingText ? text : nil,
+                        onEndEditing: { isEditingText = false }
                     )
                     .frame(maxWidth: proxy.size.width * CaptionLayout.maximumWidthFraction)
                     .background { sizeReader }
                     .overlay { adjustingOutline }
                     .overlay { smallCaptionHint }
+                    .overlay { editingOutline }
                     // A small caption is a small target. The padding is symmetric, so
                     // it grows what can be grabbed without moving what is drawn.
                     .padding(editing != nil ? 22 : 0)
@@ -52,14 +60,33 @@ struct CaptionOverlayView: View {
 
     @ViewBuilder
     private func interactive(_ content: some View, in size: CGSize) -> some View {
-        if let editing {
+        if let editing, !isEditingText {
             content
                 .position(CaptionLayout.center(style: style, captionSize: captionSize, frameSize: size))
+                .onTapGesture { beginTextEditing() }
                 .gesture(dragGesture(in: size, style: editing))
                 .simultaneousGesture(pinchGesture(style: editing))
         } else {
+            // While the words are being typed, moving and resizing would only get in
+            // the way - and would fight the keyboard for the same drags.
             content
                 .position(CaptionLayout.center(style: style, captionSize: captionSize, frameSize: size))
+        }
+    }
+
+    private func beginTextEditing() {
+        guard text != nil else { return }
+        onBeginTextEditing?()
+        withAnimation(.snappy(duration: 0.18)) { isEditingText = true }
+    }
+
+    /// A quiet frame while typing, so it is clear which caption is being changed.
+    @ViewBuilder
+    private var editingOutline: some View {
+        if isEditingText {
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .strokeBorder(AppTheme.accent.opacity(0.9), lineWidth: 1.5)
+                .padding(-8)
         }
     }
 

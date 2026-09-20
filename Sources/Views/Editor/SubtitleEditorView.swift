@@ -31,6 +31,9 @@ struct SubtitleEditorView: View {
             subtitleSection
         }
         .appBackground()
+        // The keyboard must not resize the layout: squeezing the video is exactly
+        // what ruins editing a caption on top of it. Let it cover the list instead.
+        .ignoresSafeArea(.keyboard, edges: .bottom)
         .navigationTitle(model.project.name)
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(.visible, for: .navigationBar)
@@ -223,14 +226,29 @@ private struct CaptionLayer: View {
     let model: SubtitleEditorViewModel
 
     var body: some View {
+        let current = model.segment(at: player.currentTime)
+
         CaptionOverlayView(
-            segment: model.segment(at: player.currentTime),
+            segment: current,
             style: model.captionStyle,
             currentTime: player.currentTime,
             editing: Binding(
                 get: { model.captionStyle },
                 set: { model.captionStyle = $0 }
-            )
+            ),
+            // Read back through the model rather than the captured copy, so the field
+            // reflects every keystroke that has already been applied.
+            text: current.map { segment in
+                Binding(
+                    get: { model.segments.first { $0.id == segment.id }?.text ?? segment.text },
+                    set: { newText in
+                        guard var edited = model.segments.first(where: { $0.id == segment.id }) else { return }
+                        edited.text = newText
+                        model.update(edited)
+                    }
+                )
+            },
+            onBeginTextEditing: { player.pause() }
         )
         .onChange(of: player.currentTime) { _, time in
             // Only writes when the subtitle actually changes.

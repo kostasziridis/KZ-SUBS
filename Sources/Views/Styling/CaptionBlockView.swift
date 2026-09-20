@@ -13,8 +13,20 @@ struct CaptionBlockView: View {
     /// Height of the frame the caption is being drawn into, which is what the font
     /// size is measured against.
     let frameHeight: CGFloat
+    /// Supply this and the caption becomes an editable field in place, styled exactly
+    /// as it is drawn, so what is typed is what will be seen.
+    var editingText: Binding<String>?
+    /// Called when the field gives up focus, so the caller can leave editing mode.
+    var onEndEditing: (() -> Void)?
 
-    private var fontSize: CGFloat { style.fontSize(forFrameHeight: frameHeight) }
+    @FocusState private var isFieldFocused: Bool
+
+    private var fontSize: CGFloat {
+        let size = style.fontSize(forFrameHeight: frameHeight)
+        // Typing needs to be legible. Below this the caption is smaller than any text
+        // anyone could read while editing it, so the field alone is floored.
+        return editingText == nil ? size : max(size, 13)
+    }
 
     var body: some View {
         content
@@ -32,7 +44,46 @@ struct CaptionBlockView: View {
 
     @ViewBuilder
     private var content: some View {
-        if needsPerWordRendering {
+        if let editingText {
+            TextField("Subtitle", text: editingText, axis: .vertical)
+                .textFieldStyle(.plain)
+                .foregroundStyle(style.textColor.color)
+                .multilineTextAlignment(style.alignment.swiftUI)
+                .lineSpacing(fontSize * 0.12)
+                .lineLimit(1...4)
+                .autocorrectionDisabled()
+                .fixedSize(horizontal: false, vertical: true)
+                .focused($isFieldFocused)
+                .onAppear { isFieldFocused = true }
+                .onChange(of: isFieldFocused) { _, focused in
+                    if !focused { onEndEditing?() }
+                }
+                .toolbar {
+                    ToolbarItemGroup(placement: .keyboard) {
+                        Button {
+                            editingText.wrappedValue = SubtitleSegmenter.splitInTwo(
+                                editingText.wrappedValue.replacingOccurrences(of: "\n", with: " ")
+                            )
+                        } label: {
+                            Label("Split in two", systemImage: "text.append")
+                        }
+                        .disabled(editingText.wrappedValue.split(separator: " ").count < 2)
+
+                        Button {
+                            editingText.wrappedValue = editingText.wrappedValue
+                                .replacingOccurrences(of: "\n", with: " ")
+                        } label: {
+                            Label("One line", systemImage: "text.aligncenter")
+                        }
+                        .disabled(!editingText.wrappedValue.contains("\n"))
+
+                        Spacer()
+
+                        Button("Done") { isFieldFocused = false }
+                            .fontWeight(.semibold)
+                    }
+                }
+        } else if needsPerWordRendering {
             // One row per line the user wrote, so a hand-placed break survives even
             // when words are drawn individually for highlighting.
             VStack(alignment: stackAlignment, spacing: fontSize * 0.1) {
