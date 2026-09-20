@@ -6,6 +6,7 @@ struct KZSubsApp: App {
 
     @State private var appState = AppState()
     @State private var router = AppRouter()
+    @State private var showsSplash = true
 
     init() {
         configureAudioSession()
@@ -13,14 +14,26 @@ struct KZSubsApp: App {
 
     var body: some Scene {
         WindowGroup {
-            HomeView()
-                .environment(appState)
-                .environment(router)
-                .preferredColorScheme(.dark)
-                .tint(AppTheme.accent)
-                .task {
-                    await appState.bootstrap()
+            ZStack {
+                // Home is built underneath, so its projects are loaded and ready by the
+                // time the splash steps aside.
+                HomeView()
+                    .environment(appState)
+                    .environment(router)
+                    .task {
+                        await appState.bootstrap()
+                    }
+
+                if showsSplash {
+                    SplashView {
+                        withAnimation(.easeOut(duration: 0.3)) { showsSplash = false }
+                    }
+                    .transition(.opacity)
+                    .zIndex(1)
                 }
+            }
+            .preferredColorScheme(.dark)
+            .tint(AppTheme.accent)
         }
     }
 

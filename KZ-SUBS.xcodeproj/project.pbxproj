@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		00719329C28F51C2DB576C17 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41C60A348AFF5E624578FFBC /* SplashView.swift */; };
 		04BD38592561588B69BFBC90 /* TimecodeFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13FAA15E113E573701DC205E /* TimecodeFormatter.swift */; };
 		06565AD5881D48E8263A3420 /* PlayerLayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8214957F0D5A2140491B8B43 /* PlayerLayerView.swift */; };
 		08A7825E4708C23FDEF3FB73 /* InfoPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224F9870DB346DA027E58E63 /* InfoPill.swift */; };
@@ -34,6 +35,7 @@
 		76B437F9702D64022497F086 /* CaptionOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E82F67F6DCB602CBD4C1E4B /* CaptionOverlayView.swift */; };
 		76C83A0BD87C201381B3A582 /* WaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D095D7F5E6A234ADA579894E /* WaveformView.swift */; };
 		77231291AFFF2BDC266CE4DA /* SpeechCheckView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA0E962521B7271E74F4C972 /* SpeechCheckView.swift */; };
+		776FC77CD268756E22849885 /* KZSubsLogo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D53C3B091498E87A5D1AE72 /* KZSubsLogo.swift */; };
 		78722A6EF25780C3E3872842 /* ExportViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C61FA369AACF69E0CF4A74C7 /* ExportViewModel.swift */; };
 		787524D9EB60E2E7303CED7D /* SpeechTranscript.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12ECD3BB0E906A5E145C538 /* SpeechTranscript.swift */; };
 		79896D43436D7345AAE6DD42 /* ProcessingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4412411B987E79FEF81A96F4 /* ProcessingView.swift */; };
@@ -93,11 +95,13 @@
 		29158593A02F605B55897DA2 /* VideoAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoAsset.swift; sourceTree = "<group>"; };
 		3BD373846825C28D685F602E /* CaptionBlockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionBlockView.swift; sourceTree = "<group>"; };
 		3F110CE168A9D1A18C8B424B /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		41C60A348AFF5E624578FFBC /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 		4202C36BD4B7A3933696817E /* VideoImportViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoImportViewModel.swift; sourceTree = "<group>"; };
 		428B396D749BFE179137BF65 /* test-greek.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "test-greek.wav"; sourceTree = "<group>"; };
 		4384EFCFDDD2231C6BD252A0 /* SubtitleRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtitleRow.swift; sourceTree = "<group>"; };
 		4412411B987E79FEF81A96F4 /* ProcessingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessingView.swift; sourceTree = "<group>"; };
 		4B2970E93580346070C4DB52 /* VideoExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoExporter.swift; sourceTree = "<group>"; };
+		4D53C3B091498E87A5D1AE72 /* KZSubsLogo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KZSubsLogo.swift; sourceTree = "<group>"; };
 		4E82F67F6DCB602CBD4C1E4B /* CaptionOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionOverlayView.swift; sourceTree = "<group>"; };
 		5784FCDBDEE560351FC1CEE2 /* AudioExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioExtractor.swift; sourceTree = "<group>"; };
 		591D3381A6D4E4C196AA911D /* KZSubs.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = KZSubs.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -254,6 +258,7 @@
 		6D2B449E9F9AB53E7F6A933A /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				869E398B495DC4772BB97736 /* Branding */,
 				0469C49378BD1841AA94DE74 /* Components */,
 				C5A101DCBC297A636D892314 /* Editor */,
 				2BC9E35CA0B1EE52751079A9 /* Export */,
@@ -265,6 +270,15 @@
 				25D92736601BD44F80A25C84 /* VideoImport */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		869E398B495DC4772BB97736 /* Branding */ = {
+			isa = PBXGroup;
+			children = (
+				4D53C3B091498E87A5D1AE72 /* KZSubsLogo.swift */,
+				41C60A348AFF5E624578FFBC /* SplashView.swift */,
+			);
+			path = Branding;
 			sourceTree = "<group>";
 		};
 		8F62DC500ECA31571998E82E /* Processing */ = {
@@ -469,6 +483,7 @@
 				6B79BF20B441E2AA25BD3C3C /* HomeViewModel.swift in Sources */,
 				08A7825E4708C23FDEF3FB73 /* InfoPill.swift in Sources */,
 				80D74526FC5CB1A61896BE75 /* KZSubsApp.swift in Sources */,
+				776FC77CD268756E22849885 /* KZSubsLogo.swift in Sources */,
 				8F88EC02C5CE087AACE84349 /* ModelManager.swift in Sources */,
 				29EF10C3DB0D399E4305108F /* ModelSetupView.swift in Sources */,
 				06565AD5881D48E8263A3420 /* PlayerLayerView.swift in Sources */,
@@ -481,6 +496,7 @@
 				18AF085D66A91CBBDE22CCA7 /* SettingsView.swift in Sources */,
 				77231291AFFF2BDC266CE4DA /* SpeechCheckView.swift in Sources */,
 				787524D9EB60E2E7303CED7D /* SpeechTranscript.swift in Sources */,
+				00719329C28F51C2DB576C17 /* SplashView.swift in Sources */,
 				72B94B9DA76438DC38FFBD3F /* StorageManager.swift in Sources */,
 				F7E113F7AAE3F3FE148FF9AB /* StringCaptions.swift in Sources */,
 				1FB69429B1E70F650FCE4295 /* SubtitleEditSheet.swift in Sources */,
