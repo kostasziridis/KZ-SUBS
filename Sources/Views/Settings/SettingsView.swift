@@ -16,6 +16,10 @@ struct SettingsView: View {
                     storageCard
 
                     aboutCard
+
+                    #if DEBUG
+                    developerCard
+                    #endif
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 8)
@@ -104,6 +108,29 @@ struct SettingsView: View {
             }
         }
     }
+
+    #if DEBUG
+    /// Development only: a way to exercise the speech engine on a real device against
+    /// a clip whose words we already know.
+    private var developerCard: some View {
+        NavigationLink {
+            SpeechCheckView()
+        } label: {
+            GlassCard(radius: AppTheme.controlRadius, padding: 18) {
+                HStack {
+                    Label("Speech check", systemImage: "waveform.badge.magnifyingglass")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.white)
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(AppTheme.tertiaryText)
+                }
+            }
+        }
+        .buttonStyle(.plain)
+    }
+    #endif
 
     private static var versionString: String {
         let info = Bundle.main.infoDictionary

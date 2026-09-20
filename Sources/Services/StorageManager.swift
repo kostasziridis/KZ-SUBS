@@ -22,6 +22,11 @@ enum StorageManager {
         containerDirectory.appendingPathComponent("Thumbnails", isDirectory: true)
     }
 
+    /// Downloaded speech models. Large, slow to fetch, and excluded from backup.
+    static var modelsDirectory: URL {
+        containerDirectory.appendingPathComponent("Models", isDirectory: true)
+    }
+
     /// Scratch space for extracted audio and in-flight exports. Safe to wipe at launch.
     static var workingDirectory: URL {
         FileManager.default.temporaryDirectory.appendingPathComponent("KZSubsWork", isDirectory: true)
@@ -36,13 +41,15 @@ enum StorageManager {
     /// Creates the directory tree and clears leftover scratch files.
     /// Call once, early, off the main thread.
     static func prepare() {
-        for directory in [videosDirectory, thumbnailsDirectory, workingDirectory] {
+        for directory in [videosDirectory, thumbnailsDirectory, modelsDirectory, workingDirectory] {
             ensureDirectoryExists(directory)
         }
-        var videos = videosDirectory
         var values = URLResourceValues()
         values.isExcludedFromBackup = true
-        try? videos.setResourceValues(values)
+        for directory in [videosDirectory, modelsDirectory] {
+            var url = directory
+            try? url.setResourceValues(values)
+        }
 
         clearWorkingDirectory()
     }
@@ -109,7 +116,7 @@ enum StorageManager {
 
     /// Total bytes used by everything the app stores.
     static func usedBytes() -> Int64 {
-        [videosDirectory, thumbnailsDirectory, workingDirectory]
+        [videosDirectory, thumbnailsDirectory, modelsDirectory, workingDirectory]
             .reduce(0) { $0 + directorySize(of: $1) }
     }
 

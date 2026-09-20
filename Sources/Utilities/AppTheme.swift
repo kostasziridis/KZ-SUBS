@@ -72,15 +72,24 @@ extension View {
 }
 
 /// The app's primary action button: full width, accent filled.
+///
+/// A custom `ButtonStyle` gets no dimming from `.disabled` for free, so it reads the
+/// environment itself - otherwise a disabled button looks fully tappable.
 struct PrimaryButtonStyle: ButtonStyle {
+    @Environment(\.isEnabled) private var isEnabled
+
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .primaryActionAppearance(pressed: configuration.isPressed)
+            .opacity(isEnabled ? 1 : 0.4)
+            .animation(.snappy(duration: 0.18), value: isEnabled)
     }
 }
 
 /// The quieter companion to `PrimaryButtonStyle`.
 struct SecondaryButtonStyle: ButtonStyle {
+    @Environment(\.isEnabled) private var isEnabled
+
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.headline)
@@ -96,6 +105,7 @@ struct SecondaryButtonStyle: ButtonStyle {
                     }
             }
             .opacity(configuration.isPressed ? 0.75 : 1)
+            .opacity(isEnabled ? 1 : 0.4)
             .animation(.snappy(duration: 0.18), value: configuration.isPressed)
     }
 }

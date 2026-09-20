@@ -8,4 +8,5 @@ enum AppLog {
     static let media = Logger(subsystem: subsystem, category: "media")
     static let player = Logger(subsystem: subsystem, category: "player")
     static let storage = Logger(subsystem: subsystem, category: "storage")
+    static let speech = Logger(subsystem: subsystem, category: "speech")
 }

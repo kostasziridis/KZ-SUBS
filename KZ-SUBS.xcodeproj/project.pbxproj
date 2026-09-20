@@ -22,19 +22,26 @@
 		5CC6D23942450EC0C35B1483 /* AppError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D9EAB09E40C988162B09046 /* AppError.swift */; };
 		60E8FBA272BF8FD7D60EF81E /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = D576C8CE5D5BB9097367E81F /* AppTheme.swift */; };
 		6B79BF20B441E2AA25BD3C3C /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3150F8882847010CC893F9C /* HomeViewModel.swift */; };
+		6C57A19E9345CAF666969319 /* test-greek.wav in Resources */ = {isa = PBXBuildFile; fileRef = 428B396D749BFE179137BF65 /* test-greek.wav */; };
 		72B94B9DA76438DC38FFBD3F /* StorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 243902D51A8A21F685419131 /* StorageManager.swift */; };
+		77231291AFFF2BDC266CE4DA /* SpeechCheckView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA0E962521B7271E74F4C972 /* SpeechCheckView.swift */; };
+		787524D9EB60E2E7303CED7D /* SpeechTranscript.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12ECD3BB0E906A5E145C538 /* SpeechTranscript.swift */; };
 		80D74526FC5CB1A61896BE75 /* KZSubsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7F134845C22DB8696E190F1 /* KZSubsApp.swift */; };
 		81A457FBF2D3300DF73540D5 /* SubtitleProject.swift in Sources */ = {isa = PBXBuildFile; fileRef = C85FD6A8EE404260D85030C4 /* SubtitleProject.swift */; };
 		8278D8D9AB33E37321791382 /* VideoAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29158593A02F605B55897DA2 /* VideoAsset.swift */; };
 		8C787CFE6AF24670A3CED4ED /* VideoPlayerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75EA5DDAEB3766F45CB9F6C0 /* VideoPlayerViewModel.swift */; };
+		8F88EC02C5CE087AACE84349 /* ModelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AECE6B1A0E3FB728E69E4391 /* ModelManager.swift */; };
 		A10D2DCDC27FB0578E5DC8C3 /* FileHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11D27845E8523BAD37DC9251 /* FileHelpers.swift */; };
+		A1E03C37E1EAA68BDB881FDE /* WhisperService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B45129D3F6D522F096BC5780 /* WhisperService.swift */; };
 		AAB75A58B3EEBA62A063F6F3 /* VideoImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF4FEA4A02EBB64AC885ED01 /* VideoImportView.swift */; };
 		B6C6A7F9C55210339C47AE4D /* PrivacyBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230DFEFB5C7C8DA5C4491C92 /* PrivacyBadge.swift */; };
+		C20294216ED9B57B63E5D709 /* WhisperKit in Frameworks */ = {isa = PBXBuildFile; productRef = 46774DD9F39F76DA0F14D322 /* WhisperKit */; };
 		C744CD288E48BDCD848D3C89 /* VideoDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A3EE9D6CC6E3CB4F7E4786 /* VideoDetailsView.swift */; };
 		CAF0A2BF18833335E8A89AF4 /* ProjectCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7AC70134DB4D3082312D23E /* ProjectCard.swift */; };
 		E335C7039E396D6C6F582FF8 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A441B22E166823C8DE2229 /* AppState.swift */; };
 		E610427B32513F7E47F4209E /* ThumbnailGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93DDD874F16F66285646FD85 /* ThumbnailGenerator.swift */; };
 		E7EA9499B1A49434EEC13D68 /* AppLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6614EE230D9E968E3E09C9E /* AppLanguage.swift */; };
+		E952DCFB055C69610038A00E /* test-english.wav in Resources */ = {isa = PBXBuildFile; fileRef = 0AD7751E00BE245005F4DC29 /* test-english.wav */; };
 		E9A9407A98945B07FD5CC0DF /* SubtitleSegment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AF81F238339687AE6B0F33 /* SubtitleSegment.swift */; };
 		EE824AE267710344B65683E7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DAABAF8958A49FEFD952EE41 /* Assets.xcassets */; };
 		F60D1AC8FBCDEECD7A3E04EF /* ProjectStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D17916ABC506327143963C40 /* ProjectStore.swift */; };
@@ -44,6 +51,7 @@
 /* Begin PBXFileReference section */
 		016F169B147EF57064F19F75 /* TranscriptionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptionState.swift; sourceTree = "<group>"; };
 		01AF81F238339687AE6B0F33 /* SubtitleSegment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtitleSegment.swift; sourceTree = "<group>"; };
+		0AD7751E00BE245005F4DC29 /* test-english.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "test-english.wav"; sourceTree = "<group>"; };
 		11D27845E8523BAD37DC9251 /* FileHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileHelpers.swift; sourceTree = "<group>"; };
 		13FAA15E113E573701DC205E /* TimecodeFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimecodeFormatter.swift; sourceTree = "<group>"; };
 		1AC290106BEA5F0C6253D4A6 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
@@ -53,6 +61,7 @@
 		29158593A02F605B55897DA2 /* VideoAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoAsset.swift; sourceTree = "<group>"; };
 		3F110CE168A9D1A18C8B424B /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		4202C36BD4B7A3933696817E /* VideoImportViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoImportViewModel.swift; sourceTree = "<group>"; };
+		428B396D749BFE179137BF65 /* test-greek.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "test-greek.wav"; sourceTree = "<group>"; };
 		591D3381A6D4E4C196AA911D /* KZSubs.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = KZSubs.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		605479A04469AFEF9FAA831E /* PreviewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewData.swift; sourceTree = "<group>"; };
 		75EA5DDAEB3766F45CB9F6C0 /* VideoPlayerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayerViewModel.swift; sourceTree = "<group>"; };
@@ -61,7 +70,11 @@
 		8214957F0D5A2140491B8B43 /* PlayerLayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerLayerView.swift; sourceTree = "<group>"; };
 		93DDD874F16F66285646FD85 /* ThumbnailGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailGenerator.swift; sourceTree = "<group>"; };
 		99B6BE21B5622E5290930FD1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		A12ECD3BB0E906A5E145C538 /* SpeechTranscript.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechTranscript.swift; sourceTree = "<group>"; };
+		AECE6B1A0E3FB728E69E4391 /* ModelManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelManager.swift; sourceTree = "<group>"; };
 		AF4FEA4A02EBB64AC885ED01 /* VideoImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoImportView.swift; sourceTree = "<group>"; };
+		B45129D3F6D522F096BC5780 /* WhisperService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhisperService.swift; sourceTree = "<group>"; };
+		BA0E962521B7271E74F4C972 /* SpeechCheckView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechCheckView.swift; sourceTree = "<group>"; };
 		C7A441B22E166823C8DE2229 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		C7AC70134DB4D3082312D23E /* ProjectCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectCard.swift; sourceTree = "<group>"; };
 		C7CC027A1DAAAF8A1E2FF852 /* ThumbnailImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailImage.swift; sourceTree = "<group>"; };
@@ -77,6 +90,17 @@
 		F3150F8882847010CC893F9C /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
 		F5A3EE9D6CC6E3CB4F7E4786 /* VideoDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoDetailsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		588DFAEAF58E0CE5885D057A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C20294216ED9B57B63E5D709 /* WhisperKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		0469C49378BD1841AA94DE74 /* Components */ = {
@@ -95,6 +119,7 @@
 				7D9EAB09E40C988162B09046 /* AppError.swift */,
 				D6614EE230D9E968E3E09C9E /* AppLanguage.swift */,
 				7D878D98F57F5A22A32AF8DC /* CaptionStyle.swift */,
+				A12ECD3BB0E906A5E145C538 /* SpeechTranscript.swift */,
 				C85FD6A8EE404260D85030C4 /* SubtitleProject.swift */,
 				01AF81F238339687AE6B0F33 /* SubtitleSegment.swift */,
 				016F169B147EF57064F19F75 /* TranscriptionState.swift */,
@@ -137,6 +162,8 @@
 			isa = PBXGroup;
 			children = (
 				DAABAF8958A49FEFD952EE41 /* Assets.xcassets */,
+				0AD7751E00BE245005F4DC29 /* test-english.wav */,
+				428B396D749BFE179137BF65 /* test-greek.wav */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -165,10 +192,12 @@
 		A5CFE07DFA9CEF55802481CC /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				AECE6B1A0E3FB728E69E4391 /* ModelManager.swift */,
 				D17916ABC506327143963C40 /* ProjectStore.swift */,
 				243902D51A8A21F685419131 /* StorageManager.swift */,
 				93DDD874F16F66285646FD85 /* ThumbnailGenerator.swift */,
 				D1E6F4CAB10291C058697721 /* VideoImporter.swift */,
+				B45129D3F6D522F096BC5780 /* WhisperService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -196,6 +225,7 @@
 			isa = PBXGroup;
 			children = (
 				3F110CE168A9D1A18C8B424B /* SettingsView.swift */,
+				BA0E962521B7271E74F4C972 /* SpeechCheckView.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -240,6 +270,7 @@
 			buildPhases = (
 				D7FDBD14621DE91E4F79A9A5 /* Sources */,
 				54C54F89B48A988C7EC4B483 /* Resources */,
+				588DFAEAF58E0CE5885D057A /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -247,6 +278,7 @@
 			);
 			name = KZSubs;
 			packageProductDependencies = (
+				46774DD9F39F76DA0F14D322 /* WhisperKit */,
 			);
 			productName = KZSubs;
 			productReference = 591D3381A6D4E4C196AA911D /* KZSubs.app */;
@@ -262,7 +294,7 @@
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					21AB73D91FF9C497723A73D7 = {
-						DevelopmentTeam = "";
+						DevelopmentTeam = 8NMJPV5YW6;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -276,6 +308,9 @@
 			);
 			mainGroup = E9705BAC739ED0048D44DF4C;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				14206E3AACF209115FF28724 /* XCRemoteSwiftPackageReference "WhisperKit" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = E486F5D536CA1B9076A3E13A /* Products */;
 			projectDirPath = "";
@@ -292,6 +327,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				EE824AE267710344B65683E7 /* Assets.xcassets in Resources */,
+				E952DCFB055C69610038A00E /* test-english.wav in Resources */,
+				6C57A19E9345CAF666969319 /* test-greek.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -313,12 +350,15 @@
 				6B79BF20B441E2AA25BD3C3C /* HomeViewModel.swift in Sources */,
 				08A7825E4708C23FDEF3FB73 /* InfoPill.swift in Sources */,
 				80D74526FC5CB1A61896BE75 /* KZSubsApp.swift in Sources */,
+				8F88EC02C5CE087AACE84349 /* ModelManager.swift in Sources */,
 				06565AD5881D48E8263A3420 /* PlayerLayerView.swift in Sources */,
 				FA808F0162DFF4077FCC9F4F /* PreviewData.swift in Sources */,
 				B6C6A7F9C55210339C47AE4D /* PrivacyBadge.swift in Sources */,
 				CAF0A2BF18833335E8A89AF4 /* ProjectCard.swift in Sources */,
 				F60D1AC8FBCDEECD7A3E04EF /* ProjectStore.swift in Sources */,
 				18AF085D66A91CBBDE22CCA7 /* SettingsView.swift in Sources */,
+				77231291AFFF2BDC266CE4DA /* SpeechCheckView.swift in Sources */,
+				787524D9EB60E2E7303CED7D /* SpeechTranscript.swift in Sources */,
 				72B94B9DA76438DC38FFBD3F /* StorageManager.swift in Sources */,
 				81A457FBF2D3300DF73540D5 /* SubtitleProject.swift in Sources */,
 				E9A9407A98945B07FD5CC0DF /* SubtitleSegment.swift in Sources */,
@@ -333,6 +373,7 @@
 				348C90964598D09ED31CFE8E /* VideoImporter.swift in Sources */,
 				8C787CFE6AF24670A3CED4ED /* VideoPlayerViewModel.swift in Sources */,
 				4EFB6356BFEA7869FEE97B6F /* VideoPreviewView.swift in Sources */,
+				A1E03C37E1EAA68BDB881FDE /* WhisperService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -474,7 +515,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 8NMJPV5YW6;
 				INFOPLIST_FILE = Sources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -502,7 +543,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 8NMJPV5YW6;
 				INFOPLIST_FILE = Sources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -544,6 +585,25 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		14206E3AACF209115FF28724 /* XCRemoteSwiftPackageReference "WhisperKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/argmaxinc/WhisperKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		46774DD9F39F76DA0F14D322 /* WhisperKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 14206E3AACF209115FF28724 /* XCRemoteSwiftPackageReference "WhisperKit" */;
+			productName = WhisperKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 23148E96515134B8633F8422 /* Project object */;
 }

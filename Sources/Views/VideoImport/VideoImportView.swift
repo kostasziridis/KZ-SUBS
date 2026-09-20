@@ -125,7 +125,6 @@ struct VideoImportView: View {
             }
             .buttonStyle(PrimaryButtonStyle())
             .disabled(!model.canGenerateSubtitles)
-            .opacity(model.canGenerateSubtitles ? 1 : 0.5)
 
             Button {
                 player.pause()

@@ -49,7 +49,7 @@ Rules the codebase holds to:
 | Phase | Scope | State |
 |-------|-------|-------|
 | 1 | Navigation, Home, video picker, preview, playback, metadata | **Done** — builds and verified on simulator |
-| 2 | WhisperKit via SPM, speech service | Not started |
+| 2 | WhisperKit via SPM, speech service | **Done** — Greek and English verified on simulator |
 | 3 | Audio extraction | Not started |
 | 4 | Timestamps → subtitle segments over the player | Not started |
 | 5 | Subtitle timeline | Not started |
@@ -63,8 +63,18 @@ Phase 1 builds clean (Xcode 27, iOS 27 SDK, no source warnings) and was verified
 the iPhone 17 Pro simulator: video import, orientation-correct metadata, playback,
 scrubbing, language selection, the no-audio path and settings all work.
 
-Still untested on a physical iPhone — do that before starting Phase 2, since
-Simulator playback says nothing about how on-device speech recognition will behave.
+Phase 2 adds WhisperKit 1.1.0 (SPM) behind `WhisperService`. Verified on the
+simulator against bundled clips with known wording: English matched word for word,
+Greek matched apart from two accepted spelling variants, and word-level timings came
+through (12 and 16 words). Simulator inference is CPU-only and took ~19s for a 5s
+clip; the Neural Engine on device should be far faster — measure it there.
+
+The model is `openai_whisper-large-v3-v20240930_turbo_632MB`, chosen by
+`ModelManager` from the device's supported list. English-only builds are excluded by
+name: both the `.en` suffix and the whole `distil-whisper` family, which is
+English-only despite carrying no suffix.
+
+A DEBUG-only "Speech check" screen under Settings runs this test on device.
 
 ## Privacy
 

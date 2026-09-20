@@ -17,12 +17,20 @@ settings:
     DEAD_CODE_STRIPPING: YES
     ENABLE_MODULE_VERIFIER: NO
 
+packages:
+  WhisperKit:
+    url: https://github.com/argmaxinc/WhisperKit.git
+    from: 1.1.0
+
 targets:
   KZSubs:
     type: application
     platform: iOS
     sources:
       - path: Sources
+    dependencies:
+      - package: WhisperKit
+        product: WhisperKit
     settings:
       base:
         PRODUCT_NAME: KZ-SUBS
@@ -37,7 +45,9 @@ targets:
         SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: NO
         SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD: NO
         CODE_SIGN_STYLE: Automatic
-        DEVELOPMENT_TEAM: ""
+        # Pinned here, not in the Xcode UI: the project is generated, so a UI-only
+        # signing change is lost on the next `xcodegen generate`.
+        DEVELOPMENT_TEAM: 8NMJPV5YW6
       configs:
         Debug:
           SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG
