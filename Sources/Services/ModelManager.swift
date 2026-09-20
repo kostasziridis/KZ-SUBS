@@ -7,7 +7,77 @@ import WhisperKit
 /// transcription code.
 enum ModelManager {
 
-    /// Variants we would pick, best first.
+    /// What the user asked for: speed, balance, or the best accuracy available.
+    ///
+    /// Every option is multilingual - Greek is a requirement, so English-only builds
+    /// are never candidates whatever the choice.
+    enum Choice: String, CaseIterable, Identifiable, Sendable {
+        case fast, balanced, accurate
+
+        var id: String { rawValue }
+
+        var displayName: String {
+            switch self {
+            case .fast: return "Fast"
+            case .balanced: return "Balanced"
+            case .accurate: return "Most accurate"
+            }
+        }
+
+        var detail: String {
+            switch self {
+            case .fast: return "Quickest, and easiest on battery. Less reliable with accents and background noise."
+            case .balanced: return "The recommended choice. Near the accuracy of the large model at a fraction of the time."
+            case .accurate: return "The most accurate model. Noticeably slower, and a larger download."
+            }
+        }
+
+        var approximateSize: String {
+            switch self {
+            case .fast: return "~250 MB"
+            case .balanced: return "~630 MB"
+            case .accurate: return "~950 MB"
+            }
+        }
+
+        /// Candidates for this choice, best first.
+        var variants: [String] {
+            switch self {
+            case .fast:
+                return ["openai_whisper-small", "openai_whisper-base"]
+            case .balanced:
+                return [
+                    "openai_whisper-large-v3-v20240930_turbo_632MB",
+                    "openai_whisper-large-v3_turbo_954MB",
+                    "openai_whisper-small"
+                ]
+            case .accurate:
+                return [
+                    "openai_whisper-large-v3_947MB",
+                    "openai_whisper-large-v3-v20240930_626MB",
+                    "openai_whisper-large-v3-v20240930_turbo_632MB"
+                ]
+            }
+        }
+    }
+
+    private static let choiceKey = "speechModelChoice"
+
+    /// The user's pick, defaulting to balanced.
+    static var choice: Choice {
+        get {
+            guard let raw = UserDefaults.standard.string(forKey: choiceKey) else { return .balanced }
+            return Choice(rawValue: raw) ?? .balanced
+        }
+        set { UserDefaults.standard.set(newValue.rawValue, forKey: choiceKey) }
+    }
+
+    /// True once this variant has been downloaded and is still on disk.
+    static func isDownloaded(_ variant: String) -> Bool {
+        cachedFolder(for: variant) != nil
+    }
+
+    /// Variants we would pick when the user has expressed no preference, best first.
     ///
     /// Every entry is multilingual: Greek is a hard requirement, so English-only builds
     /// are not candidates. The large-v3 turbo build leads because it is the strongest
@@ -26,10 +96,14 @@ enum ModelManager {
         !variant.contains(".en") && !variant.lowercased().contains("distil")
     }
 
-    /// Picks the best multilingual variant this device supports.
-    static func selectVariant(from support: ModelSupport) -> String {
+    /// Picks the best multilingual variant this device supports, honouring the choice.
+    static func selectVariant(from support: ModelSupport, choice: Choice = ModelManager.choice) -> String {
         let supported = support.supported.filter { isMultilingual($0) && !support.disabled.contains($0) }
 
+        // What the user asked for comes first, as long as the device supports it.
+        if let wanted = choice.variants.first(where: { supported.contains($0) }) {
+            return wanted
+        }
         if let preferred = preferredVariants.first(where: { supported.contains($0) }) {
             return preferred
         }

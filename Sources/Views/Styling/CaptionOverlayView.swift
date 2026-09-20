@@ -60,22 +60,48 @@ struct CaptionOverlayView: View {
 
     // MARK: - Text
 
-    /// Builds the line as a single `Text`, concatenating per-word runs when karaoke is
-    /// on. Concatenation matters: it keeps normal wrapping, which a hand-laid-out row
-    /// of words would lose.
+    /// Builds the line as a single `Text`.
+    ///
+    /// Per-word styling goes through `AttributedString` rather than concatenated `Text`
+    /// runs, because only attributed runs can carry a background - and a box behind the
+    /// spoken word is the whole point of the Spotlight style. Wrapping still works,
+    /// which hand-laying words out in an HStack would break.
     private func text(for segment: SubtitleSegment) -> Text {
-        guard style.highlightsSpokenWord, let words = segment.words, !words.isEmpty else {
+        let words = segment.words ?? []
+        let needsPerWord = !words.isEmpty
+            && (style.highlightsSpokenWord || words.contains { $0.colorOverride != nil })
+
+        guard needsPerWord else {
             return Text(display(segment.text))
                 .foregroundStyle(style.textColor.color)
         }
+        return Text(attributed(words))
+    }
 
-        var result = Text("")
+    private func attributed(_ words: [SubtitleWord]) -> AttributedString {
+        var result = AttributedString()
+
         for (index, word) in words.enumerated() {
+            var run = AttributedString(display(word.word))
             let isSpoken = currentTime >= word.startTime && currentTime < word.endTime
-            let run = Text(display(word.word))
-                .foregroundStyle(isSpoken ? style.highlightColor.color : style.textColor.color)
-            result = index == 0 ? run : result + Text(" ") + run
+
+            // A colour chosen by hand for this word beats anything the style would do.
+            if let override = word.colorOverride {
+                run.foregroundColor = override.color
+            } else if isSpoken, style.spokenWordEffect == .colour {
+                run.foregroundColor = style.highlightColor.color
+            } else {
+                run.foregroundColor = style.textColor.color
+            }
+
+            if isSpoken, style.spokenWordEffect == .box {
+                run.backgroundColor = style.spokenWordBackgroundColor.color
+            }
+
+            if index > 0 { result += AttributedString(" ") }
+            result += run
         }
+
         return result
     }
 

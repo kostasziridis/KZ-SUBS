@@ -15,8 +15,10 @@ struct CaptionStyle: Codable, Equatable, Hashable {
         case boxed
         /// Oversized heavy text, the look short-form video uses.
         case bold
-        /// Word-by-word highlighting, timed to the speech.
+        /// Word-by-word recolouring, timed to the speech.
         case karaoke
+        /// A filled box travelling behind each word as it is spoken.
+        case spotlight
         /// Small, light, unobtrusive.
         case minimal
 
@@ -28,6 +30,7 @@ struct CaptionStyle: Codable, Equatable, Hashable {
             case .boxed: return "Boxed"
             case .bold: return "Bold"
             case .karaoke: return "Karaoke"
+            case .spotlight: return "Spotlight"
             case .minimal: return "Minimal"
             }
         }
@@ -90,6 +93,25 @@ struct CaptionStyle: Codable, Equatable, Hashable {
         }
     }
 
+    /// What marks the word currently being spoken.
+    enum SpokenWordEffect: String, Codable, CaseIterable, Identifiable, Sendable {
+        case none
+        /// Recolours the word.
+        case colour
+        /// Puts a filled box behind it, the look short-form video uses.
+        case box
+
+        var id: String { rawValue }
+
+        var displayName: String {
+            switch self {
+            case .none: return "Off"
+            case .colour: return "Colour"
+            case .box: return "Box"
+            }
+        }
+    }
+
     enum TextAlignment: String, Codable, CaseIterable, Identifiable, Sendable {
         case leading, center, trailing
 
@@ -138,13 +160,18 @@ struct CaptionStyle: Codable, Equatable, Hashable {
     var alignment: TextAlignment
     var isUppercased: Bool
     /// Karaoke-style highlighting. Needs word timings; falls back to plain text without.
-    var highlightsSpokenWord: Bool
+    var spokenWordEffect: SpokenWordEffect
+    /// Fill behind the spoken word when the effect is `.box`.
+    var spokenWordBackgroundColor: CaptionColor
+
+    var highlightsSpokenWord: Bool { spokenWordEffect != .none }
 
     // MARK: - Presets
 
     static let `default` = CaptionStyle.preset(.classic)
 
     static func preset(_ preset: Preset) -> CaptionStyle {
+        // Capitals are never forced by a preset: it is a choice the user makes.
         switch preset {
         case .classic:
             return CaptionStyle(
@@ -152,7 +179,7 @@ struct CaptionStyle: Codable, Equatable, Hashable {
                 referenceFontSize: 56, textColor: .white, highlightColor: .yellow,
                 background: .shadow, backgroundColor: .shadow,
                 verticalPosition: 0.86, alignment: .center,
-                isUppercased: false, highlightsSpokenWord: false
+                isUppercased: false, spokenWordEffect: .none, spokenWordBackgroundColor: .blue
             )
         case .boxed:
             return CaptionStyle(
@@ -160,7 +187,7 @@ struct CaptionStyle: Codable, Equatable, Hashable {
                 referenceFontSize: 54, textColor: .white, highlightColor: .yellow,
                 background: .roundedBlock, backgroundColor: .black.withOpacity(0.72),
                 verticalPosition: 0.86, alignment: .center,
-                isUppercased: false, highlightsSpokenWord: false
+                isUppercased: false, spokenWordEffect: .none, spokenWordBackgroundColor: .blue
             )
         case .bold:
             return CaptionStyle(
@@ -168,7 +195,7 @@ struct CaptionStyle: Codable, Equatable, Hashable {
                 referenceFontSize: 82, textColor: .white, highlightColor: .yellow,
                 background: .shadow, backgroundColor: .shadow,
                 verticalPosition: 0.72, alignment: .center,
-                isUppercased: true, highlightsSpokenWord: false
+                isUppercased: false, spokenWordEffect: .none, spokenWordBackgroundColor: .blue
             )
         case .karaoke:
             return CaptionStyle(
@@ -176,7 +203,15 @@ struct CaptionStyle: Codable, Equatable, Hashable {
                 referenceFontSize: 78, textColor: .white, highlightColor: .mint,
                 background: .shadow, backgroundColor: .shadow,
                 verticalPosition: 0.72, alignment: .center,
-                isUppercased: true, highlightsSpokenWord: true
+                isUppercased: false, spokenWordEffect: .colour, spokenWordBackgroundColor: .mint
+            )
+        case .spotlight:
+            return CaptionStyle(
+                preset: .spotlight, fontDesign: .rounded, weight: .black,
+                referenceFontSize: 78, textColor: .white, highlightColor: .white,
+                background: .shadow, backgroundColor: .shadow,
+                verticalPosition: 0.72, alignment: .center,
+                isUppercased: false, spokenWordEffect: .box, spokenWordBackgroundColor: .hotPink
             )
         case .minimal:
             return CaptionStyle(
@@ -184,7 +219,7 @@ struct CaptionStyle: Codable, Equatable, Hashable {
                 referenceFontSize: 44, textColor: .white, highlightColor: .white,
                 background: .none, backgroundColor: .black.withOpacity(0),
                 verticalPosition: 0.9, alignment: .center,
-                isUppercased: false, highlightsSpokenWord: false
+                isUppercased: false, spokenWordEffect: .none, spokenWordBackgroundColor: .blue
             )
         }
     }
@@ -215,14 +250,50 @@ struct CaptionStyle: Codable, Equatable, Hashable {
         verticalPosition = (try? c.decode(Double.self, forKey: .verticalPosition)) ?? fallback.verticalPosition
         alignment = (try? c.decode(TextAlignment.self, forKey: .alignment)) ?? fallback.alignment
         isUppercased = (try? c.decode(Bool.self, forKey: .isUppercased)) ?? fallback.isUppercased
-        highlightsSpokenWord = (try? c.decode(Bool.self, forKey: .highlightsSpokenWord)) ?? fallback.highlightsSpokenWord
+        spokenWordBackgroundColor = (try? c.decode(CaptionColor.self, forKey: .spokenWordBackgroundColor))
+            ?? fallback.spokenWordBackgroundColor
+
+        if let effect = try? c.decode(SpokenWordEffect.self, forKey: .spokenWordEffect) {
+            spokenWordEffect = effect
+        } else {
+            // Projects from before the box option stored a plain on/off flag.
+            let legacy = (try? c.decode(Bool.self, forKey: .highlightsSpokenWord)) ?? false
+            spokenWordEffect = legacy ? .colour : fallback.spokenWordEffect
+        }
+    }
+
+    /// Written explicitly because `CodingKeys` carries a legacy key with no property
+    /// behind it, which stops the compiler synthesising this.
+    func encode(to encoder: Encoder) throws {
+        var c = encoder.container(keyedBy: CodingKeys.self)
+        try c.encode(preset, forKey: .preset)
+        try c.encode(fontDesign, forKey: .fontDesign)
+        try c.encode(weight, forKey: .weight)
+        try c.encode(referenceFontSize, forKey: .referenceFontSize)
+        try c.encode(textColor, forKey: .textColor)
+        try c.encode(highlightColor, forKey: .highlightColor)
+        try c.encode(background, forKey: .background)
+        try c.encode(backgroundColor, forKey: .backgroundColor)
+        try c.encode(verticalPosition, forKey: .verticalPosition)
+        try c.encode(alignment, forKey: .alignment)
+        try c.encode(isUppercased, forKey: .isUppercased)
+        try c.encode(spokenWordEffect, forKey: .spokenWordEffect)
+        try c.encode(spokenWordBackgroundColor, forKey: .spokenWordBackgroundColor)
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case preset, fontDesign, weight, referenceFontSize, textColor, highlightColor
+        case background, backgroundColor, verticalPosition, alignment, isUppercased
+        case spokenWordEffect, spokenWordBackgroundColor
+        /// Read for backward compatibility only; no longer written.
+        case highlightsSpokenWord
     }
 
     init(
         preset: Preset, fontDesign: FontDesign, weight: Weight, referenceFontSize: Double,
         textColor: CaptionColor, highlightColor: CaptionColor, background: Background,
         backgroundColor: CaptionColor, verticalPosition: Double, alignment: TextAlignment,
-        isUppercased: Bool, highlightsSpokenWord: Bool
+        isUppercased: Bool, spokenWordEffect: SpokenWordEffect, spokenWordBackgroundColor: CaptionColor
     ) {
         self.preset = preset
         self.fontDesign = fontDesign
@@ -235,6 +306,7 @@ struct CaptionStyle: Codable, Equatable, Hashable {
         self.verticalPosition = verticalPosition
         self.alignment = alignment
         self.isUppercased = isUppercased
-        self.highlightsSpokenWord = highlightsSpokenWord
+        self.spokenWordEffect = spokenWordEffect
+        self.spokenWordBackgroundColor = spokenWordBackgroundColor
     }
 }

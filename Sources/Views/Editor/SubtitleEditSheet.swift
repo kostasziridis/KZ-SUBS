@@ -17,6 +17,8 @@ struct SubtitleEditSheet: View {
     @State private var text: String = ""
     @State private var startTime: TimeInterval = 0
     @State private var endTime: TimeInterval = 0
+    @State private var words: [SubtitleWord] = []
+    @State private var selectedWordID: SubtitleWord.ID?
     @FocusState private var isEditingText: Bool
 
     private let nudge: TimeInterval = 0.1
@@ -26,6 +28,7 @@ struct SubtitleEditSheet: View {
             ScrollView {
                 VStack(spacing: 18) {
                     textCard
+                    if !words.isEmpty { wordColourCard }
                     timingCard
                     navigationRow
                     deleteButton
@@ -68,6 +71,80 @@ struct SubtitleEditSheet: View {
                 Text("Keep it to two short lines so it stays readable.")
                     .font(.caption2)
                     .foregroundStyle(AppTheme.tertiaryText)
+            }
+        }
+    }
+
+    // MARK: - Word colours
+
+    /// Colour one word on its own, for emphasis - independent of the caption style.
+    private var wordColourCard: some View {
+        GlassCard(radius: AppTheme.controlRadius, padding: 16) {
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Colour a word")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(AppTheme.tertiaryText)
+
+                FlowRow(spacing: 8) {
+                    ForEach(words) { word in
+                        Button {
+                            selectedWordID = selectedWordID == word.id ? nil : word.id
+                        } label: {
+                            Text(word.word)
+                                .font(.footnote.weight(.medium))
+                                .foregroundStyle(word.colorOverride?.color ?? .white)
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 6)
+                                .background {
+                                    Capsule().fill(
+                                        selectedWordID == word.id
+                                            ? AppTheme.accent.opacity(0.28)
+                                            : AppTheme.elevatedSurface
+                                    )
+                                }
+                                .overlay {
+                                    Capsule().strokeBorder(
+                                        selectedWordID == word.id ? AppTheme.accent : .clear,
+                                        lineWidth: 1.5
+                                    )
+                                }
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+
+                if let selectedWordID, let index = words.firstIndex(where: { $0.id == selectedWordID }) {
+                    HStack(spacing: 10) {
+                        ForEach(Array(CaptionColor.palette.enumerated()), id: \.offset) { _, colour in
+                            Button {
+                                words[index].colorOverride = colour
+                                commit()
+                            } label: {
+                                Circle()
+                                    .fill(colour.color)
+                                    .frame(width: 28, height: 28)
+                                    .overlay { Circle().strokeBorder(.white.opacity(0.25), lineWidth: 1) }
+                            }
+                            .buttonStyle(.plain)
+                        }
+
+                        Button {
+                            words[index].colorOverride = nil
+                            commit()
+                        } label: {
+                            Image(systemName: "arrow.uturn.backward")
+                                .font(.caption.weight(.bold))
+                                .frame(width: 28, height: 28)
+                                .background { Circle().fill(AppTheme.elevatedSurface) }
+                        }
+                        .buttonStyle(.plain)
+                        .foregroundStyle(.white)
+                    }
+                } else {
+                    Text("Tap a word, then pick a colour.")
+                        .font(.caption2)
+                        .foregroundStyle(AppTheme.tertiaryText)
+                }
             }
         }
     }
@@ -216,6 +293,8 @@ struct SubtitleEditSheet: View {
         text = segment.text
         startTime = segment.startTime
         endTime = segment.endTime
+        words = segment.words ?? []
+        selectedWordID = nil
     }
 
     private func commit() {
@@ -223,6 +302,9 @@ struct SubtitleEditSheet: View {
         edited.text = text
         edited.startTime = startTime
         edited.endTime = endTime
+        // Only carry word timings back if they are still the ones this subtitle had;
+        // retyping the text does not re-time the words.
+        edited.words = words.isEmpty ? nil : words
         onChange(edited)
     }
 }

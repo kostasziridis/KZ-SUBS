@@ -24,13 +24,19 @@ actor WhisperService {
     /// Downloads the model if needed and loads it. Safe to call repeatedly: once a model
     /// is loaded this returns immediately.
     func prepare(onProgress: @escaping @Sendable (ModelPreparation) -> Void) async throws {
-        if whisperKit != nil {
+        onProgress(.checking)
+        let variant = await ModelManager.resolveVariant()
+
+        if whisperKit != nil, loadedVariant == variant {
             onProgress(.ready)
             return
         }
 
-        onProgress(.checking)
-        let variant = await ModelManager.resolveVariant()
+        // The user changed which model they want: drop the old one before loading the
+        // new, so two large models are never resident at once.
+        if whisperKit != nil {
+            await unload()
+        }
         AppLog.speech.info("Preparing speech model \(variant, privacy: .public)")
 
         let folder = try await ModelManager.ensureAvailable(variant: variant) { fraction in

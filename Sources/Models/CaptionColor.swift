@@ -32,7 +32,11 @@ struct CaptionColor: Codable, Equatable, Hashable, Sendable {
     static let mint = CaptionColor(red: 0.29, green: 0.95, blue: 0.68)
     static let hotPink = CaptionColor(red: 1, green: 0.19, blue: 0.53)
     static let blue = CaptionColor(red: 0.039, green: 0.518, blue: 1)
+    static let red = CaptionColor(red: 1, green: 0.23, blue: 0.19)
+    static let orange = CaptionColor(red: 1, green: 0.58, blue: 0)
 
-    /// The swatches offered in the style editor.
-    static let palette: [CaptionColor] = [.white, .yellow, .mint, .hotPink, .blue, .black]
+    /// The swatches offered wherever a colour is picked.
+    static let palette: [CaptionColor] = [
+        .white, .yellow, .orange, .red, .hotPink, .mint, .blue, .black
+    ]
 }

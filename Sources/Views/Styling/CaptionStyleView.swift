@@ -98,16 +98,24 @@ struct CaptionStyleView: View {
                     .font(.footnote)
                     .tint(AppTheme.accent)
 
-                Toggle(isOn: $style.highlightsSpokenWord) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Highlight each word")
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack {
+                        Text("Spoken word")
                             .font(.footnote)
-                        Text("Colours words as they are spoken.")
-                            .font(.caption2)
-                            .foregroundStyle(AppTheme.tertiaryText)
+                            .foregroundStyle(AppTheme.secondaryText)
+                        Spacer()
+                        Picker("Spoken word", selection: $style.spokenWordEffect) {
+                            ForEach(CaptionStyle.SpokenWordEffect.allCases) { effect in
+                                Text(effect.displayName).tag(effect)
+                            }
+                        }
+                        .pickerStyle(.segmented)
+                        .frame(width: 190)
                     }
+                    Text("Marks each word as it is spoken.")
+                        .font(.caption2)
+                        .foregroundStyle(AppTheme.tertiaryText)
                 }
-                .tint(AppTheme.accent)
                 .disabled(!hasWordTimings)
                 .opacity(hasWordTimings ? 1 : 0.5)
 
@@ -132,8 +140,12 @@ struct CaptionStyleView: View {
             VStack(alignment: .leading, spacing: 14) {
                 swatches(title: "Text", selection: $style.textColor)
 
-                if style.highlightsSpokenWord {
+                if style.spokenWordEffect == .colour {
                     swatches(title: "Spoken word", selection: $style.highlightColor)
+                }
+
+                if style.spokenWordEffect == .box {
+                    swatches(title: "Spoken word box", selection: $style.spokenWordBackgroundColor)
                 }
 
                 labelledPicker("Behind", selection: $style.background) { background in

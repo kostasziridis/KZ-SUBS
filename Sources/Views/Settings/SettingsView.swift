@@ -6,12 +6,15 @@ struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var usedBytes: Int64?
     @State private var isClearing = false
+    @State private var modelChoice: ModelManager.Choice = ModelManager.choice
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 20) {
                     PrivacyCard()
+
+                    accuracyCard
 
                     storageCard
 
@@ -38,6 +41,65 @@ struct SettingsView: View {
             .task { await refreshStorage() }
         }
         .preferredColorScheme(.dark)
+    }
+
+    /// Lets the user trade speed for accuracy. Every option is multilingual, so Greek
+    /// keeps working whichever they pick.
+    private var accuracyCard: some View {
+        GlassCard(radius: AppTheme.controlRadius, padding: 18) {
+            VStack(alignment: .leading, spacing: 14) {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("Subtitle accuracy")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.white)
+                    Text("A more accurate model takes longer and downloads once.")
+                        .font(.caption)
+                        .foregroundStyle(AppTheme.secondaryText)
+                }
+
+                ForEach(ModelManager.Choice.allCases) { choice in
+                    Button {
+                        guard choice != modelChoice else { return }
+                        modelChoice = choice
+                        ModelManager.choice = choice
+                        Task { await refreshStorage() }
+                    } label: {
+                        HStack(alignment: .top, spacing: 12) {
+                            Image(systemName: choice == modelChoice ? "largecircle.fill.circle" : "circle")
+                                .font(.body)
+                                .foregroundStyle(choice == modelChoice ? AppTheme.accent : AppTheme.tertiaryText)
+
+                            VStack(alignment: .leading, spacing: 3) {
+                                HStack(spacing: 6) {
+                                    Text(choice.displayName)
+                                        .font(.footnote.weight(.semibold))
+                                        .foregroundStyle(.white)
+                                    Text(choice.approximateSize)
+                                        .font(.caption2)
+                                        .foregroundStyle(AppTheme.tertiaryText)
+                                }
+                                Text(choice.detail)
+                                    .font(.caption2)
+                                    .foregroundStyle(AppTheme.secondaryText)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+
+                            Spacer(minLength: 0)
+                        }
+                    }
+                    .buttonStyle(.plain)
+                }
+
+                if modelChoice != .balanced {
+                    Label(
+                        "Switching downloads a new model the next time you make subtitles.",
+                        systemImage: "arrow.down.circle"
+                    )
+                    .font(.caption2)
+                    .foregroundStyle(AppTheme.tertiaryText)
+                }
+            }
+        }
     }
 
     private var storageCard: some View {

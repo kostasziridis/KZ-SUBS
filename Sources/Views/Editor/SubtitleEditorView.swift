@@ -126,7 +126,9 @@ struct SubtitleEditorView: View {
                         activeSegmentID: model.activeSegmentID
                     ) { segment in
                         model.selectedSegmentID = segment.id
-                        player.seek(to: segment.startTime, precise: true)
+                        // Land just inside the subtitle: seeking to its exact start can
+                        // settle a hair before it, leaving the caption off screen.
+                        player.seek(to: segment.startTime + 0.05, precise: true)
                         editingSegment = segment
                     }
                     .padding(.horizontal, 20)

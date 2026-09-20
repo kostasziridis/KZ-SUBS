@@ -6,15 +6,24 @@ import Foundation
 /// karaoke-style highlighting possible later without re-transcribing anything.
 struct SubtitleWord: Identifiable, Codable, Equatable, Hashable {
     let id: UUID
-    let word: String
+    var word: String
     let startTime: TimeInterval
     let endTime: TimeInterval
+    /// Set by hand to colour this one word, overriding the style. Nil follows the style.
+    var colorOverride: CaptionColor?
 
-    init(id: UUID = UUID(), word: String, startTime: TimeInterval, endTime: TimeInterval) {
+    init(
+        id: UUID = UUID(),
+        word: String,
+        startTime: TimeInterval,
+        endTime: TimeInterval,
+        colorOverride: CaptionColor? = nil
+    ) {
         self.id = id
         self.word = word
         self.startTime = startTime
         self.endTime = endTime
+        self.colorOverride = colorOverride
     }
 }
 
