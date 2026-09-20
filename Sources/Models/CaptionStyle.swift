@@ -155,7 +155,9 @@ struct CaptionStyle: Codable, Equatable, Hashable {
     var highlightColor: CaptionColor
     var background: Background
     var backgroundColor: CaptionColor
-    /// 0 = top of the safe area, 1 = bottom.
+    /// Where the caption's centre sits, 0...1 across the frame.
+    var horizontalPosition: Double
+    /// Where the caption's centre sits, 0 = top, 1 = bottom.
     var verticalPosition: Double
     var alignment: TextAlignment
     var isUppercased: Bool
@@ -250,6 +252,7 @@ struct CaptionStyle: Codable, Equatable, Hashable {
         background = (try? c.decode(Background.self, forKey: .background)) ?? fallback.background
         backgroundColor = (try? c.decode(CaptionColor.self, forKey: .backgroundColor)) ?? fallback.backgroundColor
         verticalPosition = (try? c.decode(Double.self, forKey: .verticalPosition)) ?? fallback.verticalPosition
+        horizontalPosition = (try? c.decode(Double.self, forKey: .horizontalPosition)) ?? fallback.horizontalPosition
         alignment = (try? c.decode(TextAlignment.self, forKey: .alignment)) ?? fallback.alignment
         isUppercased = (try? c.decode(Bool.self, forKey: .isUppercased)) ?? fallback.isUppercased
         spokenWordBackgroundColor = (try? c.decode(CaptionColor.self, forKey: .spokenWordBackgroundColor))
@@ -278,6 +281,7 @@ struct CaptionStyle: Codable, Equatable, Hashable {
         try c.encode(background, forKey: .background)
         try c.encode(backgroundColor, forKey: .backgroundColor)
         try c.encode(verticalPosition, forKey: .verticalPosition)
+        try c.encode(horizontalPosition, forKey: .horizontalPosition)
         try c.encode(alignment, forKey: .alignment)
         try c.encode(isUppercased, forKey: .isUppercased)
         try c.encode(spokenWordEffect, forKey: .spokenWordEffect)
@@ -287,7 +291,7 @@ struct CaptionStyle: Codable, Equatable, Hashable {
 
     private enum CodingKeys: String, CodingKey {
         case preset, fontDesign, weight, referenceFontSize, textColor, highlightColor
-        case background, backgroundColor, verticalPosition, alignment, isUppercased
+        case background, backgroundColor, verticalPosition, horizontalPosition, alignment, isUppercased
         case spokenWordEffect, spokenWordBackgroundColor, maxWordsOnScreen
         /// Read for backward compatibility only; no longer written.
         case highlightsSpokenWord
@@ -297,6 +301,7 @@ struct CaptionStyle: Codable, Equatable, Hashable {
         preset: Preset, fontDesign: FontDesign, weight: Weight, referenceFontSize: Double,
         textColor: CaptionColor, highlightColor: CaptionColor, background: Background,
         backgroundColor: CaptionColor, verticalPosition: Double, alignment: TextAlignment,
+        horizontalPosition: Double = 0.5,
         isUppercased: Bool, spokenWordEffect: SpokenWordEffect, spokenWordBackgroundColor: CaptionColor,
         maxWordsOnScreen: Int? = nil
     ) {
@@ -309,6 +314,7 @@ struct CaptionStyle: Codable, Equatable, Hashable {
         self.background = background
         self.backgroundColor = backgroundColor
         self.verticalPosition = verticalPosition
+        self.horizontalPosition = horizontalPosition
         self.alignment = alignment
         self.isUppercased = isUppercased
         self.spokenWordEffect = spokenWordEffect

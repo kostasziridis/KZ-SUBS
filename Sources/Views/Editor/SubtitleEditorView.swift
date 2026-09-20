@@ -85,6 +85,7 @@ struct SubtitleEditorView: View {
 
     // MARK: - Player
 
+    @ViewBuilder
     private var playerSection: some View {
         VideoPreviewView(
             model: player,
@@ -98,7 +99,12 @@ struct SubtitleEditorView: View {
         }
         .padding(.horizontal, 20)
         .padding(.top, 8)
-        .padding(.bottom, 14)
+
+        Text("Drag the caption to move it · pinch to resize")
+            .font(.caption2)
+            .foregroundStyle(AppTheme.tertiaryText)
+            .frame(maxWidth: .infinity)
+            .padding(.bottom, 12)
     }
 
     // MARK: - List
@@ -193,7 +199,11 @@ private struct CaptionLayer: View {
         CaptionOverlayView(
             segment: model.segment(at: player.currentTime),
             style: model.captionStyle,
-            currentTime: player.currentTime
+            currentTime: player.currentTime,
+            editing: Binding(
+                get: { model.captionStyle },
+                set: { model.captionStyle = $0 }
+            )
         )
         .onChange(of: player.currentTime) { _, time in
             // Only writes when the subtitle actually changes.

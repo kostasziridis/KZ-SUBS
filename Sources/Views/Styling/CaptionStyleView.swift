@@ -90,7 +90,9 @@ struct CaptionStyleView: View {
                 slider(
                     "Size",
                     value: $style.referenceFontSize,
-                    range: 28...120,
+                    // Matches the bounds the pinch gesture enforces, so the slider and
+                    // the fingers cannot disagree about the limits.
+                    range: 24...140,
                     display: "\(Int(style.referenceFontSize))"
                 )
 
@@ -234,6 +236,28 @@ struct CaptionStyleView: View {
                     range: 0.3...0.97,
                     display: "\(Int(style.verticalPosition * 100))%"
                 )
+
+                HStack {
+                    Text("Position")
+                        .font(.footnote)
+                        .foregroundStyle(AppTheme.secondaryText)
+                    Spacer()
+                    Button {
+                        withAnimation(.snappy(duration: 0.2)) {
+                            style.horizontalPosition = 0.5
+                            style.verticalPosition = 0.86
+                        }
+                    } label: {
+                        Label("Reset", systemImage: "arrow.counterclockwise")
+                            .font(.caption.weight(.medium))
+                    }
+                    .tint(AppTheme.accent)
+                }
+
+                Text("Drag the caption on the video to place it, or pinch to resize.")
+                    .font(.caption2)
+                    .foregroundStyle(AppTheme.tertiaryText)
+                    .frame(maxWidth: .infinity, alignment: .leading)
 
                 HStack {
                     Text("Alignment")
