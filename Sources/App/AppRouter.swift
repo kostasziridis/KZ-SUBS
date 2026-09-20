@@ -5,6 +5,7 @@ import Observation
 enum Route: Hashable {
     case importVideo(VideoAsset)
     case processing(asset: VideoAsset, language: AppLanguage)
+    case editor(SubtitleProject)
 }
 
 /// The navigation stack's path, shared so any screen can push - and so a finished
@@ -20,5 +21,11 @@ final class AppRouter {
 
     func popToRoot() {
         path.removeAll()
+    }
+
+    /// Replaces the stack with a single screen, so finishing a job does not leave the
+    /// steps that produced it sitting behind the Back button.
+    func replaceStack(with route: Route) {
+        path = [route]
     }
 }

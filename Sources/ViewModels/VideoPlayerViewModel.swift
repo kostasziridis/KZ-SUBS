@@ -30,6 +30,9 @@ final class VideoPlayerViewModel {
     @ObservationIgnored private var rateObservation: NSKeyValueObservation?
     @ObservationIgnored private var endObserver: NSObjectProtocol?
     @ObservationIgnored private var loadedURL: URL?
+    /// How often playback time is published. 10/s is plenty for a scrubber; word-by-word
+    /// highlighting needs finer steps, so the editor raises it. Set before `load`.
+    @ObservationIgnored var observationInterval: TimeInterval = 0.1
     @ObservationIgnored private var isSeekInFlight = false
     @ObservationIgnored private var pendingSeek: (time: TimeInterval, precise: Bool)?
 
@@ -130,8 +133,7 @@ final class VideoPlayerViewModel {
     // MARK: - Observation
 
     private func addObservers(for item: AVPlayerItem) {
-        // 10 updates a second: smooth enough for a scrubber, far short of flooding SwiftUI.
-        let interval = CMTime(seconds: 0.1, preferredTimescale: 600)
+        let interval = CMTime(seconds: observationInterval, preferredTimescale: 600)
         timeObserver = player.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] time in
             MainActor.assumeIsolated {
                 guard let self, !self.isScrubbing else { return }

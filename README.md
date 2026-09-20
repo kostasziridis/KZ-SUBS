@@ -51,11 +51,11 @@ Rules the codebase holds to:
 | 1 | Navigation, Home, video picker, preview, playback, metadata | **Done** — builds and verified on simulator |
 | 2 | WhisperKit via SPM, speech service | **Done** — Greek and English verified on simulator |
 | 3 | Audio extraction → transcription → saved project | **Done** — verified on simulator |
-| 4 | Timestamps → subtitle segments over the player | Not started |
-| 5 | Subtitle timeline | Not started |
-| 6 | Subtitle editing | Not started |
+| 4 | Readable segments rendered over the player | **Done** |
+| 5 | Playback sync (timeline track still to come) | **Partly done** |
+| 6 | Edit text and timing, add and delete | **Done** |
 | 7 | SRT export | Not started |
-| 8 | Caption style editor | Not started |
+| 8 | Caption styles, colours, karaoke | **Done** |
 | 9 | Burned-in video export | Not started |
 | 10 | Persistence, errors, polish | Partly in place (storage, project store) |
 

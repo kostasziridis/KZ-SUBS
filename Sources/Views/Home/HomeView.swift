@@ -40,6 +40,10 @@ struct HomeView: View {
                     VideoImportView(asset: asset)
                 case let .processing(asset, language):
                     ProcessingView(asset: asset, language: language)
+                case let .editor(project):
+                    SubtitleEditorView(project: project) { edited in
+                        await appState.save(edited)
+                    }
                 }
             }
             .sheet(isPresented: $showsSettings) {
@@ -129,8 +133,13 @@ struct HomeView: View {
             } else {
                 LazyVStack(spacing: 12) {
                     ForEach(appState.projects) { project in
-                        ProjectCard(project: project)
-                            .contextMenu {
+                        Button {
+                            router.push(.editor(project))
+                        } label: {
+                            ProjectCard(project: project)
+                        }
+                        .buttonStyle(.plain)
+                        .contextMenu {
                                 Button(role: .destructive) {
                                     Task { await appState.delete(project) }
                                 } label: {

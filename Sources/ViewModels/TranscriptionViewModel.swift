@@ -24,6 +24,8 @@ final class TranscriptionViewModel {
     private(set) var resolvedLanguage: AppLanguage?
     private(set) var processingTime: TimeInterval = 0
     private(set) var timings: SpeechTimings?
+    /// Built once when the run finishes. Rebuilding it would mint a new id each time.
+    private(set) var producedProject: SubtitleProject?
 
     /// One job at a time. A second tap on Generate must not start a parallel run.
     @ObservationIgnored private var job: Task<Void, Never>?
@@ -65,6 +67,7 @@ final class TranscriptionViewModel {
         segments = []
         detectedLanguage = nil
         resolvedLanguage = nil
+        producedProject = nil
         preparation = .checking
         state = .preparingModel(progress: nil)
 
@@ -114,11 +117,18 @@ final class TranscriptionViewModel {
 
                 try Task.checkCancellation()
 
-                self.segments = transcript.segments
+                // Reshape the engine's decoding-window segments into readable blocks.
+                self.segments = SubtitleSegmenter.makeSubtitles(from: transcript.segments)
                 self.detectedLanguage = transcript.detectedLanguageDisplayName
                 self.resolvedLanguage = AppLanguage(languageCode: transcript.detectedLanguageCode)
                 self.processingTime = transcript.processingTime
                 self.timings = transcript.timings
+                if !self.segments.isEmpty {
+                    var project = SubtitleProject(asset: self.asset, language: self.resolvedLanguage ?? self.language)
+                    project.subtitles = self.segments
+                    self.producedProject = project
+                }
+
                 self.state = transcript.segments.isEmpty
                     ? .failed(AppError.unableToGenerateSubtitles)
                     : .completed
@@ -136,15 +146,6 @@ final class TranscriptionViewModel {
 
     func cancel() {
         job?.cancel()
-    }
-
-    /// Builds the project this run produced, ready to persist.
-    func makeProject() -> SubtitleProject {
-        // Record the spoken language rather than "Auto Detect", which tells the user
-        // nothing when they come back to the project later.
-        var project = SubtitleProject(asset: asset, language: resolvedLanguage ?? language)
-        project.subtitles = segments
-        return project
     }
 
     // MARK: - Housekeeping

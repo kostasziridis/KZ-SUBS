@@ -60,8 +60,8 @@ struct ProcessingView: View {
             model.start()
         }
         .onChange(of: model.segments) { _, segments in
-            guard !segments.isEmpty else { return }
-            Task { await appState.save(model.makeProject()) }
+            guard !segments.isEmpty, let project = model.producedProject else { return }
+            Task { await appState.save(project) }
         }
     }
 
@@ -187,9 +187,13 @@ struct ProcessingView: View {
             SubtitleListView(segments: model.segments)
 
             Button {
-                router.popToRoot()
+                if let project = model.producedProject {
+                    router.replaceStack(with: .editor(project))
+                } else {
+                    router.popToRoot()
+                }
             } label: {
-                Text("Done")
+                Label("Edit subtitles", systemImage: "slider.horizontal.3")
             }
             .buttonStyle(PrimaryButtonStyle())
         }
