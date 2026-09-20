@@ -20,7 +20,7 @@ struct VideoImportView: View {
                 VideoPreviewView(
                     model: player,
                     aspectRatio: model.asset.aspectRatio,
-                    maxVideoHeight: model.asset.isPortrait ? 440 : nil
+                    maxVideoHeight: model.asset.isPortrait ? 520 : nil
                 )
 
                 VideoDetailsView(asset: model.asset, fileSizeText: model.fileSizeText)
@@ -40,6 +40,7 @@ struct VideoImportView: View {
         .appBackground()
         .navigationTitle(model.title)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbarBackground(.visible, for: .navigationBar)
         .task {
             player.load(url: model.asset.url, knownDuration: model.asset.duration)
         }

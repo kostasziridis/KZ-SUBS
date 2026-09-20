@@ -6,7 +6,7 @@ Airplane Mode.
 
 ## Requirements
 
-- Xcode 16 or newer (not currently installed on this Mac — see *Status* below)
+- Xcode 16 or newer (Xcode 27.0 in use here)
 - iOS 17.0+ iPhone (physical device required for real speech performance)
 - [XcodeGen](https://github.com/yonaskolb/XcodeGen) — already installed via Homebrew
 
@@ -48,7 +48,7 @@ Rules the codebase holds to:
 
 | Phase | Scope | State |
 |-------|-------|-------|
-| 1 | Navigation, Home, video picker, preview, playback, metadata | Code complete, **not yet compiled** |
+| 1 | Navigation, Home, video picker, preview, playback, metadata | **Done** — builds and verified on simulator |
 | 2 | WhisperKit via SPM, speech service | Not started |
 | 3 | Audio extraction | Not started |
 | 4 | Timestamps → subtitle segments over the player | Not started |
@@ -59,9 +59,12 @@ Rules the codebase holds to:
 | 9 | Burned-in video export | Not started |
 | 10 | Persistence, errors, polish | Partly in place (storage, project store) |
 
-Phase 1 has not been built or run: Xcode is not installed on this machine, so there
-is no iOS SDK to compile against. Every file parses cleanly, but nothing has been
-type-checked. Install Xcode, then build before trusting any of it.
+Phase 1 builds clean (Xcode 27, iOS 27 SDK, no source warnings) and was verified on
+the iPhone 17 Pro simulator: video import, orientation-correct metadata, playback,
+scrubbing, language selection, the no-audio path and settings all work.
+
+Still untested on a physical iPhone — do that before starting Phase 2, since
+Simulator playback says nothing about how on-device speech recognition will behave.
 
 ## Privacy
 

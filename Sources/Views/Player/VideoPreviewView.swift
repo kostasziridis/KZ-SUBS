@@ -42,6 +42,9 @@ struct VideoPreviewView: View {
             }
         }
         .aspectRatio(aspectRatio, contentMode: .fit)
+        // A full-width stage, so every video sits in a card of the same width whatever
+        // its shape. Portrait clips letterbox inside it; `maxVideoHeight` decides how
+        // tall that stage gets, and so how wide a portrait video ends up.
         .frame(maxWidth: .infinity, maxHeight: maxVideoHeight)
         .background(Color.black)
         .clipShape(AppTheme.cardShape(AppTheme.cardRadius))

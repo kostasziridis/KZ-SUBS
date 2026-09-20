@@ -36,10 +36,8 @@ final class HomeViewModel {
                 let asset = try await VideoImporter.importVideo(from: item)
                 guard !Task.isCancelled else { return }
 
-                if !asset.hasAudio {
-                    // Still let them look at it, but say plainly why subtitles cannot work.
-                    self.error = .videoHasNoAudio
-                }
+                // A missing audio track is not an error here: the import screen shows
+                // the video and states plainly why subtitles cannot work.
                 self.importedAsset = asset
             } catch let error as AppError {
                 self.error = error
