@@ -168,6 +168,22 @@ struct ProcessingView: View {
                     .foregroundStyle(AppTheme.secondaryText)
             }
 
+            #if DEBUG
+            if let timings = model.timings {
+                GlassCard(radius: AppTheme.controlRadius, padding: 14) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Timings")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(AppTheme.tertiaryText)
+                        Text(timings.summary)
+                            .font(.caption2.monospaced())
+                            .foregroundStyle(AppTheme.secondaryText)
+                            .textSelection(.enabled)
+                    }
+                }
+            }
+            #endif
+
             SubtitleListView(segments: model.segments)
 
             Button {

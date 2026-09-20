@@ -23,6 +23,7 @@ final class TranscriptionViewModel {
     /// and it is what the saved project should record.
     private(set) var resolvedLanguage: AppLanguage?
     private(set) var processingTime: TimeInterval = 0
+    private(set) var timings: SpeechTimings?
 
     /// One job at a time. A second tap on Generate must not start a parallel run.
     @ObservationIgnored private var job: Task<Void, Never>?
@@ -117,6 +118,7 @@ final class TranscriptionViewModel {
                 self.detectedLanguage = transcript.detectedLanguageDisplayName
                 self.resolvedLanguage = AppLanguage(languageCode: transcript.detectedLanguageCode)
                 self.processingTime = transcript.processingTime
+                self.timings = transcript.timings
                 self.state = transcript.segments.isEmpty
                     ? .failed(AppError.unableToGenerateSubtitles)
                     : .completed

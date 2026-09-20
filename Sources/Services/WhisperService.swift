@@ -11,6 +11,8 @@ actor WhisperService {
 
     private var whisperKit: WhisperKit?
     private var loadedVariant: String?
+    /// How long the last load took, so it can be reported next to transcription time.
+    private var lastPreparationSeconds: TimeInterval = 0
 
     private init() {}
 
@@ -38,6 +40,7 @@ actor WhisperService {
         try Task.checkCancellation()
         onProgress(.loading)
 
+        let loadStart = Date()
         do {
             let config = WhisperKitConfig(
                 model: variant,
@@ -52,6 +55,8 @@ actor WhisperService {
             let kit = try await WhisperKit(config)
             whisperKit = kit
             loadedVariant = variant
+            lastPreparationSeconds = Date().timeIntervalSince(loadStart)
+            AppLog.speech.info("Model ready in \(Int(self.lastPreparationSeconds), privacy: .public)s")
             onProgress(.ready)
         } catch {
             AppLog.speech.error("Model load failed: \(error.localizedDescription, privacy: .public)")
@@ -132,11 +137,25 @@ actor WhisperService {
         let segments = results.flatMap(\.segments).map(Self.makeSegment)
         let text = results.map(\.text).joined(separator: " ").trimmingCharacters(in: .whitespacesAndNewlines)
 
+        let elapsed = Date().timeIntervalSince(started)
+        let engineTimings = results.first?.timings
+        let timings = SpeechTimings(
+            modelPreparation: lastPreparationSeconds,
+            specialization: (engineTimings?.encoderSpecializationTime ?? 0)
+                + (engineTimings?.decoderSpecializationTime ?? 0),
+            audioSeconds: engineTimings?.inputAudioSeconds ?? totalSeconds,
+            encoding: engineTimings?.encoding ?? 0,
+            decodingLoop: engineTimings?.decodingLoop ?? 0,
+            transcription: elapsed
+        )
+        AppLog.speech.info("Timings — \(timings.summary, privacy: .public)")
+
         return SpeechTranscript(
             text: text,
             detectedLanguageCode: results.first?.language ?? language.languageCode ?? "",
             segments: segments.sorted { $0.startTime < $1.startTime },
-            processingTime: Date().timeIntervalSince(started)
+            processingTime: elapsed,
+            timings: timings
         )
     }
 
