@@ -44,6 +44,8 @@ struct HomeView: View {
                     ProcessingView(asset: asset, language: language)
                 case let .stylePicker(project):
                     CaptionStylePickerView(project: project)
+                case let .export(project):
+                    ExportView(project: project)
                 case let .editor(project):
                     SubtitleEditorView(project: project) { edited in
                         await appState.save(edited)

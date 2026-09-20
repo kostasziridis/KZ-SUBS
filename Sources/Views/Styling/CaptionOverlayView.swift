@@ -1,9 +1,10 @@
 import SwiftUI
 
-/// Draws one subtitle over the video, in whatever style the project uses.
+/// Places a caption over the video.
 ///
-/// Sizes itself from the frame it is given, so the same style looks right in a small
-/// preview and in a full-resolution export.
+/// The caption's appearance lives in `CaptionBlockView` and its placement in
+/// `CaptionLayout`, both shared with the exporter - this view only adds the frame it
+/// sits in and, when editing, the gestures that move and resize it.
 struct CaptionOverlayView: View {
 
     let segment: SubtitleSegment?
@@ -24,10 +25,15 @@ struct CaptionOverlayView: View {
         GeometryReader { proxy in
             if let segment, !segment.text.isEmpty {
                 interactive(
-                    caption(for: segment, in: proxy.size)
-                        .frame(maxWidth: proxy.size.width * 0.9)
-                        .background { sizeReader }
-                        .overlay { adjustingOutline },
+                    CaptionBlockView(
+                        segment: segment,
+                        style: style,
+                        currentTime: currentTime,
+                        frameHeight: proxy.size.height
+                    )
+                    .frame(maxWidth: proxy.size.width * CaptionLayout.maximumWidthFraction)
+                    .background { sizeReader }
+                    .overlay { adjustingOutline },
                     in: proxy.size
                 )
             }
@@ -43,24 +49,13 @@ struct CaptionOverlayView: View {
     private func interactive(_ content: some View, in size: CGSize) -> some View {
         if let editing {
             content
-                .position(position(in: size))
+                .position(CaptionLayout.center(style: style, captionSize: captionSize, frameSize: size))
                 .gesture(dragGesture(in: size, style: editing))
                 .simultaneousGesture(pinchGesture(style: editing))
         } else {
-            content.position(position(in: size))
+            content
+                .position(CaptionLayout.center(style: style, captionSize: captionSize, frameSize: size))
         }
-    }
-
-    /// Keeps the caption fully on screen whatever position is stored, by pulling it
-    /// back by its own half-width and half-height at the edges.
-    private func position(in size: CGSize) -> CGPoint {
-        let halfWidth = min(captionSize.width / 2, size.width / 2)
-        let halfHeight = min(captionSize.height / 2, size.height / 2)
-
-        return CGPoint(
-            x: min(max(style.horizontalPosition * size.width, halfWidth), size.width - halfWidth),
-            y: min(max(style.verticalPosition * size.height, halfHeight), size.height - halfHeight)
-        )
     }
 
     private var sizeReader: some View {
@@ -122,88 +117,13 @@ struct CaptionOverlayView: View {
     private func clamped(_ value: Double) -> Double {
         min(max(value, 0), 1)
     }
+}
 
-    // MARK: - Caption
-
-    private func caption(for segment: SubtitleSegment, in size: CGSize) -> some View {
-        let fontSize = style.fontSize(forFrameHeight: size.height)
-
-        return Group {
-            if needsPerWordRendering(segment), let words = segment.words {
-                CaptionFlowLayout(
-                    alignment: style.alignment,
-                    spacing: fontSize * 0.04,
-                    lineSpacing: fontSize * 0.1
-                ) {
-                    ForEach(words) { word in
-                        wordView(word, fontSize: fontSize)
-                    }
-                }
-            } else {
-                Text(display(segment.text))
-                    .foregroundStyle(style.textColor.color)
-                    .multilineTextAlignment(style.alignment.swiftUI)
-                    .lineSpacing(fontSize * 0.12)
-            }
-        }
-        .font(.system(size: fontSize, weight: style.weight.fontWeight, design: style.fontDesign.design))
-        .padding(.horizontal, style.background == .none ? 0 : fontSize * 0.45)
-        .padding(.vertical, style.background == .none ? 0 : fontSize * 0.22)
-        .background { backgroundShape }
-        .shadow(
-            color: style.background == .shadow ? style.backgroundColor.color : .clear,
-            radius: fontSize * 0.06,
-            x: 0,
-            y: fontSize * 0.035
-        )
-        .frame(maxWidth: .infinity, alignment: style.alignment.frameAlignment)
-    }
-
-    /// Words only need laying out one by one when something distinguishes them.
-    private func needsPerWordRendering(_ segment: SubtitleSegment) -> Bool {
-        guard let words = segment.words, !words.isEmpty else { return false }
-        return style.highlightsSpokenWord || words.contains { $0.colorOverride != nil }
-    }
-
-    private func wordView(_ word: SubtitleWord, fontSize: CGFloat) -> some View {
-        let isSpoken = currentTime >= word.startTime && currentTime < word.endTime
-        let showsBox = isSpoken && style.spokenWordEffect == .box
-
-        // A colour chosen by hand for this word beats anything the style would do.
-        let colour: Color = {
-            if let override = word.colorOverride { return override.color }
-            if isSpoken, style.spokenWordEffect == .colour { return style.highlightColor.color }
-            return style.textColor.color
-        }()
-
-        return Text(display(word.word))
-            .foregroundStyle(colour)
-            // Padding is constant whether or not the box is showing. If it were not,
-            // every word would shift sideways as the highlight passed over it.
-            .padding(.horizontal, fontSize * 0.16)
-            .padding(.vertical, fontSize * 0.05)
-            .background {
-                if showsBox {
-                    RoundedRectangle(cornerRadius: fontSize * 0.22, style: .continuous)
-                        .fill(style.spokenWordBackgroundColor.color)
-                }
-            }
-    }
-
-    @ViewBuilder
-    private var backgroundShape: some View {
-        switch style.background {
-        case .block:
-            Rectangle().fill(style.backgroundColor.color)
-        case .roundedBlock:
-            RoundedRectangle(cornerRadius: 12, style: .continuous).fill(style.backgroundColor.color)
-        case .shadow, .none:
-            Color.clear
-        }
-    }
-
-    private func display(_ value: String) -> String {
-        style.isUppercased ? value.captionUppercased() : value
+/// Reports the caption's laid-out size, so it can be kept inside the frame.
+private struct CaptionSizeKey: PreferenceKey {
+    static let defaultValue: CGSize = .zero
+    static func reduce(value: inout CGSize, nextValue: () -> CGSize) {
+        value = nextValue()
     }
 }
 
@@ -216,9 +136,9 @@ struct CaptionOverlayView: View {
                     startPoint: .topLeading, endPoint: .bottomTrailing
                 )
                 CaptionOverlayView(
-                    segment: SubtitleSegment.samples[1],
+                    segment: CaptionStylePreview.placeholder,
                     style: .preset(preset),
-                    currentTime: 4.6
+                    currentTime: 1.4
                 )
             }
             .frame(height: 150)
@@ -234,12 +154,4 @@ struct CaptionOverlayView: View {
     .padding()
     .appBackground()
     .preferredColorScheme(.dark)
-}
-
-/// Reports the caption's laid-out size, so it can be kept inside the frame.
-private struct CaptionSizeKey: PreferenceKey {
-    static let defaultValue: CGSize = .zero
-    static func reduce(value: inout CGSize, nextValue: () -> CGSize) {
-        value = nextValue()
-    }
 }

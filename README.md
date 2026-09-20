@@ -7,6 +7,8 @@ Airplane Mode.
 ## Requirements
 
 - Xcode 16 or newer (Xcode 27.0 in use here)
+- iOS 18.0+ (raised from 17 so the export can use `export(to:as:)` rather than the
+  deprecated `exportAsynchronously`)
 - iOS 17.0+ iPhone (physical device required for real speech performance)
 - [XcodeGen](https://github.com/yonaskolb/XcodeGen) — already installed via Homebrew
 
@@ -54,9 +56,9 @@ Rules the codebase holds to:
 | 4 | Readable segments rendered over the player | **Done** |
 | 5 | Playback sync (timeline track still to come) | **Partly done** |
 | 6 | Edit text and timing, add and delete | **Done** |
-| 7 | SRT export | Not started |
+| 7 | SRT export | **Done** |
 | 8 | Caption styles, colours, karaoke | **Done** |
-| 9 | Burned-in video export | Not started |
+| 9 | Burned-in video export | **Done** |
 | 10 | Persistence, errors, polish | Partly in place (storage, project store) |
 
 Phase 1 builds clean (Xcode 27, iOS 27 SDK, no source warnings) and was verified on

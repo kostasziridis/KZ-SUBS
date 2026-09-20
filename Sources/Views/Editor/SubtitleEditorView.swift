@@ -4,6 +4,7 @@ import SwiftUI
 struct SubtitleEditorView: View {
 
     @Environment(AppState.self) private var appState
+    @Environment(AppRouter.self) private var router
     @Environment(\.dismiss) private var dismiss
 
     @State private var model: SubtitleEditorViewModel
@@ -41,6 +42,21 @@ struct SubtitleEditorView: View {
                     Image(systemName: "textformat")
                 }
                 .tint(AppTheme.accent)
+            }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    player.pause()
+                    Task {
+                        // Persist the edits first, so the export and the saved project
+                        // are the same thing.
+                        await model.saveNow()
+                        router.push(.export(model.currentProject()))
+                    }
+                } label: {
+                    Image(systemName: "square.and.arrow.up")
+                }
+                .tint(AppTheme.accent)
+                .disabled(model.segments.isEmpty)
             }
         }
         .task {

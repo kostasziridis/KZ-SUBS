@@ -143,6 +143,15 @@ final class SubtitleEditorViewModel {
         }
     }
 
+    /// The project as it stands right now, including unsaved edits - what an export
+    /// must be built from.
+    func currentProject() -> SubtitleProject {
+        var current = project
+        current.subtitles = segments
+        current.captionStyle = captionStyle
+        return current
+    }
+
     func saveNow() async {
         project.subtitles = segments
         project.captionStyle = captionStyle

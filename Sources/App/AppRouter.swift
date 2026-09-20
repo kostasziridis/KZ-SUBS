@@ -8,6 +8,7 @@ enum Route: Hashable {
     case processing(asset: VideoAsset, language: AppLanguage)
     case stylePicker(SubtitleProject)
     case editor(SubtitleProject)
+    case export(SubtitleProject)
 }
 
 /// The navigation stack's path, shared so any screen can push - and so a finished
