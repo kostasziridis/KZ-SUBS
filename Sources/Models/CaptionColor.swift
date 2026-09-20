@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 /// A colour that can be stored in a project file.
 ///
@@ -19,6 +20,23 @@ struct CaptionColor: Codable, Equatable, Hashable, Sendable {
 
     var color: Color {
         Color(.sRGB, red: red, green: green, blue: blue, opacity: opacity)
+    }
+
+    /// Takes the components back out of a colour the system picker produced.
+    ///
+    /// Falls back to white rather than throwing: a colour that cannot be read in sRGB
+    /// is no reason to lose the caption.
+    init(_ color: Color) {
+        var red: CGFloat = 0
+        var green: CGFloat = 0
+        var blue: CGFloat = 0
+        var alpha: CGFloat = 0
+
+        if UIColor(color).getRed(&red, green: &green, blue: &blue, alpha: &alpha) {
+            self.init(red: red, green: green, blue: blue, opacity: alpha)
+        } else {
+            self.init(red: 1, green: 1, blue: 1)
+        }
     }
 
     func withOpacity(_ value: Double) -> CaptionColor {

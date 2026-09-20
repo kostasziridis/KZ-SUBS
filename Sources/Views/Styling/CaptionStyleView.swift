@@ -199,30 +199,12 @@ struct CaptionStyleView: View {
                 .font(.caption)
                 .foregroundStyle(AppTheme.secondaryText)
 
-            HStack(spacing: 10) {
-                ForEach(Array(CaptionColor.palette.enumerated()), id: \.offset) { _, colour in
-                    let resolved = usesOpacity ? colour.withOpacity(0.72) : colour
-                    Button {
-                        selection.wrappedValue = resolved
-                    } label: {
-                        Circle()
-                            .fill(colour.color)
-                            .frame(width: 30, height: 30)
-                            .overlay {
-                                Circle().strokeBorder(
-                                    isSelected(resolved, selection.wrappedValue) ? AppTheme.accent : Color.white.opacity(0.25),
-                                    lineWidth: isSelected(resolved, selection.wrappedValue) ? 3 : 1
-                                )
-                            }
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
+            CaptionColorPalette(
+                selection: selection,
+                supportsOpacity: usesOpacity,
+                transform: { usesOpacity ? $0.withOpacity(0.72) : $0 }
+            )
         }
-    }
-
-    private func isSelected(_ a: CaptionColor, _ b: CaptionColor) -> Bool {
-        abs(a.red - b.red) < 0.01 && abs(a.green - b.green) < 0.01 && abs(a.blue - b.blue) < 0.01
     }
 
     // MARK: - Placement

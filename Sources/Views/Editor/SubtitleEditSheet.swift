@@ -137,18 +137,15 @@ struct SubtitleEditSheet: View {
 
                 if let selectedWordID, let index = words.firstIndex(where: { $0.id == selectedWordID }) {
                     HStack(spacing: 10) {
-                        ForEach(Array(CaptionColor.palette.enumerated()), id: \.offset) { _, colour in
-                            Button {
-                                words[index].colorOverride = colour
-                                commit()
-                            } label: {
-                                Circle()
-                                    .fill(colour.color)
-                                    .frame(width: 28, height: 28)
-                                    .overlay { Circle().strokeBorder(.white.opacity(0.25), lineWidth: 1) }
-                            }
-                            .buttonStyle(.plain)
-                        }
+                        CaptionColorPalette(
+                            selection: Binding(
+                                get: { words[index].colorOverride ?? .white },
+                                set: {
+                                    words[index].colorOverride = $0
+                                    commit()
+                                }
+                            )
+                        )
 
                         Button {
                             words[index].colorOverride = nil
