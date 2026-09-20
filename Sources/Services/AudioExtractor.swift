@@ -99,7 +99,7 @@ private final class PCMExtraction: @unchecked Sendable {
     private let readerOutput: AVAssetReaderAudioMixOutput
     private let totalSeconds: Double
     private let onProgress: @Sendable (Double) -> Void
-    private let queue = DispatchQueue(label: "gr.agrotechniki.kzsubs.audio-extract")
+    private let queue = DispatchQueue(label: "gr.kziridis.kzsubs.audio-extract")
 
     init(
         asset: AVAsset,

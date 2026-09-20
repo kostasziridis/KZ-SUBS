@@ -682,7 +682,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = gr.agrotechniki.kzsubs;
+				PRODUCT_BUNDLE_IDENTIFIER = gr.kziridis.kzsubs;
 				PRODUCT_MODULE_NAME = KZSubs;
 				PRODUCT_NAME = "KZ-SUBS";
 				SDKROOT = iphoneos;
@@ -711,7 +711,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = gr.agrotechniki.kzsubs;
+				PRODUCT_BUNDLE_IDENTIFIER = gr.kziridis.kzsubs;
 				PRODUCT_MODULE_NAME = KZSubs;
 				PRODUCT_NAME = "KZ-SUBS";
 				SDKROOT = iphoneos;

@@ -1,7 +1,7 @@
 name: KZ-SUBS
 
 options:
-  bundleIdPrefix: gr.agrotechniki
+  bundleIdPrefix: gr.kziridis
   deploymentTarget:
     iOS: "18.0"
   createIntermediateGroups: true
@@ -35,7 +35,7 @@ targets:
       base:
         PRODUCT_NAME: KZ-SUBS
         PRODUCT_MODULE_NAME: KZSubs
-        PRODUCT_BUNDLE_IDENTIFIER: gr.agrotechniki.kzsubs
+        PRODUCT_BUNDLE_IDENTIFIER: gr.kziridis.kzsubs
         CURRENT_PROJECT_VERSION: 1
         MARKETING_VERSION: "1.0"
         TARGETED_DEVICE_FAMILY: "1"
