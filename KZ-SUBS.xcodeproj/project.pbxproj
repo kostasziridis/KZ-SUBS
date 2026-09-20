@@ -53,6 +53,7 @@
 		E335C7039E396D6C6F582FF8 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A441B22E166823C8DE2229 /* AppState.swift */; };
 		E342EF78E7CF2CF2CA0A2009 /* TranscriptionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A474E129C22C7F894358DD32 /* TranscriptionViewModel.swift */; };
 		E610427B32513F7E47F4209E /* ThumbnailGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93DDD874F16F66285646FD85 /* ThumbnailGenerator.swift */; };
+		E6DB435FF76DDA971409A40D /* CaptionFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = E247EAF876864EE731EEFDC1 /* CaptionFlowLayout.swift */; };
 		E7EA9499B1A49434EEC13D68 /* AppLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6614EE230D9E968E3E09C9E /* AppLanguage.swift */; };
 		E952DCFB055C69610038A00E /* test-english.wav in Resources */ = {isa = PBXBuildFile; fileRef = 0AD7751E00BE245005F4DC29 /* test-english.wav */; };
 		E9A9407A98945B07FD5CC0DF /* SubtitleSegment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AF81F238339687AE6B0F33 /* SubtitleSegment.swift */; };
@@ -114,6 +115,7 @@
 		D6614EE230D9E968E3E09C9E /* AppLanguage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLanguage.swift; sourceTree = "<group>"; };
 		D7F134845C22DB8696E190F1 /* KZSubsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KZSubsApp.swift; sourceTree = "<group>"; };
 		DAABAF8958A49FEFD952EE41 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		E247EAF876864EE731EEFDC1 /* CaptionFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionFlowLayout.swift; sourceTree = "<group>"; };
 		ECCD757D1B92D57623A1874B /* AppLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLog.swift; sourceTree = "<group>"; };
 		EF84E4654CF403EAC067FBE9 /* SubtitleSegmenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtitleSegmenter.swift; sourceTree = "<group>"; };
 		F24EC48A29872D417B4F20DB /* VideoPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPreviewView.swift; sourceTree = "<group>"; };
@@ -206,6 +208,7 @@
 		5EBE0309E4B72189BB6B3C26 /* Styling */ = {
 			isa = PBXGroup;
 			children = (
+				E247EAF876864EE731EEFDC1 /* CaptionFlowLayout.swift */,
 				4E82F67F6DCB602CBD4C1E4B /* CaptionOverlayView.swift */,
 				2286AC2C18FA3BE0A5ED27B1 /* CaptionStylePreview.swift */,
 				03DFCB2891D7E39A3DDF2DB8 /* CaptionStyleView.swift */,
@@ -419,6 +422,7 @@
 				60E8FBA272BF8FD7D60EF81E /* AppTheme.swift in Sources */,
 				F0FEC39CA7D7D6FD50A79544 /* AudioExtractor.swift in Sources */,
 				090FA6283EF4FC1E93CA64A2 /* CaptionColor.swift in Sources */,
+				E6DB435FF76DDA971409A40D /* CaptionFlowLayout.swift in Sources */,
 				76B437F9702D64022497F086 /* CaptionOverlayView.swift in Sources */,
 				23F4B1884FAE3C3CE2475A36 /* CaptionStyle.swift in Sources */,
 				D01465E9C7111BFC737317BB /* CaptionStylePreview.swift in Sources */,

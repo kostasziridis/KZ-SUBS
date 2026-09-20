@@ -163,6 +163,8 @@ struct CaptionStyle: Codable, Equatable, Hashable {
     var spokenWordEffect: SpokenWordEffect
     /// Fill behind the spoken word when the effect is `.box`.
     var spokenWordBackgroundColor: CaptionColor
+    /// At most this many words on screen at once. Nil keeps whole lines.
+    var maxWordsOnScreen: Int?
 
     var highlightsSpokenWord: Bool { spokenWordEffect != .none }
 
@@ -179,7 +181,7 @@ struct CaptionStyle: Codable, Equatable, Hashable {
                 referenceFontSize: 56, textColor: .white, highlightColor: .yellow,
                 background: .shadow, backgroundColor: .shadow,
                 verticalPosition: 0.86, alignment: .center,
-                isUppercased: false, spokenWordEffect: .none, spokenWordBackgroundColor: .blue
+                isUppercased: false, spokenWordEffect: .none, spokenWordBackgroundColor: .blue, maxWordsOnScreen: nil
             )
         case .boxed:
             return CaptionStyle(
@@ -187,7 +189,7 @@ struct CaptionStyle: Codable, Equatable, Hashable {
                 referenceFontSize: 54, textColor: .white, highlightColor: .yellow,
                 background: .roundedBlock, backgroundColor: .black.withOpacity(0.72),
                 verticalPosition: 0.86, alignment: .center,
-                isUppercased: false, spokenWordEffect: .none, spokenWordBackgroundColor: .blue
+                isUppercased: false, spokenWordEffect: .none, spokenWordBackgroundColor: .blue, maxWordsOnScreen: nil
             )
         case .bold:
             return CaptionStyle(
@@ -195,7 +197,7 @@ struct CaptionStyle: Codable, Equatable, Hashable {
                 referenceFontSize: 82, textColor: .white, highlightColor: .yellow,
                 background: .shadow, backgroundColor: .shadow,
                 verticalPosition: 0.72, alignment: .center,
-                isUppercased: false, spokenWordEffect: .none, spokenWordBackgroundColor: .blue
+                isUppercased: false, spokenWordEffect: .none, spokenWordBackgroundColor: .blue, maxWordsOnScreen: nil
             )
         case .karaoke:
             return CaptionStyle(
@@ -203,7 +205,7 @@ struct CaptionStyle: Codable, Equatable, Hashable {
                 referenceFontSize: 78, textColor: .white, highlightColor: .mint,
                 background: .shadow, backgroundColor: .shadow,
                 verticalPosition: 0.72, alignment: .center,
-                isUppercased: false, spokenWordEffect: .colour, spokenWordBackgroundColor: .mint
+                isUppercased: false, spokenWordEffect: .colour, spokenWordBackgroundColor: .mint, maxWordsOnScreen: nil
             )
         case .spotlight:
             return CaptionStyle(
@@ -211,7 +213,7 @@ struct CaptionStyle: Codable, Equatable, Hashable {
                 referenceFontSize: 78, textColor: .white, highlightColor: .white,
                 background: .shadow, backgroundColor: .shadow,
                 verticalPosition: 0.72, alignment: .center,
-                isUppercased: false, spokenWordEffect: .box, spokenWordBackgroundColor: .hotPink
+                isUppercased: false, spokenWordEffect: .box, spokenWordBackgroundColor: .hotPink, maxWordsOnScreen: 4
             )
         case .minimal:
             return CaptionStyle(
@@ -219,7 +221,7 @@ struct CaptionStyle: Codable, Equatable, Hashable {
                 referenceFontSize: 44, textColor: .white, highlightColor: .white,
                 background: .none, backgroundColor: .black.withOpacity(0),
                 verticalPosition: 0.9, alignment: .center,
-                isUppercased: false, spokenWordEffect: .none, spokenWordBackgroundColor: .blue
+                isUppercased: false, spokenWordEffect: .none, spokenWordBackgroundColor: .blue, maxWordsOnScreen: nil
             )
         }
     }
@@ -252,6 +254,7 @@ struct CaptionStyle: Codable, Equatable, Hashable {
         isUppercased = (try? c.decode(Bool.self, forKey: .isUppercased)) ?? fallback.isUppercased
         spokenWordBackgroundColor = (try? c.decode(CaptionColor.self, forKey: .spokenWordBackgroundColor))
             ?? fallback.spokenWordBackgroundColor
+        maxWordsOnScreen = try? c.decodeIfPresent(Int.self, forKey: .maxWordsOnScreen)
 
         if let effect = try? c.decode(SpokenWordEffect.self, forKey: .spokenWordEffect) {
             spokenWordEffect = effect
@@ -279,12 +282,13 @@ struct CaptionStyle: Codable, Equatable, Hashable {
         try c.encode(isUppercased, forKey: .isUppercased)
         try c.encode(spokenWordEffect, forKey: .spokenWordEffect)
         try c.encode(spokenWordBackgroundColor, forKey: .spokenWordBackgroundColor)
+        try c.encodeIfPresent(maxWordsOnScreen, forKey: .maxWordsOnScreen)
     }
 
     private enum CodingKeys: String, CodingKey {
         case preset, fontDesign, weight, referenceFontSize, textColor, highlightColor
         case background, backgroundColor, verticalPosition, alignment, isUppercased
-        case spokenWordEffect, spokenWordBackgroundColor
+        case spokenWordEffect, spokenWordBackgroundColor, maxWordsOnScreen
         /// Read for backward compatibility only; no longer written.
         case highlightsSpokenWord
     }
@@ -293,7 +297,8 @@ struct CaptionStyle: Codable, Equatable, Hashable {
         preset: Preset, fontDesign: FontDesign, weight: Weight, referenceFontSize: Double,
         textColor: CaptionColor, highlightColor: CaptionColor, background: Background,
         backgroundColor: CaptionColor, verticalPosition: Double, alignment: TextAlignment,
-        isUppercased: Bool, spokenWordEffect: SpokenWordEffect, spokenWordBackgroundColor: CaptionColor
+        isUppercased: Bool, spokenWordEffect: SpokenWordEffect, spokenWordBackgroundColor: CaptionColor,
+        maxWordsOnScreen: Int? = nil
     ) {
         self.preset = preset
         self.fontDesign = fontDesign
@@ -308,5 +313,6 @@ struct CaptionStyle: Codable, Equatable, Hashable {
         self.isUppercased = isUppercased
         self.spokenWordEffect = spokenWordEffect
         self.spokenWordBackgroundColor = spokenWordBackgroundColor
+        self.maxWordsOnScreen = maxWordsOnScreen
     }
 }

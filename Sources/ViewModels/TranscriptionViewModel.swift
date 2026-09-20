@@ -126,6 +126,8 @@ final class TranscriptionViewModel {
                 if !self.segments.isEmpty {
                     var project = SubtitleProject(asset: self.asset, language: self.resolvedLanguage ?? self.language)
                     project.subtitles = self.segments
+                    // Remember the whole-line version so a word limit can be undone.
+                    project.sourceSubtitles = self.segments
                     self.producedProject = project
                 }
 

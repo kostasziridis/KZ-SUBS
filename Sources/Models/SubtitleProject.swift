@@ -20,6 +20,9 @@ struct SubtitleProject: Identifiable, Codable, Equatable, Hashable {
 
     var language: AppLanguage
     var subtitles: [SubtitleSegment]
+    /// The subtitles as first produced, before any word-count splitting. Kept so
+    /// returning to whole lines restores them rather than guessing them back.
+    var sourceSubtitles: [SubtitleSegment]?
     var captionStyle: CaptionStyle
 
     init(
@@ -33,6 +36,7 @@ struct SubtitleProject: Identifiable, Codable, Equatable, Hashable {
         pixelSize: CGSize,
         language: AppLanguage = .automatic,
         subtitles: [SubtitleSegment] = [],
+        sourceSubtitles: [SubtitleSegment]? = nil,
         captionStyle: CaptionStyle = .default
     ) {
         self.id = id
@@ -45,6 +49,7 @@ struct SubtitleProject: Identifiable, Codable, Equatable, Hashable {
         self.pixelSize = pixelSize
         self.language = language
         self.subtitles = subtitles
+        self.sourceSubtitles = sourceSubtitles
         self.captionStyle = captionStyle
     }
 
@@ -68,7 +73,7 @@ struct SubtitleProject: Identifiable, Codable, Equatable, Hashable {
         case id, createdAt, updatedAt, name
         case videoFileName, thumbnailFileName
         case duration, width, height
-        case language, subtitles, captionStyle
+        case language, subtitles, sourceSubtitles, captionStyle
     }
 
     init(from decoder: Decoder) throws {
@@ -94,6 +99,7 @@ struct SubtitleProject: Identifiable, Codable, Equatable, Hashable {
         )
         language = try c.decode(AppLanguage.self, forKey: .language)
         subtitles = try c.decode([SubtitleSegment].self, forKey: .subtitles)
+        sourceSubtitles = try c.decodeIfPresent([SubtitleSegment].self, forKey: .sourceSubtitles)
         captionStyle = try c.decode(CaptionStyle.self, forKey: .captionStyle)
     }
 
@@ -110,6 +116,7 @@ struct SubtitleProject: Identifiable, Codable, Equatable, Hashable {
         try c.encode(Double(pixelSize.height), forKey: .height)
         try c.encode(language, forKey: .language)
         try c.encode(subtitles, forKey: .subtitles)
+        try c.encodeIfPresent(sourceSubtitles, forKey: .sourceSubtitles)
         try c.encode(captionStyle, forKey: .captionStyle)
     }
 }

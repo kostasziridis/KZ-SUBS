@@ -113,6 +113,24 @@ final class SubtitleEditorViewModel {
         captionStyle = .preset(preset)
     }
 
+    /// Re-splits the subtitles so at most `limit` words show at once, or restores the
+    /// whole lines when `limit` is nil.
+    ///
+    /// Always works from the originals, so switching between limits does not split
+    /// what is already split.
+    func applyWordLimit(_ limit: Int?) {
+        let base = project.sourceSubtitles ?? segments
+        if project.sourceSubtitles == nil {
+            project.sourceSubtitles = segments
+        }
+
+        let updated = limit.map { SubtitleSegmenter.limitWords(base, maxWords: $0) } ?? base
+        guard updated != segments else { return }
+        segments = updated
+        selectedSegmentID = nil
+        activeSegmentID = nil
+    }
+
     // MARK: - Saving
 
     /// Waits for the edits to settle before writing, so a drag is one save, not fifty.

@@ -30,20 +30,66 @@ struct CaptionOverlayView: View {
     private func caption(for segment: SubtitleSegment, in size: CGSize) -> some View {
         let fontSize = style.fontSize(forFrameHeight: size.height)
 
-        return text(for: segment)
-            .font(.system(size: fontSize, weight: style.weight.fontWeight, design: style.fontDesign.design))
-            .multilineTextAlignment(style.alignment.swiftUI)
-            .lineSpacing(fontSize * 0.12)
-            .padding(.horizontal, style.background == .none ? 0 : fontSize * 0.45)
-            .padding(.vertical, style.background == .none ? 0 : fontSize * 0.22)
-            .background { backgroundShape }
-            .shadow(
-                color: style.background == .shadow ? style.backgroundColor.color : .clear,
-                radius: fontSize * 0.06,
-                x: 0,
-                y: fontSize * 0.035
-            )
-            .frame(maxWidth: .infinity, alignment: style.alignment.frameAlignment)
+        return Group {
+            if needsPerWordRendering(segment), let words = segment.words {
+                CaptionFlowLayout(
+                    alignment: style.alignment,
+                    spacing: fontSize * 0.04,
+                    lineSpacing: fontSize * 0.1
+                ) {
+                    ForEach(words) { word in
+                        wordView(word, fontSize: fontSize)
+                    }
+                }
+            } else {
+                Text(display(segment.text))
+                    .foregroundStyle(style.textColor.color)
+                    .multilineTextAlignment(style.alignment.swiftUI)
+                    .lineSpacing(fontSize * 0.12)
+            }
+        }
+        .font(.system(size: fontSize, weight: style.weight.fontWeight, design: style.fontDesign.design))
+        .padding(.horizontal, style.background == .none ? 0 : fontSize * 0.45)
+        .padding(.vertical, style.background == .none ? 0 : fontSize * 0.22)
+        .background { backgroundShape }
+        .shadow(
+            color: style.background == .shadow ? style.backgroundColor.color : .clear,
+            radius: fontSize * 0.06,
+            x: 0,
+            y: fontSize * 0.035
+        )
+        .frame(maxWidth: .infinity, alignment: style.alignment.frameAlignment)
+    }
+
+    /// Words only need laying out one by one when something distinguishes them.
+    private func needsPerWordRendering(_ segment: SubtitleSegment) -> Bool {
+        guard let words = segment.words, !words.isEmpty else { return false }
+        return style.highlightsSpokenWord || words.contains { $0.colorOverride != nil }
+    }
+
+    private func wordView(_ word: SubtitleWord, fontSize: CGFloat) -> some View {
+        let isSpoken = currentTime >= word.startTime && currentTime < word.endTime
+        let showsBox = isSpoken && style.spokenWordEffect == .box
+
+        // A colour chosen by hand for this word beats anything the style would do.
+        let colour: Color = {
+            if let override = word.colorOverride { return override.color }
+            if isSpoken, style.spokenWordEffect == .colour { return style.highlightColor.color }
+            return style.textColor.color
+        }()
+
+        return Text(display(word.word))
+            .foregroundStyle(colour)
+            // Padding is constant whether or not the box is showing. If it were not,
+            // every word would shift sideways as the highlight passed over it.
+            .padding(.horizontal, fontSize * 0.16)
+            .padding(.vertical, fontSize * 0.05)
+            .background {
+                if showsBox {
+                    RoundedRectangle(cornerRadius: fontSize * 0.22, style: .continuous)
+                        .fill(style.spokenWordBackgroundColor.color)
+                }
+            }
     }
 
     @ViewBuilder
@@ -56,53 +102,6 @@ struct CaptionOverlayView: View {
         case .shadow, .none:
             Color.clear
         }
-    }
-
-    // MARK: - Text
-
-    /// Builds the line as a single `Text`.
-    ///
-    /// Per-word styling goes through `AttributedString` rather than concatenated `Text`
-    /// runs, because only attributed runs can carry a background - and a box behind the
-    /// spoken word is the whole point of the Spotlight style. Wrapping still works,
-    /// which hand-laying words out in an HStack would break.
-    private func text(for segment: SubtitleSegment) -> Text {
-        let words = segment.words ?? []
-        let needsPerWord = !words.isEmpty
-            && (style.highlightsSpokenWord || words.contains { $0.colorOverride != nil })
-
-        guard needsPerWord else {
-            return Text(display(segment.text))
-                .foregroundStyle(style.textColor.color)
-        }
-        return Text(attributed(words))
-    }
-
-    private func attributed(_ words: [SubtitleWord]) -> AttributedString {
-        var result = AttributedString()
-
-        for (index, word) in words.enumerated() {
-            var run = AttributedString(display(word.word))
-            let isSpoken = currentTime >= word.startTime && currentTime < word.endTime
-
-            // A colour chosen by hand for this word beats anything the style would do.
-            if let override = word.colorOverride {
-                run.foregroundColor = override.color
-            } else if isSpoken, style.spokenWordEffect == .colour {
-                run.foregroundColor = style.highlightColor.color
-            } else {
-                run.foregroundColor = style.textColor.color
-            }
-
-            if isSpoken, style.spokenWordEffect == .box {
-                run.backgroundColor = style.spokenWordBackgroundColor.color
-            }
-
-            if index > 0 { result += AttributedString(" ") }
-            result += run
-        }
-
-        return result
     }
 
     private func display(_ value: String) -> String {

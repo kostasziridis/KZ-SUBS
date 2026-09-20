@@ -48,6 +48,9 @@ struct SubtitleEditorView: View {
             player.observationInterval = 1.0 / 30.0
             player.load(url: model.project.videoURL, knownDuration: model.project.duration)
         }
+        .onChange(of: model.captionStyle.maxWordsOnScreen) { _, limit in
+            model.applyWordLimit(limit)
+        }
         .onDisappear {
             player.teardown()
             Task { await model.saveNow() }

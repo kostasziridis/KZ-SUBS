@@ -100,6 +100,29 @@ struct CaptionStyleView: View {
 
                 VStack(alignment: .leading, spacing: 6) {
                     HStack {
+                        Text("Words on screen")
+                            .font(.footnote)
+                            .foregroundStyle(AppTheme.secondaryText)
+                        Spacer()
+                        Picker("Words on screen", selection: wordLimitBinding) {
+                            Text("All").tag(0)
+                            Text("6").tag(6)
+                            Text("5").tag(5)
+                            Text("4").tag(4)
+                            Text("3").tag(3)
+                        }
+                        .pickerStyle(.segmented)
+                        .frame(width: 210)
+                    }
+                    Text("Short bursts of words, the way short-form video captions read.")
+                        .font(.caption2)
+                        .foregroundStyle(AppTheme.tertiaryText)
+                }
+                .disabled(!hasWordTimings)
+                .opacity(hasWordTimings ? 1 : 0.5)
+
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack {
                         Text("Spoken word")
                             .font(.footnote)
                             .foregroundStyle(AppTheme.secondaryText)
@@ -127,6 +150,15 @@ struct CaptionStyleView: View {
                 }
             }
         }
+    }
+
+    /// The picker works in Ints because a segmented control cannot tag nil; 0 is
+    /// the "all words" case.
+    private var wordLimitBinding: Binding<Int> {
+        Binding(
+            get: { style.maxWordsOnScreen ?? 0 },
+            set: { style.maxWordsOnScreen = $0 == 0 ? nil : $0 }
+        )
     }
 
     private var hasWordTimings: Bool {

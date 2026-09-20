@@ -145,6 +145,42 @@ enum SubtitleSegmenter {
         return result
     }
 
+    // MARK: - Word limit
+
+    /// Splits subtitles so no more than `maxWords` show at once - the short, fast
+    /// captions short-form video uses.
+    ///
+    /// Needs word timings: without them there is no honest way to say when the second
+    /// half begins, so those subtitles are left whole.
+    static func limitWords(_ segments: [SubtitleSegment], maxWords: Int) -> [SubtitleSegment] {
+        guard maxWords > 0 else { return segments }
+
+        var result: [SubtitleSegment] = []
+
+        for segment in segments {
+            guard let words = segment.words, words.count > maxWords else {
+                result.append(segment)
+                continue
+            }
+
+            for start in stride(from: 0, to: words.count, by: maxWords) {
+                let slice = Array(words[start..<min(start + maxWords, words.count)])
+                guard let first = slice.first, let last = slice.last else { continue }
+
+                result.append(
+                    SubtitleSegment(
+                        startTime: first.startTime,
+                        endTime: last.endTime,
+                        text: slice.map(\.word).joined(separator: " "),
+                        words: slice
+                    )
+                )
+            }
+        }
+
+        return result
+    }
+
     // MARK: - Line wrapping
 
     /// Lays the text out over at most `maxLines`, balancing them so one line is not
