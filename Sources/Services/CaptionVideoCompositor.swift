@@ -82,9 +82,13 @@ final class CaptionVideoCompositor: NSObject, AVVideoCompositing {
         var image = CIImage(cvPixelBuffer: sourceBuffer)
 
         if !instruction.transform.isIdentity {
-            image = image.transformed(by: instruction.transform)
-            // A rotation leaves the extent off the origin; bring it back so the frame
-            // lines up with the render size.
+            // Applying preferredTransform to the image directly rotates the wrong way:
+            // the matrix describes a top-left coordinate space and Core Image works
+            // bottom-left, which for a quarter turn lands 180 degrees out. `oriented`
+            // knows about both conventions.
+            image = image.oriented(CGImagePropertyOrientation(videoTransform: instruction.transform))
+            // A rotation can leave the extent off the origin; bring it back so the
+            // frame lines up with the render size.
             image = image.transformed(
                 by: CGAffineTransform(translationX: -image.extent.origin.x, y: -image.extent.origin.y)
             )
@@ -107,5 +111,22 @@ final class CaptionVideoCompositor: NSObject, AVVideoCompositing {
 
     func cancelAllPendingVideoCompositionRequests() {
         // Requests are served synchronously, so there is nothing queued to drop.
+    }
+}
+
+extension CGImagePropertyOrientation {
+
+    /// The orientation matching a video track's `preferredTransform`.
+    ///
+    /// Only the four rotations are recognised, which is what recordings actually carry;
+    /// anything else is left alone rather than guessed at, because an unnecessary flip
+    /// is worse than none.
+    init(videoTransform transform: CGAffineTransform) {
+        switch (transform.a, transform.b, transform.c, transform.d) {
+        case (0, -1, 1, 0): self = .left
+        case (0, 1, -1, 0): self = .right
+        case (-1, 0, 0, -1): self = .down
+        default: self = .up
+        }
     }
 }
