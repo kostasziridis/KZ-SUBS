@@ -42,13 +42,10 @@ struct SubtitleEditorView: View {
                 Button {
                     showsStyleEditor = true
                 } label: {
-                    // Spelled out rather than a bare icon: "Aa" does not tell anyone
-                    // that every caption style in the app lives behind it. A Label is
-                    // not enough here - a toolbar collapses one to its icon.
-                    HStack(spacing: 4) {
-                        Image(systemName: "textformat")
-                        Text("Style")
-                    }
+                    // The word on its own. An icon beside it only invited reading the
+                    // "Aa" as the button and the word as a caption for it.
+                    Text("Style")
+                        .font(.body.weight(.medium))
                 }
                 .tint(AppTheme.accent)
             }

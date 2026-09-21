@@ -1,23 +1,47 @@
 {
-  "sourceLanguage": "en",
-  "version": "1.0",
-  "strings": {
-    "NSPhotoLibraryAddUsageDescription": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "KZ-SUBS saves your finished subtitled video to your photo library. Your video is processed on this iPhone and is never uploaded."
+  "sourceLanguage" : "en",
+  "strings" : {
+    "CFBundleDisplayName" : {
+      "comment" : "Bundle display name",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "KZ-SUBS"
+          }
+        }
+      }
+    },
+    "CFBundleName" : {
+      "comment" : "Bundle name",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "KZ-SUBS"
+          }
+        }
+      }
+    },
+    "NSPhotoLibraryAddUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Το KZ-SUBS αποθηκεύει το έτοιμο βίντεο με τους υπότιτλους στη συλλογή φωτογραφιών σας. Το βίντεό σας επεξεργάζεται σε αυτό το iPhone και δεν ανεβαίνει ποτέ πουθενά."
           }
         },
-        "el": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Το KZ-SUBS αποθηκεύει το έτοιμο βίντεο με τους υπότιτλους στη συλλογή φωτογραφιών σας. Το βίντεό σας επεξεργάζεται σε αυτό το iPhone και δεν ανεβαίνει ποτέ πουθενά."
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "KZ-SUBS saves your finished subtitled video to your photo library. Your video is processed on this iPhone and is never uploaded."
           }
         }
       }
     }
-  }
+  },
+  "version" : "1.0"
 }
