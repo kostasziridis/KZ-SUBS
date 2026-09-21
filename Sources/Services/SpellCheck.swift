@@ -25,6 +25,12 @@ enum SpellCheck {
 
         var unknown = await GreekSpellChecker.shared.unknownWords(in: greek)
         unknown.formUnion(await systemUnknownWords(in: rest))
+
+        // A word the user has kept is a word, whatever any dictionary says.
+        let learned = await LearnedWords.shared
+        for word in unknown where await learned.knows(word) {
+            unknown.remove(word)
+        }
         return unknown
     }
 
@@ -99,6 +105,30 @@ enum SpellCheck {
             if let match = available.first(where: { $0.hasPrefix(preferred.prefix(2)) }) { return match }
         }
         return available.contains("en_US") ? "en_US" : available.first
+    }
+
+    /// Puts a suggestion back into the shape of the word it replaces.
+    ///
+    /// A dictionary holds bare lowercase words, but a caption holds «Ολα» at the start
+    /// of a sentence and «ιντερνετ.» at the end of one. Dropping straight in would take
+    /// the capital off the first and the full stop off the second - a correction that
+    /// introduces two new mistakes.
+    static func shaped(_ suggestion: String, like original: String) -> String {
+        let punctuation = CharacterSet.punctuationCharacters
+
+        let leading = String(original.prefix { $0.unicodeScalars.allSatisfy(punctuation.contains) })
+        let trailing = String(original.reversed().prefix { $0.unicodeScalars.allSatisfy(punctuation.contains) }.reversed())
+        let core = original.dropFirst(leading.count).dropLast(trailing.count)
+
+        var replacement = suggestion
+        // Only the first letter: an all-capitals caption is the style's doing, applied
+        // when it is drawn, and must not be written into the words themselves.
+        if let first = core.first, first.isUppercase,
+           let replacementFirst = replacement.first, replacementFirst.isLowercase {
+            replacement = replacementFirst.uppercased() + replacement.dropFirst()
+        }
+
+        return leading + replacement + trailing
     }
 
     // MARK: - What the system can actually do

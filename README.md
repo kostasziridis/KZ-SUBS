@@ -135,6 +135,13 @@ Misspelled words in the subtitle editor get a dotted underline, and tapping one 
 what it was probably meant to be. Correcting a word never moves its timing, so the
 styles that light up words one by one keep working.
 
+The editor also counts the suspect words across the whole video and offers them in one
+pass - "is this video spelled correctly" must not depend on whether the user happened
+to open every subtitle. A suggestion is reshaped to the word it replaces before it is
+applied, so «Ολα» becomes «Όλα» rather than «όλα» and «ιντερνετ.» keeps its full stop.
+"Keep as it is" is remembered, because a review that asks twice about the same surname
+is a review nobody finishes.
+
 Greek carries its own dictionary. iOS lists Greek among its spell-checking languages
 but has nothing behind it - it does not flag even pure nonsense, while French, German,
 Spanish, Italian and Russian all work - and Apple's on-device language model does not

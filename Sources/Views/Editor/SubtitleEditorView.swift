@@ -11,6 +11,8 @@ struct SubtitleEditorView: View {
     @State private var player = VideoPlayerViewModel()
     @State private var editingSegment: SubtitleSegment?
     @State private var showsStyleEditor = false
+    @State private var spelling = SpellReviewViewModel()
+    @State private var showsSpelling = false
 
     init(project: SubtitleProject, onSave: @escaping (SubtitleProject) async -> Void) {
         _model = State(initialValue: SubtitleEditorViewModel(project: project, onSave: onSave))
@@ -76,6 +78,11 @@ struct SubtitleEditorView: View {
         .onChange(of: model.captionStyle.maxWordsOnScreen) { _, limit in
             model.applyWordLimit(limit)
         }
+        .task(id: model.segments.map(\.text).joined(separator: "\u{1}")) {
+            // Whenever the words change, including after a correction, so the count is
+            // never telling the user about a mistake they have already fixed.
+            spelling.check(model.segments)
+        }
         .onDisappear {
             player.teardown()
             Task { await model.saveNow() }
@@ -93,6 +100,18 @@ struct SubtitleEditorView: View {
                 onPrevious: { editingSegment = previousSegment(before: segment) },
                 onNext: { editingSegment = nextSegment(after: segment) },
                 onSeek: { player.seek(to: $0, precise: true) }
+            )
+        }
+        .sheet(isPresented: $showsSpelling) {
+            SpellReviewView(
+                model: spelling,
+                onCorrect: { finding, replacement in
+                    correct(finding, with: replacement)
+                },
+                onGoTo: { finding in
+                    model.selectedSegmentID = finding.segmentID
+                    player.seek(to: finding.startTime + 0.05, precise: true)
+                }
             )
         }
         .sheet(isPresented: $showsStyleEditor) {
@@ -143,6 +162,28 @@ struct SubtitleEditorView: View {
             .padding(.bottom, 12)
     }
 
+    /// Says how many words want looking at, so a spelling pass is something the user
+    /// is told about rather than something they have to think to run.
+    @ViewBuilder
+    private var spellingButton: some View {
+        if !model.segments.isEmpty {
+            Button {
+                spelling.check(model.segments)
+                showsSpelling = true
+            } label: {
+                HStack(spacing: 5) {
+                    Image(systemName: spelling.count > 0 ? "text.badge.xmark" : "textformat.abc.dottedunderline")
+                    if spelling.count > 0 {
+                        Text("\(spelling.count)")
+                            .font(.footnote.weight(.semibold).monospacedDigit())
+                    }
+                }
+                .font(.footnote.weight(.semibold))
+            }
+            .tint(spelling.count > 0 ? .orange : AppTheme.accent)
+        }
+    }
+
     // MARK: - List
 
     private var subtitleSection: some View {
@@ -157,6 +198,9 @@ struct SubtitleEditorView: View {
                         .foregroundStyle(AppTheme.tertiaryText)
                 }
                 Spacer()
+
+                spellingButton
+
                 Button {
                     let created = model.addSegment(at: player.currentTime, limit: max(player.duration, model.project.duration))
                     editingSegment = created
@@ -218,6 +262,32 @@ struct SubtitleEditorView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 40)
+    }
+
+    // MARK: - Corrections
+
+    /// Applies one correction from the review.
+    ///
+    /// Through `renameWord` wherever there are word timings, so the moment the word is
+    /// spoken does not move and the styles that light up words keep working. A subtitle
+    /// written by hand has no timings, so there the text is edited instead.
+    private func correct(_ finding: SpellFinding, with replacement: String) {
+        guard var segment = model.segments.first(where: { $0.id == finding.segmentID }) else { return }
+
+        // Carrying over the capital and the punctuation the original word wore.
+        let shaped = SpellCheck.shaped(replacement, like: finding.word)
+
+        if let wordID = finding.wordID {
+            segment.renameWord(id: wordID, to: shaped)
+        } else {
+            let corrected = segment.text
+                .split(whereSeparator: \.isWhitespace)
+                .map { $0 == finding.word ? shaped : String($0) }
+                .joined(separator: " ")
+            segment.setText(corrected)
+        }
+
+        model.update(segment)
     }
 
     // MARK: - Neighbours
