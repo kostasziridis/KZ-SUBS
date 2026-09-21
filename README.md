@@ -106,6 +106,29 @@ up once there was space. Keep several GB free, and clear that cache directory
 between runs. On device this does not happen - Core ML targets the Neural Engine
 and the artifacts are far smaller.
 
+## Languages
+
+The app is in English and Greek, and follows the phone: a Greek iPhone gets Greek,
+everything else gets English. There is no setting, because iOS already knows.
+
+Translations live in `Sources/Resources/Localizable.xcstrings`. SwiftUI looks strings
+up automatically from a `Text` literal; a plain `String` has to ask, which is what the
+`String(localized:)` calls in the enums and error messages are for.
+
+To find strings that have been added since the last pass:
+
+```
+xcodebuild -project KZ-SUBS.xcodeproj -scheme KZSubs -sdk iphonesimulator \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
+  -derivedDataPath /tmp/kzsubs-loc SWIFT_EMIT_LOC_STRINGS=YES build
+python3 Tools/tidy-string-catalog.py /tmp/kzsubs-loc
+```
+
+That build makes Xcode rewrite the catalogue, and it makes a mess of it - duplicate
+keys for anything containing a number, and the real ones marked stale. The script
+undoes that and lists whatever still needs Greek. An ordinary build leaves the
+catalogue alone, so this is only needed when strings change.
+
 ## Privacy
 
 No account. No login. No backend. No cloud transcription. No analytics. No ads.

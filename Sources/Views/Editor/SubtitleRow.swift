@@ -5,6 +5,9 @@ struct SubtitleRow: View {
     let index: Int
     let segment: SubtitleSegment
     var isActive: Bool = false
+    /// Opens this subtitle for editing. Spelled out as a button because holding a row
+    /// is not something anyone discovers on their own.
+    var onEdit: (() -> Void)?
 
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
@@ -14,9 +17,29 @@ struct SubtitleRow: View {
                 .frame(width: 22, alignment: .trailing)
 
             VStack(alignment: .leading, spacing: 4) {
-                Text("\(TimecodeFormatter.precise(segment.startTime)) — \(TimecodeFormatter.precise(segment.endTime))")
-                    .font(.caption2.monospacedDigit())
-                    .foregroundStyle(isActive ? AppTheme.accent : AppTheme.tertiaryText)
+                HStack(spacing: 8) {
+                    Text("\(TimecodeFormatter.precise(segment.startTime)) — \(TimecodeFormatter.precise(segment.endTime))")
+                        .font(.caption2.monospacedDigit())
+                        .foregroundStyle(isActive ? AppTheme.accent : AppTheme.tertiaryText)
+
+                    Spacer(minLength: 0)
+
+                    // On the timecode line rather than beside the words, so it never
+                    // takes width away from the subtitle itself.
+                    if let onEdit {
+                        Button(action: onEdit) {
+                            Label("Edit", systemImage: "pencil")
+                                .font(.caption2.weight(.semibold))
+                                .padding(.horizontal, 9)
+                                .padding(.vertical, 4)
+                                .background { Capsule().fill(AppTheme.elevatedSurface) }
+                                .overlay { Capsule().strokeBorder(AppTheme.hairline, lineWidth: 1) }
+                        }
+                        .buttonStyle(.plain)
+                        .tint(AppTheme.accent)
+                        .foregroundStyle(AppTheme.accent)
+                    }
+                }
 
                 Text(segment.text)
                     .font(.subheadline)

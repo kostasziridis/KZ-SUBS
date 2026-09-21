@@ -8,7 +8,7 @@ struct SubtitleListView: View {
     /// A tap moves the playhead to this subtitle. Nothing else - jumping around the
     /// video is the common action, so it gets the cheap gesture.
     var onSelect: ((SubtitleSegment) -> Void)?
-    /// A press and hold opens it for editing.
+    /// Opens it for editing: the row's own Edit button, or a press and hold.
     var onEdit: ((SubtitleSegment) -> Void)?
 
     var body: some View {
@@ -17,7 +17,8 @@ struct SubtitleListView: View {
                 SubtitleRow(
                     index: index + 1,
                     segment: segment,
-                    isActive: segment.id == activeSegmentID
+                    isActive: segment.id == activeSegmentID,
+                    onEdit: onEdit.map { edit in { edit(segment) } }
                 )
                 .contentShape(Rectangle())
                 .onTapGesture { onSelect?(segment) }

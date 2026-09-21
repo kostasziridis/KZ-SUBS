@@ -96,9 +96,11 @@ struct SubtitleEditSheet: View {
                 }
                 .tint(AppTheme.accent)
 
+                // The two editors do different jobs, and nothing said so: this one
+                // changes which words there are, the one below changes one word.
                 Text(words.isEmpty
                      ? "Return starts a new line. Two short lines read best."
-                     : "Return starts a new line. Corrections here also fix the words below.")
+                     : "Add or remove words here, or press Return for a new line.")
                     .font(.caption2)
                     .foregroundStyle(AppTheme.tertiaryText)
             }
@@ -150,7 +152,7 @@ struct SubtitleEditSheet: View {
                 if let index = selectedIndex {
                     selectedWordEditor(at: index)
                 } else {
-                    Text("Tap a word to correct its spelling or colour it.")
+                    Text("Tap a word to correct its spelling or colour it. Its timing stays put.")
                         .font(.caption2)
                         .foregroundStyle(AppTheme.tertiaryText)
                 }
@@ -321,8 +323,8 @@ struct SubtitleEditSheet: View {
     /// Flags timings that will read badly, without preventing them.
     private var durationWarning: String? {
         let duration = endTime - startTime
-        if duration < 0.8 { return "Very short — this may flash by too quickly to read." }
-        if duration > 7 { return "Very long — consider splitting this subtitle." }
+        if duration < 0.8 { return String(localized: "Very short — this may flash by too quickly to read.") }
+        if duration > 7 { return String(localized: "Very long — consider splitting this subtitle.") }
         return nil
     }
 

@@ -149,7 +149,7 @@ struct SubtitleEditorView: View {
                     Text("\(model.segments.count) subtitles")
                         .font(.footnote.weight(.medium))
                         .foregroundStyle(AppTheme.secondaryText)
-                    Text("Tap to jump · hold to edit")
+                    Text("Tap a subtitle to jump to it")
                         .font(.caption2)
                         .foregroundStyle(AppTheme.tertiaryText)
                 }
