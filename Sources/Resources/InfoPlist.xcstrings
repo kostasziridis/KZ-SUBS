@@ -1,0 +1,23 @@
+{
+  "sourceLanguage": "en",
+  "version": "1.0",
+  "strings": {
+    "NSPhotoLibraryAddUsageDescription": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "KZ-SUBS saves your finished subtitled video to your photo library. Your video is processed on this iPhone and is never uploaded."
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Το KZ-SUBS αποθηκεύει το έτοιμο βίντεο με τους υπότιτλους στη συλλογή φωτογραφιών σας. Το βίντεό σας επεξεργάζεται σε αυτό το iPhone και δεν ανεβαίνει ποτέ πουθενά."
+          }
+        }
+      }
+    }
+  }
+}

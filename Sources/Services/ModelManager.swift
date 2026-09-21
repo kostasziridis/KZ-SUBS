@@ -18,34 +18,34 @@ enum ModelManager {
 
         var displayName: String {
             switch self {
-            case .fast: return "Fast"
-            case .balanced: return "Balanced"
-            case .accurate: return "Most accurate"
+            case .fast: return String(localized: "Fast")
+            case .balanced: return String(localized: "Balanced")
+            case .accurate: return String(localized: "Most accurate")
             }
         }
 
         var detail: String {
             switch self {
-            case .fast: return "Quickest, and easiest on battery. Less reliable with accents and background noise."
-            case .balanced: return "The recommended choice. Near the accuracy of the large model at a fraction of the time."
-            case .accurate: return "The most accurate model. Noticeably slower, and a larger download."
+            case .fast: return String(localized: "Quickest, and easiest on battery. Less reliable with accents and background noise.")
+            case .balanced: return String(localized: "The recommended choice. Near the accuracy of the large model at a fraction of the time.")
+            case .accurate: return String(localized: "The most accurate model. Noticeably slower, and a larger download.")
             }
         }
 
         var approximateSize: String {
             switch self {
-            case .fast: return "~250 MB"
-            case .balanced: return "~630 MB"
-            case .accurate: return "~950 MB"
+            case .fast: return String(localized: "~250 MB")
+            case .balanced: return String(localized: "~630 MB")
+            case .accurate: return String(localized: "~950 MB")
             }
         }
 
         /// Roughly how long the one-time setup takes, download plus first preparation.
         var estimatedSetupTime: String {
             switch self {
-            case .fast: return "about 1-2 minutes"
-            case .balanced: return "about 3-5 minutes"
-            case .accurate: return "about 5-8 minutes"
+            case .fast: return String(localized: "about 1-2 minutes")
+            case .balanced: return String(localized: "about 3-5 minutes")
+            case .accurate: return String(localized: "about 5-8 minutes")
             }
         }
 

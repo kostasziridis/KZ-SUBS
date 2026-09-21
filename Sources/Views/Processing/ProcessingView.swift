@@ -30,15 +30,15 @@ struct ProcessingView: View {
                     completedSection
                 case .cancelled:
                     stoppedSection(
-                        title: "Stopped",
-                        message: "No subtitles were made. You can try again whenever you like.",
+                        title: String(localized: "Stopped"),
+                        message: String(localized: "No subtitles were made. You can try again whenever you like."),
                         symbol: "stop.circle"
                     )
                 case let .failed(error):
                     stoppedSection(
-                        title: (error as? AppError)?.errorDescription ?? "Unable to generate subtitles",
+                        title: (error as? AppError)?.errorDescription ?? String(localized: "Unable to generate subtitles"),
                         message: (error as? AppError)?.recoverySuggestion
-                            ?? "Something interrupted the process. Try again.",
+                            ?? String(localized: "Something interrupted the process. Try again."),
                         symbol: (error as? AppError)?.symbolName ?? "exclamationmark.triangle"
                     )
                 }
@@ -117,9 +117,9 @@ struct ProcessingView: View {
 
     private var preparationDetail: String {
         switch model.preparation {
-        case .checking: return "Getting things ready…"
-        case .downloading: return "Downloading speech model…"
-        case .loading, .ready: return "Loading speech model…"
+        case .checking: return String(localized: "Getting things ready…")
+        case .downloading: return String(localized: "Downloading speech model…")
+        case .loading, .ready: return String(localized: "Loading speech model…")
         }
     }
 

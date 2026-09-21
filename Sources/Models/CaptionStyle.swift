@@ -26,12 +26,12 @@ struct CaptionStyle: Codable, Equatable, Hashable {
 
         var displayName: String {
             switch self {
-            case .classic: return "Classic"
-            case .boxed: return "Boxed"
-            case .bold: return "Bold"
-            case .karaoke: return "Karaoke"
-            case .spotlight: return "Spotlight"
-            case .minimal: return "Minimal"
+            case .classic: return String(localized: "Classic")
+            case .boxed: return String(localized: "Boxed")
+            case .bold: return String(localized: "Bold")
+            case .karaoke: return String(localized: "Karaoke")
+            case .spotlight: return String(localized: "Spotlight")
+            case .minimal: return String(localized: "Minimal")
             }
         }
     }
@@ -43,10 +43,10 @@ struct CaptionStyle: Codable, Equatable, Hashable {
 
         var displayName: String {
             switch self {
-            case .standard: return "Standard"
-            case .rounded: return "Rounded"
-            case .serif: return "Serif"
-            case .monospaced: return "Mono"
+            case .standard: return String(localized: "Standard")
+            case .rounded: return String(localized: "Rounded")
+            case .serif: return String(localized: "Serif")
+            case .monospaced: return String(localized: "Mono")
             }
         }
 
@@ -64,6 +64,17 @@ struct CaptionStyle: Codable, Equatable, Hashable {
         case regular, medium, semibold, bold, heavy, black
 
         var id: String { rawValue }
+
+        var displayName: String {
+            switch self {
+            case .regular: return String(localized: "Regular")
+            case .medium: return String(localized: "Medium")
+            case .semibold: return String(localized: "Semibold")
+            case .bold: return String(localized: "Bold weight")
+            case .heavy: return String(localized: "Heavy")
+            case .black: return String(localized: "Black")
+            }
+        }
 
         var fontWeight: Font.Weight {
             switch self {
@@ -85,10 +96,10 @@ struct CaptionStyle: Codable, Equatable, Hashable {
 
         var displayName: String {
             switch self {
-            case .shadow: return "Shadow"
-            case .block: return "Block"
-            case .roundedBlock: return "Rounded"
-            case .none: return "None"
+            case .shadow: return String(localized: "Shadow")
+            case .block: return String(localized: "Block")
+            case .roundedBlock: return String(localized: "Rounded")
+            case .none: return String(localized: "None")
             }
         }
     }
@@ -105,9 +116,9 @@ struct CaptionStyle: Codable, Equatable, Hashable {
 
         var displayName: String {
             switch self {
-            case .none: return "Off"
-            case .colour: return "Colour"
-            case .box: return "Box"
+            case .none: return String(localized: "Off")
+            case .colour: return String(localized: "Colour")
+            case .box: return String(localized: "Box")
             }
         }
     }

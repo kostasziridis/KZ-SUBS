@@ -24,7 +24,7 @@ struct VideoDetailsView: View {
                         InfoPill(symbol: "internaldrive", text: fileSizeText)
                     }
                     if !asset.hasAudio {
-                        InfoPill(symbol: "speaker.slash", text: "No sound")
+                        InfoPill(symbol: "speaker.slash", text: String(localized: "No sound"))
                     }
                 }
             }

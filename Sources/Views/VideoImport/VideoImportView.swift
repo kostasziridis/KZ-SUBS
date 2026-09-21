@@ -134,7 +134,7 @@ struct VideoImportView: View {
             }
             .buttonStyle(SecondaryButtonStyle())
 
-            PrivacyBadge(text: "Processed entirely on this iPhone")
+            PrivacyBadge(text: String(localized: "Processed entirely on this iPhone"))
                 .padding(.top, 4)
         }
     }

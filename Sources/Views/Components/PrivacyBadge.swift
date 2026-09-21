@@ -2,7 +2,9 @@ import SwiftUI
 
 /// The single privacy line the app shows. No jargon, no model names.
 struct PrivacyBadge: View {
-    var text: String = "On-device • Nothing leaves your iPhone"
+    // A stored String rather than a literal in the body, so it has to be asked for
+    // in the current language explicitly.
+    var text: String = String(localized: "On-device • Nothing leaves your iPhone")
 
     var body: some View {
         Label(text, systemImage: "lock.fill")

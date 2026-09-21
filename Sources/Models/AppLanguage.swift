@@ -14,7 +14,7 @@ enum AppLanguage: String, Codable, CaseIterable, Identifiable, Hashable {
     /// Name shown in the UI, written in the language it represents.
     var displayName: String {
         switch self {
-        case .automatic: return "Auto Detect"
+        case .automatic: return String(localized: "Auto Detect")
         case .greek: return "Ελληνικά"
         case .english: return "English"
         }

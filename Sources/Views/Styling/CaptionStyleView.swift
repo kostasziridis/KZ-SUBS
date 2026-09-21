@@ -84,7 +84,7 @@ struct CaptionStyleView: View {
                 }
 
                 labelledPicker("Weight", selection: $style.weight) { weight in
-                    Text(weight.rawValue.capitalized).tag(weight)
+                    Text(weight.displayName).tag(weight)
                 }
 
                 slider(
@@ -193,7 +193,7 @@ struct CaptionStyleView: View {
         }
     }
 
-    private func swatches(title: String, selection: Binding<CaptionColor>, usesOpacity: Bool = false) -> some View {
+    private func swatches(title: LocalizedStringKey, selection: Binding<CaptionColor>, usesOpacity: Bool = false) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title)
                 .font(.caption)
@@ -260,7 +260,7 @@ struct CaptionStyleView: View {
 
     // MARK: - Building blocks
 
-    private func section<Content: View>(_ title: String, @ViewBuilder content: () -> Content) -> some View {
+    private func section<Content: View>(_ title: LocalizedStringKey, @ViewBuilder content: () -> Content) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(title)
                 .font(.subheadline.weight(.semibold))
@@ -275,7 +275,7 @@ struct CaptionStyleView: View {
     }
 
     private func labelledPicker<T: Hashable, Content: View>(
-        _ title: String,
+        _ title: LocalizedStringKey,
         selection: Binding<T>,
         @ViewBuilder options: @escaping (T) -> Content
     ) -> some View where T: CaseIterable, T.AllCases: RandomAccessCollection {
@@ -293,7 +293,7 @@ struct CaptionStyleView: View {
         }
     }
 
-    private func slider(_ title: String, value: Binding<Double>, range: ClosedRange<Double>, display: String) -> some View {
+    private func slider(_ title: LocalizedStringKey, value: Binding<Double>, range: ClosedRange<Double>, display: String) -> some View {
         VStack(spacing: 4) {
             HStack {
                 Text(title)

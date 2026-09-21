@@ -6,6 +6,9 @@ options:
     iOS: "18.0"
   createIntermediateGroups: true
   developmentLanguage: en
+  # Listed here because the project is generated: the string catalogue carries the
+  # Greek translations, but the build only compiles a language the project knows about.
+  knownRegions: [en, el, Base]
   groupSortPosition: top
 
 settings:
