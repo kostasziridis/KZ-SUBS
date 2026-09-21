@@ -18,8 +18,14 @@ struct SubtitleEditSheet: View {
     @State private var startTime: TimeInterval = 0
     @State private var endTime: TimeInterval = 0
     @State private var words: [SubtitleWord] = []
+    /// The words as the speech engine timed them, kept aside so that retyping the text
+    /// is always matched against the original rather than against the last match.
+    /// Without it, typing a word one letter at a time would walk the timings away.
+    @State private var baselineWords: [SubtitleWord] = []
     @State private var selectedWordID: SubtitleWord.ID?
+    @State private var draftWord: String = ""
     @FocusState private var isEditingText: Bool
+    @FocusState private var isEditingWord: Bool
 
     private let nudge: TimeInterval = 0.1
 
@@ -28,7 +34,7 @@ struct SubtitleEditSheet: View {
             ScrollView {
                 VStack(spacing: 18) {
                     textCard
-                    if !words.isEmpty { wordColourCard }
+                    if !words.isEmpty { wordCard }
                     timingCard
                     navigationRow
                     deleteButton
@@ -66,13 +72,13 @@ struct SubtitleEditSheet: View {
                     .foregroundStyle(.white)
                     .lineLimit(2...5)
                     .focused($isEditingText)
-                    .onChange(of: text) { _, _ in commit() }
+                    .onChange(of: text) { _, _ in applyTextEdit() }
 
                 HStack(spacing: 10) {
                     Button {
                         // Break it where the two lines come out closest in length.
                         text = SubtitleSegmenter.splitInTwo(text.replacingOccurrences(of: "\n", with: " "))
-                        commit()
+                        applyTextEdit()
                     } label: {
                         Label("Split in two", systemImage: "text.append")
                             .font(.caption.weight(.medium))
@@ -81,7 +87,7 @@ struct SubtitleEditSheet: View {
 
                     Button {
                         text = text.replacingOccurrences(of: "\n", with: " ")
-                        commit()
+                        applyTextEdit()
                     } label: {
                         Label("One line", systemImage: "text.aligncenter")
                             .font(.caption.weight(.medium))
@@ -90,27 +96,33 @@ struct SubtitleEditSheet: View {
                 }
                 .tint(AppTheme.accent)
 
-                Text("Return starts a new line. Two short lines read best.")
+                Text(words.isEmpty
+                     ? "Return starts a new line. Two short lines read best."
+                     : "Return starts a new line. Corrections here also fix the words below.")
                     .font(.caption2)
                     .foregroundStyle(AppTheme.tertiaryText)
             }
         }
     }
 
-    // MARK: - Word colours
+    // MARK: - Words
 
-    /// Colour one word on its own, for emphasis - independent of the caption style.
-    private var wordColourCard: some View {
+    /// One word at a time: correct its spelling, or colour it on its own.
+    ///
+    /// This is the only place a word can be changed without disturbing anything else.
+    /// Each word keeps the moment it was spoken, so the caption styles that light up
+    /// words one by one carry on working after a correction.
+    private var wordCard: some View {
         GlassCard(radius: AppTheme.controlRadius, padding: 16) {
             VStack(alignment: .leading, spacing: 12) {
-                Text("Colour a word")
+                Text("Words")
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(AppTheme.tertiaryText)
 
                 FlowRow(spacing: 8) {
                     ForEach(words) { word in
                         Button {
-                            selectedWordID = selectedWordID == word.id ? nil : word.id
+                            select(word)
                         } label: {
                             Text(word.word)
                                 .font(.footnote.weight(.medium))
@@ -135,36 +147,125 @@ struct SubtitleEditSheet: View {
                     }
                 }
 
-                if let selectedWordID, let index = words.firstIndex(where: { $0.id == selectedWordID }) {
-                    HStack(spacing: 10) {
-                        CaptionColorPalette(
-                            selection: Binding(
-                                get: { words[index].colorOverride ?? .white },
-                                set: {
-                                    words[index].colorOverride = $0
-                                    commit()
-                                }
-                            )
-                        )
-
-                        Button {
-                            words[index].colorOverride = nil
-                            commit()
-                        } label: {
-                            Image(systemName: "arrow.uturn.backward")
-                                .font(.caption.weight(.bold))
-                                .frame(width: 28, height: 28)
-                                .background { Circle().fill(AppTheme.elevatedSurface) }
-                        }
-                        .buttonStyle(.plain)
-                        .foregroundStyle(.white)
-                    }
+                if let index = selectedIndex {
+                    selectedWordEditor(at: index)
                 } else {
-                    Text("Tap a word, then pick a colour.")
+                    Text("Tap a word to correct its spelling or colour it.")
                         .font(.caption2)
                         .foregroundStyle(AppTheme.tertiaryText)
                 }
             }
+        }
+    }
+
+    private var selectedIndex: Int? {
+        guard let selectedWordID else { return nil }
+        return words.firstIndex { $0.id == selectedWordID }
+    }
+
+    @ViewBuilder
+    private func selectedWordEditor(at index: Int) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Divider().overlay(AppTheme.hairline)
+
+            HStack(spacing: 10) {
+                TextField("Word", text: $draftWord)
+                    .font(.body.weight(.medium))
+                    .foregroundStyle(.white)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled()
+                    .submitLabel(.done)
+                    .focused($isEditingWord)
+                    .onSubmit { commitDraftWord() }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 9)
+                    .background {
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .fill(AppTheme.elevatedSurface)
+                    }
+
+                Button("Apply") { commitDraftWord() }
+                    .font(.footnote.weight(.semibold))
+                    .tint(AppTheme.accent)
+                    .disabled(draftWord.trimmingCharacters(in: .whitespaces).isEmpty
+                              || draftWord == words[index].word)
+            }
+
+            Text("Spoken at \(TimecodeFormatter.precise(words[index].startTime)) — unchanged by a correction.")
+                .font(.caption2)
+                .foregroundStyle(AppTheme.tertiaryText)
+
+            HStack(spacing: 10) {
+                CaptionColorPalette(
+                    selection: Binding(
+                        get: { words[index].colorOverride ?? .white },
+                        set: { setColour($0, at: index) }
+                    )
+                )
+
+                Button {
+                    setColour(nil, at: index)
+                } label: {
+                    Image(systemName: "arrow.uturn.backward")
+                        .font(.caption.weight(.bold))
+                        .frame(width: 28, height: 28)
+                        .background { Circle().fill(AppTheme.elevatedSurface) }
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(.white)
+            }
+        }
+    }
+
+    // MARK: - Word editing
+
+    private func select(_ word: SubtitleWord) {
+        if selectedWordID == word.id {
+            selectedWordID = nil
+            isEditingWord = false
+        } else {
+            selectedWordID = word.id
+            draftWord = word.word
+        }
+    }
+
+    private func commitDraftWord() {
+        guard let selectedWordID else { return }
+        let trimmed = draftWord.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else {
+            // Put the word back rather than leaving an empty box: deleting a word is
+            // what the text field above is for.
+            draftWord = words.first { $0.id == selectedWordID }?.word ?? ""
+            return
+        }
+
+        var draft = draftSegment()
+        draft.renameWord(id: selectedWordID, to: trimmed)
+
+        words = draft.words ?? words
+        mirrorIntoBaseline()
+        // Set last: the text field watches this, and the baseline has to agree with it
+        // first or the edit would immediately be re-matched away.
+        text = draft.text
+        draftWord = words.first { $0.id == selectedWordID }?.word ?? trimmed
+
+        onChange(draft)
+        isEditingWord = false
+    }
+
+    private func setColour(_ colour: CaptionColor?, at index: Int) {
+        words[index].colorOverride = colour
+        mirrorIntoBaseline()
+        commit()
+    }
+
+    /// Keeps the untouched original in step with deliberate word edits, so that a later
+    /// correction in the text field does not undo them.
+    private func mirrorIntoBaseline() {
+        for word in words {
+            guard let index = baselineWords.firstIndex(where: { $0.id == word.id }) else { continue }
+            baselineWords[index].word = word.word
+            baselineWords[index].colorOverride = word.colorOverride
         }
     }
 
@@ -225,7 +326,7 @@ struct SubtitleEditSheet: View {
         return nil
     }
 
-    private func timeRow(label: String, value: TimeInterval, onChange: @escaping (TimeInterval) -> Void) -> some View {
+    private func timeRow(label: LocalizedStringKey, value: TimeInterval, onChange: @escaping (TimeInterval) -> Void) -> some View {
         HStack(spacing: 14) {
             Text(label)
                 .font(.footnote)
@@ -313,21 +414,53 @@ struct SubtitleEditSheet: View {
         startTime = segment.startTime
         endTime = segment.endTime
         words = segment.words ?? []
+        baselineWords = words
         selectedWordID = nil
+        draftWord = ""
     }
 
-    private func commit() {
+    /// The subtitle as the sheet currently has it.
+    private func draftSegment() -> SubtitleSegment {
         var edited = segment
         edited.text = text
         edited.startTime = startTime
         edited.endTime = endTime
-        // Only carry word timings back if they are still the ones this subtitle had;
-        // retyping the text does not re-time the words.
         edited.words = words.isEmpty ? nil : words
-        onChange(edited)
+        return edited
+    }
+
+    /// Carries a change made in the text field into the timed words.
+    ///
+    /// Always matched against `baselineWords`, never against the last result: matching
+    /// against the last result would let a half-typed word throw away a timing that the
+    /// finished word should have got back.
+    private func applyTextEdit() {
+        guard !baselineWords.isEmpty else {
+            commit()
+            return
+        }
+
+        // Line breaks and punctuation are not words, so there is nothing to re-match
+        // when they are all that changed.
+        guard WordAligner.tokenise(text) != words.map(\.word) else {
+            commit()
+            return
+        }
+
+        words = WordAligner.realign(
+            text: text,
+            to: baselineWords,
+            start: startTime,
+            end: endTime
+        )
+        if selectedIndex == nil { selectedWordID = nil }
+        commit()
+    }
+
+    private func commit() {
+        onChange(draftSegment())
     }
 }
-
 #if DEBUG
 #Preview {
     SubtitleEditSheet(

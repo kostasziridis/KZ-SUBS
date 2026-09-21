@@ -19,6 +19,9 @@ struct CaptionOverlayView: View {
     var text: Binding<String>?
     /// Called when in-place typing starts, so playback can be stopped.
     var onBeginTextEditing: (() -> Void)?
+    /// Called when it finishes, so the caller can forget whatever it was holding for
+    /// the duration of the edit.
+    var onEndTextEditing: (() -> Void)?
     /// The video's shape. Without it the caption is laid out in the whole view, which
     /// for a pillarboxed clip is wider than the picture - so the preview wraps the text
     /// differently from the export and the two stop matching. Nil means the view is
@@ -43,7 +46,10 @@ struct CaptionOverlayView: View {
                         currentTime: currentTime,
                         frameHeight: content.height,
                         editingText: isEditingText ? text : nil,
-                        onEndEditing: { isEditingText = false }
+                        onEndEditing: {
+                            isEditingText = false
+                            onEndTextEditing?()
+                        }
                     )
                     .frame(maxWidth: content.width * CaptionLayout.maximumWidthFraction)
                     .background { sizeReader }

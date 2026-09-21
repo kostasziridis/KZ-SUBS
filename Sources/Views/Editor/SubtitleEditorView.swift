@@ -242,6 +242,13 @@ private struct CaptionLayer: View {
     let model: SubtitleEditorViewModel
     let aspectRatio: CGFloat
 
+    /// The words as they stood when typing on the video began.
+    ///
+    /// Every keystroke re-matches the text against these rather than against the
+    /// previous keystroke's result, so a word that is deleted and typed again comes
+    /// back with the timing it was originally spoken at.
+    @State private var wordsBeforeEditing: (segment: SubtitleSegment.ID, words: [SubtitleWord])?
+
     var body: some View {
         let current = model.segment(at: player.currentTime)
 
@@ -260,12 +267,26 @@ private struct CaptionLayer: View {
                     get: { model.segments.first { $0.id == segment.id }?.text ?? segment.text },
                     set: { newText in
                         guard var edited = model.segments.first(where: { $0.id == segment.id }) else { return }
-                        edited.text = newText
+
+                        let original: [SubtitleWord]
+                        if let held = wordsBeforeEditing, held.segment == segment.id {
+                            original = held.words
+                        } else {
+                            original = edited.words ?? []
+                            wordsBeforeEditing = (segment.id, original)
+                        }
+
+                        edited.words = original.isEmpty ? nil : original
+                        // Not `edited.text =`: the styles that light up words one by
+                        // one are drawn from the words, so a correction written only
+                        // into the text would never reach the screen.
+                        edited.setText(newText)
                         model.update(edited)
                     }
                 )
             },
             onBeginTextEditing: { player.pause() },
+            onEndTextEditing: { wordsBeforeEditing = nil },
             contentAspectRatio: aspectRatio
         )
         .onChange(of: player.currentTime) { _, time in
