@@ -110,7 +110,38 @@ struct SecondaryButtonStyle: ButtonStyle {
     }
 }
 
+/// The material behind a control that floats over content.
+///
+/// Liquid Glass belongs to the navigation layer - bars, toolbars, controls sitting on
+/// top of something - and never to the content layer, so this is deliberately not what
+/// `GlassCard` uses. On iOS 18 it stays the hand-made translucency it always was.
+///
+/// The border goes with the glass: glass carries its own edge, and the rule is to
+/// strip decorated backgrounds rather than draw over them.
+private struct FloatingGlass<S: InsettableShape>: ViewModifier {
+    let shape: S
+    let isInteractive: Bool
+
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *) {
+            content.glassEffect(isInteractive ? .regular.interactive() : .regular, in: shape)
+        } else {
+            content
+                .background { shape.fill(.ultraThinMaterial) }
+                .overlay { shape.strokeBorder(AppTheme.hairline, lineWidth: 1) }
+        }
+    }
+}
+
 extension View {
+    /// Glass where the system has it, the app's own translucency where it does not.
+    ///
+    /// - Parameter isInteractive: for something that responds to touch, which makes the
+    ///   glass react to the press rather than sit inert under it.
+    func floatingGlass(in shape: some InsettableShape, interactive isInteractive: Bool = false) -> some View {
+        modifier(FloatingGlass(shape: shape, isInteractive: isInteractive))
+    }
+
     /// The app-wide backdrop.
     func appBackground() -> some View {
         background(AppTheme.background.ignoresSafeArea())

@@ -133,7 +133,9 @@ struct SubtitleEditorView: View {
                 sampleSegment: model.activeSegment ?? model.segments.first
             )
             .presentationDetents([.medium, .large])
-            .presentationBackground(.ultraThinMaterial)
+            // Overriding this on iOS 26 replaces the system's own sheet material with
+            // a flat copy of what it used to be. Left alone, the sheet is glass.
+            .modifier(SystemSheetBackground())
         }
     }
 
@@ -330,6 +332,18 @@ struct SubtitleEditorView: View {
     private func nextSegment(after segment: SubtitleSegment) -> SubtitleSegment? {
         guard let index = model.index(of: segment), index + 1 < model.segments.count else { return nil }
         return model.segments[index + 1]
+    }
+}
+
+/// Keeps the hand-made sheet material on iOS 18 and steps out of the way on iOS 26,
+/// where the system has a better one of its own.
+private struct SystemSheetBackground: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *) {
+            content
+        } else {
+            content.presentationBackground(.ultraThinMaterial)
+        }
     }
 }
 

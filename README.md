@@ -209,6 +209,21 @@ nothing above the services knows which engine ran.
 FluidAudio is pinned to 0.13.7: from 0.14 it adds a binary xcframework target whose
 release archive does not download, which stops the whole project resolving.
 
+## Liquid Glass
+
+Adopted where it belongs and nowhere else. Liquid Glass is the material of the
+navigation layer - bars, toolbars, controls floating over something - and never of the
+content layer, so the cards in a scrolling list are deliberately not made of it.
+
+Three places use it: the caption size slider, the play button over the picture, and the
+style sheet's own background. `View.floatingGlass(in:interactive:)` in `AppTheme` is the
+only place that decides - `glassEffect` on iOS 26 and later, the hand-made translucency
+the app always had below that, so nothing changes for iOS 18.
+
+Glass carries its own edge, so the hairline borders went with it. The style sheet stops
+overriding its own background on iOS 26: setting it replaced the system's material with
+a flat copy of what it used to be.
+
 ## Privacy
 
 No account. No login. No backend. No cloud transcription. No analytics. No ads.

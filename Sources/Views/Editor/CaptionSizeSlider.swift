@@ -26,14 +26,15 @@ struct CaptionSizeSlider: View {
 
             GeometryReader { proxy in
                 ZStack(alignment: .bottom) {
-                    Capsule()
-                        .fill(.ultraThinMaterial)
-                        .overlay { Capsule().strokeBorder(AppTheme.hairline, lineWidth: 1) }
+                    // Holds the track's width open now that the material is behind the
+                    // stack rather than drawn as its first layer.
+                    Capsule().fill(.clear)
 
                     Capsule()
                         .fill(AppTheme.accent)
                         .frame(height: max(6, proxy.size.height * fraction))
                 }
+                .floatingGlass(in: Capsule())
                 .overlay(alignment: .bottom) {
                     Circle()
                         .fill(.white)

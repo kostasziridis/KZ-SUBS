@@ -73,12 +73,7 @@ struct VideoPreviewView<Overlay: View>: View {
                 .font(.system(size: 26, weight: .semibold))
                 .foregroundStyle(.white)
                 .frame(width: 66, height: 66)
-                .background {
-                    Circle().fill(.ultraThinMaterial)
-                }
-                .overlay {
-                    Circle().strokeBorder(Color.white.opacity(0.18), lineWidth: 1)
-                }
+                .floatingGlass(in: Circle(), interactive: true)
         }
         .buttonStyle(.plain)
         .disabled(!model.isReady)
