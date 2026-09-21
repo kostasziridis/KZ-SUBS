@@ -331,7 +331,10 @@ struct SubtitleEditSheet: View {
             Text(label)
                 .font(.footnote)
                 .foregroundStyle(AppTheme.secondaryText)
-                .frame(width: 44, alignment: .leading)
+                // Wide enough for a Greek word: "Έναρξη" broke across two lines in
+                // the 44pt box that fitted "Start".
+                .fixedSize()
+                .frame(width: 66, alignment: .leading)
 
             Text(TimecodeFormatter.precise(value))
                 .font(.body.monospacedDigit().weight(.medium))
