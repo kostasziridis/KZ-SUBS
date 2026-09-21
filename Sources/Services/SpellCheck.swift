@@ -10,6 +10,12 @@ import UIKit
 ///
 /// Decided per word rather than per project, because a Greek video says "DJI" and
 /// "Mavic" too.
+///
+/// Whether the system has a Greek dictionary is asked rather than assumed, because
+/// `availableLanguages` says it does and the behaviour says otherwise. Where it turns
+/// out to work, its suggestions are offered alongside ours; what counts as a mistake
+/// is still decided by our dictionary alone, so the same word is never a mistake on
+/// one phone and fine on another.
 enum SpellCheck {
 
     /// Which of the words given are not words at all.
@@ -24,10 +30,22 @@ enum SpellCheck {
 
     /// What the word was probably meant to be, best first.
     static func suggestions(for word: String, limit: Int = 4) async -> [String] {
-        if isGreek(word) {
-            return await GreekSpellChecker.shared.suggestions(for: word, limit: limit)
+        guard isGreek(word) else {
+            return await systemSuggestions(for: word, limit: limit)
         }
-        return await systemSuggestions(for: word, limit: limit)
+
+        var found = await GreekSpellChecker.shared.suggestions(for: word, limit: limit)
+
+        // Only worth asking where there is something behind the language, and only to
+        // add what ours did not think of.
+        if await systemKnowsGreek() {
+            for extra in await systemSuggestions(for: word, limit: limit, language: "el_GR")
+            where !found.contains(extra) {
+                found.append(extra)
+            }
+        }
+
+        return Array(found.prefix(limit))
     }
 
     /// Loads the Greek dictionary so the first word checked does not wait for it.
@@ -63,8 +81,8 @@ enum SpellCheck {
     }
 
     @MainActor
-    private static func systemSuggestions(for word: String, limit: Int) -> [String] {
-        guard let language = systemLanguage() else { return [] }
+    private static func systemSuggestions(for word: String, limit: Int, language: String? = nil) -> [String] {
+        guard let language = language ?? systemLanguage() else { return [] }
 
         let trimmed = word.trimmingCharacters(in: CharacterSet.punctuationCharacters.union(.whitespaces))
         let range = NSRange(location: 0, length: (trimmed as NSString).length)
@@ -82,6 +100,34 @@ enum SpellCheck {
         }
         return available.contains("en_US") ? "en_US" : available.first
     }
+
+    // MARK: - What the system can actually do
+
+    /// Whether the system's checker has a Greek dictionary behind it.
+    ///
+    /// `availableLanguages` lists `el_GR` on every iOS this has been tried on, and on
+    /// none of them does it flag so much as pure nonsense - while French, German,
+    /// Spanish, Italian and Russian all flag theirs. So the only trustworthy answer
+    /// comes from handing it a word that is certainly not one and seeing whether it
+    /// notices. Asked once.
+    @MainActor
+    private static func systemKnowsGreek() -> Bool {
+        if let known = greekSupport { return known }
+
+        let nonsense = "ξκλψδφγη"
+        let range = NSRange(location: 0, length: (nonsense as NSString).length)
+        let found = UITextChecker().rangeOfMisspelledWord(
+            in: nonsense, range: range, startingAt: 0, wrap: false, language: "el_GR"
+        )
+
+        let known = found.location != NSNotFound
+        greekSupport = known
+        AppLog.app.notice("System Greek spell checking: \(known ? "available" : "absent", privacy: .public)")
+        return known
+    }
+
+    @MainActor
+    private static var greekSupport: Bool?
 
     // MARK: - Script
 
