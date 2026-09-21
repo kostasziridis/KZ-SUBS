@@ -3,6 +3,8 @@ import SwiftUI
 /// Privacy, storage and version. Nothing technical, nothing to configure wrongly.
 struct SettingsView: View {
 
+    @State private var showsAcknowledgements = false
+
     @Environment(\.dismiss) private var dismiss
     @State private var usedBytes: Int64?
     @State private var isClearing = false
@@ -31,6 +33,7 @@ struct SettingsView: View {
             .scrollIndicators(.hidden)
             .appBackground()
             .navigationTitle("Settings")
+        .sheet(isPresented: $showsAcknowledgements) { acknowledgements }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -167,9 +170,63 @@ struct SettingsView: View {
                 Text("No account. No cloud. No analytics.")
                     .font(.caption2)
                     .foregroundStyle(AppTheme.tertiaryText)
+
+                Divider().overlay(AppTheme.hairline)
+
+                // Required by the licence the Greek dictionary is used under, and
+                // right in any case: it is someone else's work.
+                Button {
+                    showsAcknowledgements = true
+                } label: {
+                    HStack {
+                        Text("Acknowledgements")
+                            .font(.footnote)
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.caption2)
+                            .foregroundStyle(AppTheme.tertiaryText)
+                    }
+                }
+                .tint(AppTheme.accent)
             }
         }
     }
+
+    private var acknowledgements: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 14) {
+                    Text("Greek spelling dictionary")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.white)
+
+                    Text(Self.greekDictionaryNotice)
+                        .font(.footnote)
+                        .foregroundStyle(AppTheme.secondaryText)
+                        .textSelection(.enabled)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(20)
+            }
+            .appBackground()
+            .navigationTitle("Acknowledgements")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Done") { showsAcknowledgements = false }
+                        .tint(AppTheme.accent)
+                }
+            }
+        }
+        .preferredColorScheme(.dark)
+    }
+
+    /// Left in English on purpose: it names a licence and its authors.
+    private static let greekDictionaryNotice = """
+        el_GR 0.9 by Steve Stavropoulos, based on earlier work by Evripidis Papakostas,         with contributions from Γιώργος Γέγος and Nick Demou.
+
+        Used under the Mozilla Public License 1.1. The dictionary is tri-licensed         MPL 1.1 / GPL 2.0 / LGPL 2.1. Source: http://elspell.math.upatras.gr
+        """
 
     #if DEBUG
     /// Development only: a way to exercise the speech engine on a real device against

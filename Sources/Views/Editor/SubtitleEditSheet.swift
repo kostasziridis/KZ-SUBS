@@ -24,6 +24,10 @@ struct SubtitleEditSheet: View {
     @State private var baselineWords: [SubtitleWord] = []
     @State private var selectedWordID: SubtitleWord.ID?
     @State private var draftWord: String = ""
+    /// Words the dictionary does not have. Spelling only - a correctly spelled word in
+    /// the wrong place is not something any dictionary can see.
+    @State private var misspelled: Set<String> = []
+    @State private var suggestions: [String] = []
     @FocusState private var isEditingText: Bool
     @FocusState private var isEditingWord: Bool
 
@@ -56,6 +60,7 @@ struct SubtitleEditSheet: View {
         }
         .preferredColorScheme(.dark)
         .task(id: segment.id) { load() }
+        .task(id: words.map(\.word).joined(separator: " ")) { await checkSpelling() }
     }
 
     // MARK: - Text
@@ -129,6 +134,9 @@ struct SubtitleEditSheet: View {
                             Text(word.word)
                                 .font(.footnote.weight(.medium))
                                 .foregroundStyle(word.colorOverride?.color ?? .white)
+                                // Marked rather than corrected: the dictionary is not
+                                // sure enough to change anyone's words for them.
+                                .underline(misspelled.contains(word.word), pattern: .dot, color: .orange)
                                 .padding(.horizontal, 10)
                                 .padding(.vertical, 6)
                                 .background {
@@ -152,7 +160,9 @@ struct SubtitleEditSheet: View {
                 if let index = selectedIndex {
                     selectedWordEditor(at: index)
                 } else {
-                    Text("Tap a word to correct its spelling or colour it. Its timing stays put.")
+                    Text(misspelled.isEmpty
+                         ? "Tap a word to correct its spelling or colour it. Its timing stays put."
+                         : "Underlined words are not in the dictionary. Tap one to see suggestions.")
                         .font(.caption2)
                         .foregroundStyle(AppTheme.tertiaryText)
                 }
@@ -193,6 +203,25 @@ struct SubtitleEditSheet: View {
                               || draftWord == words[index].word)
             }
 
+            if !suggestions.isEmpty {
+                FlowRow(spacing: 8) {
+                    ForEach(suggestions, id: \.self) { suggestion in
+                        Button {
+                            draftWord = suggestion
+                            commitDraftWord()
+                        } label: {
+                            Text(suggestion)
+                                .font(.footnote.weight(.medium))
+                                .foregroundStyle(AppTheme.accent)
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 6)
+                                .background { Capsule().fill(AppTheme.accent.opacity(0.16)) }
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
+
             Text("Spoken at \(TimecodeFormatter.precise(words[index].startTime)) — unchanged by a correction.")
                 .font(.caption2)
                 .foregroundStyle(AppTheme.tertiaryText)
@@ -225,10 +254,27 @@ struct SubtitleEditSheet: View {
         if selectedWordID == word.id {
             selectedWordID = nil
             isEditingWord = false
+            suggestions = []
         } else {
             selectedWordID = word.id
             draftWord = word.word
+            suggestions = []
+            guard misspelled.contains(word.word) else { return }
+            Task {
+                let found = await SpellCheck.suggestions(for: word.word)
+                // The user may have moved on while the dictionary was being searched.
+                guard selectedWordID == word.id else { return }
+                suggestions = found
+            }
         }
+    }
+
+    private func checkSpelling() async {
+        guard !words.isEmpty else {
+            misspelled = []
+            return
+        }
+        misspelled = await SpellCheck.unknownWords(in: words.map(\.word))
     }
 
     private func commitDraftWord() {
@@ -253,6 +299,7 @@ struct SubtitleEditSheet: View {
 
         onChange(draft)
         isEditingWord = false
+        suggestions = []
     }
 
     private func setColour(_ colour: CaptionColor?, at index: Int) {

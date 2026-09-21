@@ -66,6 +66,9 @@ struct SubtitleEditorView: View {
             }
         }
         .task {
+            // The Greek dictionary takes a moment to unpack; do it now rather than
+            // when the first word is looked at.
+            SpellCheck.prepare()
             // Word highlighting needs finer steps than a scrubber does.
             player.observationInterval = 1.0 / 30.0
             player.load(url: model.project.videoURL, knownDuration: model.project.duration)

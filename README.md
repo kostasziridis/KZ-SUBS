@@ -129,6 +129,33 @@ keys for anything containing a number, and the real ones marked stale. The scrip
 undoes that and lists whatever still needs Greek. An ordinary build leaves the
 catalogue alone, so this is only needed when strings change.
 
+## Spelling
+
+Misspelled words in the subtitle editor get a dotted underline, and tapping one offers
+what it was probably meant to be. Correcting a word never moves its timing, so the
+styles that light up words one by one keep working.
+
+Greek carries its own dictionary. iOS lists Greek among its spell-checking languages
+but has nothing behind it - it does not flag even pure nonsense, while French, German,
+Spanish, Italian and Russian all work - and Apple's on-device language model does not
+speak Greek at all (24 languages, none of them `el`). Everything other than Greek goes
+to the system checker, which is good.
+
+`Sources/Resources/GreekWords.bin` holds 828,806 words in 1.6 MB. It is built from
+`Tools/el_GR.dic` with:
+
+```
+python3 Tools/build-greek-dictionary.py
+```
+
+That dictionary is el_GR 0.9 from the elspell project, tri-licensed MPL 1.1 / GPL 2.0 /
+LGPL 2.1; we use it under the MPL, and Settings → Acknowledgements says so. The copy in
+`Tools/` is the unmodified upstream file, kept in the repository so the build is
+reproducible and the source stays available as the licence asks.
+
+It only knows whether a word exists. A correctly spelled word in the wrong place - the
+mistake speech recognition makes most - looks perfectly fine to it.
+
 ## Privacy
 
 No account. No login. No backend. No cloud transcription. No analytics. No ads.
