@@ -79,8 +79,17 @@ struct SubtitleEditorView: View {
             model.applyWordLimit(limit)
         }
         .task(id: model.segments.map(\.text).joined(separator: "\u{1}")) {
-            // Whenever the words change, including after a correction, so the count is
-            // never telling the user about a mistake they have already fixed.
+            // Not while the review is open. Applying a correction changes a subtitle,
+            // which would otherwise start the whole scan again underneath the list the
+            // user is working through - the fix they just made pulling the list out
+            // from under them.
+            guard !showsSpelling else { return }
+            spelling.check(model.segments)
+        }
+        .onChange(of: showsSpelling) { _, isOpen in
+            // Catching up on whatever changed while it was open, now that nobody is
+            // looking at the list.
+            guard !isOpen else { return }
             spelling.check(model.segments)
         }
         .onDisappear {

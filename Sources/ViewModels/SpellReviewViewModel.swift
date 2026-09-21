@@ -39,6 +39,10 @@ final class SpellReviewViewModel {
 
     var count: Int { findings.count }
 
+    /// Only worth a spinner when there is nothing to show yet. A later pass keeps the
+    /// findings on screen while it runs, so the list does not blink on every change.
+    var showsProgress: Bool { isChecking && findings.isEmpty }
+
     // MARK: - Checking
 
     /// Looks over every subtitle. Suggestions are fetched for each finding as it is

@@ -30,7 +30,7 @@ struct SpellReviewView: View {
 
     @ViewBuilder
     private var content: some View {
-        if model.isChecking {
+        if model.showsProgress {
             VStack(spacing: 12) {
                 ProgressView().controlSize(.large).tint(AppTheme.accent)
                 Text("Checking every subtitle…")
@@ -38,7 +38,7 @@ struct SpellReviewView: View {
                     .foregroundStyle(AppTheme.secondaryText)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-        } else if model.findings.isEmpty {
+        } else if model.findings.isEmpty, model.hasChecked {
             allClear
         } else {
             list
