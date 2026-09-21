@@ -48,7 +48,10 @@ struct CaptionFlowLayout: Layout {
             + CGFloat(max(0, laid.count - 1)) * lineSpacing
         let width = laid.map(\.width).max() ?? 0
 
-        return CGSize(width: min(width, maxWidth), height: height)
+        // Not clamped to the proposal. A word wider than the line cannot be broken, so
+        // it is placed at its full width whatever this says - and reporting less than
+        // was drawn is how it ended up cut off at the edges of the video.
+        return CGSize(width: width, height: height)
     }
 
     func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {

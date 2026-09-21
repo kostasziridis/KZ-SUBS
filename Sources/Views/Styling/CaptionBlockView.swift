@@ -205,6 +205,28 @@ enum CaptionLayout {
     /// The widest a caption may be, as a share of the frame.
     static let maximumWidthFraction: CGFloat = 0.9
 
+    /// And the tallest.
+    static let maximumHeightFraction: CGFloat = 0.94
+
+    /// How much a caption has to shrink to fit inside the picture. 1 when it already
+    /// does, which is almost always.
+    ///
+    /// Without this, `center` has nowhere to put a caption taller than the frame: it
+    /// clamps to the middle and the ends are cut off, top and bottom at once. Long
+    /// closing lines are where this shows up, so it went unnoticed until the end of a
+    /// video. Shrinking is the lesser evil - a caption a little smaller than its
+    /// neighbours still reads, half a caption does not.
+    static func fitScale(captionSize: CGSize, frameSize: CGSize) -> CGFloat {
+        guard captionSize.width > 0, captionSize.height > 0,
+              frameSize.width > 0, frameSize.height > 0 else { return 1 }
+
+        return min(
+            1,
+            frameSize.width * maximumWidthFraction / captionSize.width,
+            frameSize.height * maximumHeightFraction / captionSize.height
+        )
+    }
+
     /// The centre point for a caption of `captionSize` inside `frameSize`, pulled back
     /// at the edges so it always stays wholly on screen.
     static func center(

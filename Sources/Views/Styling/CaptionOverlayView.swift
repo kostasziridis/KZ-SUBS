@@ -56,6 +56,10 @@ struct CaptionOverlayView: View {
                     .overlay { adjustingOutline }
                     .overlay { smallCaptionHint }
                     .overlay { editingOutline }
+                    // Never taller than the picture. The hit target is deliberately
+                    // left at the unscaled size, so a shrunk caption is no harder to
+                    // grab than it was.
+                    .scaleEffect(CaptionLayout.fitScale(captionSize: captionSize, frameSize: content.size))
                     // A small caption is a small target. The padding is symmetric, so
                     // it grows what can be grabbed without moving what is drawn.
                     .padding(editing != nil ? 22 : 0)
@@ -90,7 +94,11 @@ struct CaptionOverlayView: View {
     }
 
     private func placement(in rect: CGRect) -> CGPoint {
-        let center = CaptionLayout.center(style: style, captionSize: captionSize, frameSize: rect.size)
+        // Placed by what is drawn, not by what was laid out: a caption that had to
+        // shrink now occupies less of the frame, and may no longer need clamping.
+        let scale = CaptionLayout.fitScale(captionSize: captionSize, frameSize: rect.size)
+        let drawn = CGSize(width: captionSize.width * scale, height: captionSize.height * scale)
+        let center = CaptionLayout.center(style: style, captionSize: drawn, frameSize: rect.size)
         return CGPoint(x: rect.minX + center.x, y: rect.minY + center.y)
     }
 

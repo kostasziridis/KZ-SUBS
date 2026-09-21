@@ -251,18 +251,26 @@ actor VideoExporter {
     ) -> [PositionedCaption] {
 
         frames.map { frame in
+            // The same rule the preview applies, so a caption that fits on screen fits
+            // in the file and one that had to shrink shrinks by the same amount.
+            let scale = CaptionLayout.fitScale(captionSize: frame.size, frameSize: renderSize)
+            let drawn = CGSize(width: frame.size.width * scale, height: frame.size.height * scale)
+
             let center = CaptionLayout.center(
                 style: style,
-                captionSize: frame.size,
+                captionSize: drawn,
                 frameSize: renderSize
             )
 
-            let originX = center.x - frame.size.width / 2
-            let originYFromTop = center.y - frame.size.height / 2
-            let originYFromBottom = renderSize.height - originYFromTop - frame.size.height
+            let originX = center.x - drawn.width / 2
+            let originYFromTop = center.y - drawn.height / 2
+            let originYFromBottom = renderSize.height - originYFromTop - drawn.height
 
-            let image = CIImage(cgImage: frame.image)
-                .transformed(by: CGAffineTransform(translationX: originX, y: originYFromBottom))
+            var image = CIImage(cgImage: frame.image)
+            if scale < 1 {
+                image = image.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
+            }
+            image = image.transformed(by: CGAffineTransform(translationX: originX, y: originYFromBottom))
 
             return PositionedCaption(image: image, start: frame.start, end: frame.end)
         }
