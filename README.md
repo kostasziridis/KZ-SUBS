@@ -156,6 +156,21 @@ reproducible and the source stays available as the licence asks.
 It only knows whether a word exists. A correctly spelled word in the wrong place - the
 mistake speech recognition makes most - looks perfectly fine to it.
 
+## Vocabulary
+
+Settings → Vocabulary holds names the engine would otherwise guess at. They are handed
+to it as Whisper's conditioning prompt before it listens, which biases it towards those
+spellings - the only way to teach it a name without retraining anything, and the only
+correction in the app that happens *before* the mistake rather than after.
+
+It works in any language, Greek included, because it steers the recognition itself
+rather than the text that comes out.
+
+The prompt is short: 111 tokens, which is roughly 25-30 Greek words. Whatever does not
+fit is dropped from the bottom of the list, so the order on screen is the order of
+importance. `WhisperService.vocabularyPrompt` is separated from the tokenizer so the
+trimming rule can be tested without loading a 600 MB model.
+
 ## Privacy
 
 No account. No login. No backend. No cloud transcription. No analytics. No ads.

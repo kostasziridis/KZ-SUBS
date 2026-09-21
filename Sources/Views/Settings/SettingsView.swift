@@ -4,6 +4,7 @@ import SwiftUI
 struct SettingsView: View {
 
     @State private var showsAcknowledgements = false
+    @State private var showsVocabulary = false
 
     @Environment(\.dismiss) private var dismiss
     @State private var usedBytes: Int64?
@@ -17,6 +18,8 @@ struct SettingsView: View {
                     PrivacyCard()
 
                     accuracyCard
+
+                    vocabularyCard
 
                     storageCard
 
@@ -34,6 +37,7 @@ struct SettingsView: View {
             .appBackground()
             .navigationTitle("Settings")
         .sheet(isPresented: $showsAcknowledgements) { acknowledgements }
+        .sheet(isPresented: $showsVocabulary) { VocabularyView() }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -103,6 +107,51 @@ struct SettingsView: View {
                 }
             }
         }
+    }
+
+    /// Sits next to accuracy rather than in About, because that is what it is: the one
+    /// setting that changes what the engine writes, instead of what happens afterwards.
+    private var vocabularyCard: some View {
+        GlassCard(radius: AppTheme.controlRadius, padding: 18) {
+            Button {
+                showsVocabulary = true
+            } label: {
+                HStack(alignment: .top, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Vocabulary")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.white)
+                        Text("Teach it names it would otherwise guess at, so they come out spelled right.")
+                            .font(.caption2)
+                            .foregroundStyle(AppTheme.secondaryText)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+
+                    Spacer(minLength: 0)
+
+                    HStack(spacing: 6) {
+                        if !vocabularyCount.isEmpty {
+                            Text(vocabularyCount)
+                                .font(.footnote.monospacedDigit())
+                                .foregroundStyle(AppTheme.secondaryText)
+                        }
+                        Image(systemName: "chevron.right")
+                            .font(.caption2)
+                            .foregroundStyle(AppTheme.tertiaryText)
+                    }
+                }
+                // Without this only the words themselves are tappable, and the gaps
+                // between them - most of the row - quietly are not.
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
+    private var vocabularyCount: String {
+        let count = VocabularyStore.shared.terms.count
+        return count == 0 ? "" : "\(count)"
     }
 
     private var storageCard: some View {

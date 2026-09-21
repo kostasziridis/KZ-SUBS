@@ -57,6 +57,7 @@
 		AAB75A58B3EEBA62A063F6F3 /* VideoImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF4FEA4A02EBB64AC885ED01 /* VideoImportView.swift */; };
 		B12E2DE02D09D5E895611482 /* VideoExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B2970E93580346070C4DB52 /* VideoExporter.swift */; };
 		B16B64284601B72729894F4E /* CaptionSizeSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6F68DAF361F6949F4B8C785 /* CaptionSizeSlider.swift */; };
+		B347BE146558DC86DE6BE8D6 /* VocabularyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C08FCB406F74C2EB6EC6064 /* VocabularyStore.swift */; };
 		B6C6A7F9C55210339C47AE4D /* PrivacyBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230DFEFB5C7C8DA5C4491C92 /* PrivacyBadge.swift */; };
 		C20294216ED9B57B63E5D709 /* WhisperKit in Frameworks */ = {isa = PBXBuildFile; productRef = 46774DD9F39F76DA0F14D322 /* WhisperKit */; };
 		C744CD288E48BDCD848D3C89 /* VideoDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A3EE9D6CC6E3CB4F7E4786 /* VideoDetailsView.swift */; };
@@ -78,6 +79,7 @@
 		EE46453123AC39DBFDEC6D89 /* CaptionBlockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BD373846825C28D685F602E /* CaptionBlockView.swift */; };
 		EE824AE267710344B65683E7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DAABAF8958A49FEFD952EE41 /* Assets.xcassets */; };
 		F0FEC39CA7D7D6FD50A79544 /* AudioExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5784FCDBDEE560351FC1CEE2 /* AudioExtractor.swift */; };
+		F4AED165329AC3B5B87FE571 /* VocabularyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7675698E6C2D5DAC6072E6F3 /* VocabularyView.swift */; };
 		F60D1AC8FBCDEECD7A3E04EF /* ProjectStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D17916ABC506327143963C40 /* ProjectStore.swift */; };
 		F743BC340EA452E623D3B24C /* SpellCheck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 327617DC02B337AC2CA87291 /* SpellCheck.swift */; };
 		F7E113F7AAE3F3FE148FF9AB /* StringCaptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9741B1504B93855FF77084A3 /* StringCaptions.swift */; };
@@ -119,6 +121,7 @@
 		605479A04469AFEF9FAA831E /* PreviewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewData.swift; sourceTree = "<group>"; };
 		60E157757014BF9E9B5D346F /* SubtitleListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtitleListView.swift; sourceTree = "<group>"; };
 		75EA5DDAEB3766F45CB9F6C0 /* VideoPlayerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayerViewModel.swift; sourceTree = "<group>"; };
+		7675698E6C2D5DAC6072E6F3 /* VocabularyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyView.swift; sourceTree = "<group>"; };
 		79A2281B264938381EADBB8C /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		7D878D98F57F5A22A32AF8DC /* CaptionStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionStyle.swift; sourceTree = "<group>"; };
 		7D9EAB09E40C988162B09046 /* AppError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppError.swift; sourceTree = "<group>"; };
@@ -128,6 +131,7 @@
 		93DDD874F16F66285646FD85 /* ThumbnailGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailGenerator.swift; sourceTree = "<group>"; };
 		9741B1504B93855FF77084A3 /* StringCaptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringCaptions.swift; sourceTree = "<group>"; };
 		99B6BE21B5622E5290930FD1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		9C08FCB406F74C2EB6EC6064 /* VocabularyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyStore.swift; sourceTree = "<group>"; };
 		A12ECD3BB0E906A5E145C538 /* SpeechTranscript.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechTranscript.swift; sourceTree = "<group>"; };
 		A242B8769ADE1167916EFA85 /* GreekSpellChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GreekSpellChecker.swift; sourceTree = "<group>"; };
 		A37614448D17F8209A0250C5 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
@@ -329,6 +333,7 @@
 				93DDD874F16F66285646FD85 /* ThumbnailGenerator.swift */,
 				4B2970E93580346070C4DB52 /* VideoExporter.swift */,
 				D1E6F4CAB10291C058697721 /* VideoImporter.swift */,
+				9C08FCB406F74C2EB6EC6064 /* VocabularyStore.swift */,
 				B45129D3F6D522F096BC5780 /* WhisperService.swift */,
 				5DA7C05F1978FBF082322489 /* WordAligner.swift */,
 			);
@@ -374,6 +379,7 @@
 			children = (
 				3F110CE168A9D1A18C8B424B /* SettingsView.swift */,
 				BA0E962521B7271E74F4C972 /* SpeechCheckView.swift */,
+				7675698E6C2D5DAC6072E6F3 /* VocabularyView.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -556,6 +562,8 @@
 				348C90964598D09ED31CFE8E /* VideoImporter.swift in Sources */,
 				8C787CFE6AF24670A3CED4ED /* VideoPlayerViewModel.swift in Sources */,
 				4EFB6356BFEA7869FEE97B6F /* VideoPreviewView.swift in Sources */,
+				B347BE146558DC86DE6BE8D6 /* VocabularyStore.swift in Sources */,
+				F4AED165329AC3B5B87FE571 /* VocabularyView.swift in Sources */,
 				76C83A0BD87C201381B3A582 /* WaveformView.swift in Sources */,
 				A1E03C37E1EAA68BDB881FDE /* WhisperService.swift in Sources */,
 				46011CDC968CDD28959DB204 /* WordAligner.swift in Sources */,

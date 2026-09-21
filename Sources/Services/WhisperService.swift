@@ -72,17 +72,75 @@ actor WhisperService {
 
     // MARK: - Transcription
 
+    /// The user's own words, as the bit of context the engine reads before it listens.
+    ///
+    /// Whisper takes a short piece of text and leans towards the spellings in it, which
+    /// is the only way to teach it a name without retraining anything. A comma-separated
+    /// list is what that mechanism was built for.
+    private func promptTokens(for vocabulary: [String]) -> [Int]? {
+        guard !vocabulary.isEmpty, let tokenizer = whisperKit?.tokenizer else { return nil }
+
+        let tokens = Self.vocabularyPrompt(
+            vocabulary,
+            // What the decoder will accept before it starts trimming for itself.
+            limit: (Constants.maxTokenContext / 2) - 1,
+            encode: { text in
+                tokenizer.encode(text: text)
+                    .filter { $0 < tokenizer.specialTokens.specialTokenBegin }
+            }
+        )
+
+        if tokens.words < vocabulary.count {
+            AppLog.speech.notice(
+                "Vocabulary: \(tokens.words, privacy: .public) of \(vocabulary.count, privacy: .public) words fit the prompt"
+            )
+        }
+        return tokens.tokens.isEmpty ? nil : tokens.tokens
+    }
+
+    /// Builds the prompt, and says how many words made it in.
+    ///
+    /// Trimmed from this end rather than the engine's: WhisperKit keeps the *last*
+    /// tokens of an over-long prompt, so left to itself it would throw away whichever
+    /// words the user put first - the ones they thought mattered most. Separated from
+    /// the tokenizer so the rule can be checked without loading a 600 MB model.
+    static func vocabularyPrompt(
+        _ vocabulary: [String],
+        limit: Int,
+        encode: (String) -> [Int]
+    ) -> (tokens: [Int], words: Int) {
+        var tokens: [Int] = []
+        var used = 0
+
+        for (index, term) in vocabulary.enumerated() {
+            let trimmed = term.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !trimmed.isEmpty else { continue }
+
+            // Commas between them, because a list is what the mechanism expects; the
+            // first word carries none so the prompt does not open with punctuation.
+            let encoded = encode(used == 0 ? trimmed : ", \(trimmed)")
+            guard tokens.count + encoded.count <= limit else { break }
+
+            tokens += encoded
+            used = index + 1
+        }
+
+        return (tokens, used)
+    }
+
     /// Transcribes a local audio file.
     ///
     /// - Parameters:
     ///   - audioURL: a local audio file the engine can read.
     ///   - language: `nil` language code means let the engine detect it.
+    ///   - vocabulary: words to bias the engine towards, in order of importance.
     ///   - onProgress: coarse 0...1 progress, driven by how far through the audio the
     ///     engine has moved.
     /// - Throws: `CancellationError` if the surrounding task is cancelled.
     func transcribe(
         audioURL: URL,
         language: AppLanguage,
+        vocabulary: [String] = [],
         wordTimestamps: Bool = true,
         onProgress: @escaping @Sendable (Double) -> Void
     ) async throws -> SpeechTranscript {
@@ -99,6 +157,7 @@ actor WhisperService {
             detectLanguage: language.languageCode == nil,
             skipSpecialTokens: true,
             wordTimestamps: wordTimestamps,
+            promptTokens: promptTokens(for: vocabulary),
             chunkingStrategy: .vad
         )
 

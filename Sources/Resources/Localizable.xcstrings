@@ -155,6 +155,16 @@
         }
       }
     },
+    "Add a word": {
+      "localizations": {
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Προσθέστε μια λέξη"
+          }
+        }
+      }
+    },
     "Add or remove words here, or press Return for a new line.": {
       "localizations": {
         "el": {
@@ -861,6 +871,16 @@
         }
       }
     },
+    "Names the app would otherwise guess at — people, places, brands, anything it has not heard before.": {
+      "localizations": {
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ονόματα που αλλιώς η εφαρμογή θα μάντευε — ανθρώπων, τόπων, μαρκών, ό,τι δεν έχει ξανακούσει."
+          }
+        }
+      }
+    },
     "Next": {
       "localizations": {
         "el": {
@@ -917,6 +937,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Δεν υπάρχουν υπότιτλοι ακόμη"
+          }
+        }
+      }
+    },
+    "No words yet": {
+      "localizations": {
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Δεν υπάρχουν λέξεις ακόμη"
           }
         }
       }
@@ -1544,12 +1574,32 @@
         }
       }
     },
+    "Teach it names it would otherwise guess at, so they come out spelled right.": {
+      "localizations": {
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Μάθετέ της ονόματα που αλλιώς θα μάντευε, ώστε να γράφονται σωστά."
+          }
+        }
+      }
+    },
     "Text": {
       "localizations": {
         "el": {
           "stringUnit": {
             "state": "translated",
             "value": "Κείμενο"
+          }
+        }
+      }
+    },
+    "That is as many as the app can use at once. Remove one to add another.": {
+      "localizations": {
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Τόσες μπορεί να χρησιμοποιήσει η εφαρμογή κάθε φορά. Αφαιρέστε μία για να προσθέσετε άλλη."
           }
         }
       }
@@ -1744,6 +1794,16 @@
         }
       }
     },
+    "Used the next time you make subtitles. Words near the top count most.": {
+      "localizations": {
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Θα χρησιμοποιηθούν την επόμενη φορά που θα φτιάξετε υπότιτλους. Οι πρώτες μετράνε περισσότερο."
+          }
+        }
+      }
+    },
     "Version": {
       "localizations": {
         "el": {
@@ -1780,6 +1840,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Τα βίντεο που υποτιτλίζετε θα εμφανίζονται εδώ."
+          }
+        }
+      }
+    },
+    "Vocabulary": {
+      "localizations": {
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Λεξιλόγιο"
           }
         }
       }

@@ -107,7 +107,8 @@ final class TranscriptionViewModel {
 
                 let transcript = try await WhisperService.shared.transcribe(
                     audioURL: audioURL,
-                    language: self.language
+                    language: self.language,
+                    vocabulary: VocabularyStore.shared.terms
                 ) { [weak self] fraction in
                     Task { @MainActor in
                         guard let self, case .transcribing = self.state else { return }
