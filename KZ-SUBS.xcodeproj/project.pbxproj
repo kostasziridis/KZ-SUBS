@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		00719329C28F51C2DB576C17 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41C60A348AFF5E624578FFBC /* SplashView.swift */; };
 		04BD38592561588B69BFBC90 /* TimecodeFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13FAA15E113E573701DC205E /* TimecodeFormatter.swift */; };
+		04FAABBE7684D98844A5B0A7 /* FluidAudio in Frameworks */ = {isa = PBXBuildFile; productRef = 4A834CC4C2C4DE919D1605D5 /* FluidAudio */; };
 		06565AD5881D48E8263A3420 /* PlayerLayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8214957F0D5A2140491B8B43 /* PlayerLayerView.swift */; };
 		0705FBFAD31818CA8598F042 /* CaptionColorPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF23120271E2A52CCE372552 /* CaptionColorPalette.swift */; };
 		08A7825E4708C23FDEF3FB73 /* InfoPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224F9870DB346DA027E58E63 /* InfoPill.swift */; };
@@ -47,6 +48,7 @@
 		81A457FBF2D3300DF73540D5 /* SubtitleProject.swift in Sources */ = {isa = PBXBuildFile; fileRef = C85FD6A8EE404260D85030C4 /* SubtitleProject.swift */; };
 		8278D8D9AB33E37321791382 /* VideoAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29158593A02F605B55897DA2 /* VideoAsset.swift */; };
 		8658D9D13A6B8702115A44AD /* SubtitleRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4384EFCFDDD2231C6BD252A0 /* SubtitleRow.swift */; };
+		89BA9B3D54722D10EFDB78BD /* SpeechEngineChoice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9805E863F35B45EE72158251 /* SpeechEngineChoice.swift */; };
 		8A68B2ED7630EED6DEF825A6 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 79A2281B264938381EADBB8C /* Localizable.xcstrings */; };
 		8C787CFE6AF24670A3CED4ED /* VideoPlayerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75EA5DDAEB3766F45CB9F6C0 /* VideoPlayerViewModel.swift */; };
 		8F88EC02C5CE087AACE84349 /* ModelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AECE6B1A0E3FB728E69E4391 /* ModelManager.swift */; };
@@ -63,6 +65,7 @@
 		C744CD288E48BDCD848D3C89 /* VideoDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A3EE9D6CC6E3CB4F7E4786 /* VideoDetailsView.swift */; };
 		CAF0A2BF18833335E8A89AF4 /* ProjectCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7AC70134DB4D3082312D23E /* ProjectCard.swift */; };
 		CBE152B2AF1689CD242FE20B /* SRTExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8638215871BBC74F908BE14 /* SRTExporter.swift */; };
+		CC5086E9A504E749654E9679 /* ParakeetService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8280070D798B899C380E361 /* ParakeetService.swift */; };
 		CC8DDF012A890CB7B0F1A935 /* SubtitleSegmenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF84E4654CF403EAC067FBE9 /* SubtitleSegmenter.swift */; };
 		CF5029BFDAFBA7EA337750E2 /* SubtitleEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8360728997C0E83D4B396253 /* SubtitleEditorView.swift */; };
 		D01465E9C7111BFC737317BB /* CaptionStylePreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2286AC2C18FA3BE0A5ED27B1 /* CaptionStylePreview.swift */; };
@@ -130,6 +133,7 @@
 		89CC9CCB5DE7E64E29C0E16A /* CaptionVideoCompositor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionVideoCompositor.swift; sourceTree = "<group>"; };
 		93DDD874F16F66285646FD85 /* ThumbnailGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailGenerator.swift; sourceTree = "<group>"; };
 		9741B1504B93855FF77084A3 /* StringCaptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringCaptions.swift; sourceTree = "<group>"; };
+		9805E863F35B45EE72158251 /* SpeechEngineChoice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechEngineChoice.swift; sourceTree = "<group>"; };
 		99B6BE21B5622E5290930FD1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		9C08FCB406F74C2EB6EC6064 /* VocabularyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyStore.swift; sourceTree = "<group>"; };
 		A12ECD3BB0E906A5E145C538 /* SpeechTranscript.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechTranscript.swift; sourceTree = "<group>"; };
@@ -139,6 +143,7 @@
 		AECE6B1A0E3FB728E69E4391 /* ModelManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelManager.swift; sourceTree = "<group>"; };
 		AF4FEA4A02EBB64AC885ED01 /* VideoImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoImportView.swift; sourceTree = "<group>"; };
 		B45129D3F6D522F096BC5780 /* WhisperService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhisperService.swift; sourceTree = "<group>"; };
+		B8280070D798B899C380E361 /* ParakeetService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParakeetService.swift; sourceTree = "<group>"; };
 		B8638215871BBC74F908BE14 /* SRTExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SRTExporter.swift; sourceTree = "<group>"; };
 		BA0E962521B7271E74F4C972 /* SpeechCheckView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechCheckView.swift; sourceTree = "<group>"; };
 		C61FA369AACF69E0CF4A74C7 /* ExportViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportViewModel.swift; sourceTree = "<group>"; };
@@ -173,6 +178,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C20294216ED9B57B63E5D709 /* WhisperKit in Frameworks */,
+				04FAABBE7684D98844A5B0A7 /* FluidAudio in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -325,7 +331,9 @@
 				89CC9CCB5DE7E64E29C0E16A /* CaptionVideoCompositor.swift */,
 				A242B8769ADE1167916EFA85 /* GreekSpellChecker.swift */,
 				AECE6B1A0E3FB728E69E4391 /* ModelManager.swift */,
+				B8280070D798B899C380E361 /* ParakeetService.swift */,
 				D17916ABC506327143963C40 /* ProjectStore.swift */,
+				9805E863F35B45EE72158251 /* SpeechEngineChoice.swift */,
 				327617DC02B337AC2CA87291 /* SpellCheck.swift */,
 				B8638215871BBC74F908BE14 /* SRTExporter.swift */,
 				243902D51A8A21F685419131 /* StorageManager.swift */,
@@ -433,6 +441,7 @@
 			name = KZSubs;
 			packageProductDependencies = (
 				46774DD9F39F76DA0F14D322 /* WhisperKit */,
+				4A834CC4C2C4DE919D1605D5 /* FluidAudio */,
 			);
 			productName = KZSubs;
 			productReference = 591D3381A6D4E4C196AA911D /* KZSubs.app */;
@@ -464,6 +473,7 @@
 			mainGroup = E9705BAC739ED0048D44DF4C;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
+				D83647CBE536D6D682A5CBC0 /* XCRemoteSwiftPackageReference "FluidAudio" */,
 				14206E3AACF209115FF28724 /* XCRemoteSwiftPackageReference "WhisperKit" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -527,6 +537,7 @@
 				776FC77CD268756E22849885 /* KZSubsLogo.swift in Sources */,
 				8F88EC02C5CE087AACE84349 /* ModelManager.swift in Sources */,
 				29EF10C3DB0D399E4305108F /* ModelSetupView.swift in Sources */,
+				CC5086E9A504E749654E9679 /* ParakeetService.swift in Sources */,
 				06565AD5881D48E8263A3420 /* PlayerLayerView.swift in Sources */,
 				FA808F0162DFF4077FCC9F4F /* PreviewData.swift in Sources */,
 				B6C6A7F9C55210339C47AE4D /* PrivacyBadge.swift in Sources */,
@@ -536,6 +547,7 @@
 				CBE152B2AF1689CD242FE20B /* SRTExporter.swift in Sources */,
 				18AF085D66A91CBBDE22CCA7 /* SettingsView.swift in Sources */,
 				77231291AFFF2BDC266CE4DA /* SpeechCheckView.swift in Sources */,
+				89BA9B3D54722D10EFDB78BD /* SpeechEngineChoice.swift in Sources */,
 				787524D9EB60E2E7303CED7D /* SpeechTranscript.swift in Sources */,
 				F743BC340EA452E623D3B24C /* SpellCheck.swift in Sources */,
 				00719329C28F51C2DB576C17 /* SplashView.swift in Sources */,
@@ -789,6 +801,14 @@
 				minimumVersion = 1.1.0;
 			};
 		};
+		D83647CBE536D6D682A5CBC0 /* XCRemoteSwiftPackageReference "FluidAudio" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/FluidInference/FluidAudio.git";
+			requirement = {
+				kind = exactVersion;
+				version = 0.13.7;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -796,6 +816,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 14206E3AACF209115FF28724 /* XCRemoteSwiftPackageReference "WhisperKit" */;
 			productName = WhisperKit;
+		};
+		4A834CC4C2C4DE919D1605D5 /* FluidAudio */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D83647CBE536D6D682A5CBC0 /* XCRemoteSwiftPackageReference "FluidAudio" */;
+			productName = FluidAudio;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

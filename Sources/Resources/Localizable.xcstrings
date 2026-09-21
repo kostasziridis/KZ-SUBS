@@ -125,6 +125,16 @@
         }
       }
     },
+    "A smaller, faster model. Worth trying if the standard one mishears you.": {
+      "localizations": {
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ένα μικρότερο και πιο γρήγορο μοντέλο. Αξίζει δοκιμή αν η βασική σας παρακούει."
+          }
+        }
+      }
+    },
     "About": {
       "localizations": {
         "el": {
@@ -231,6 +241,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Επιτρέψτε στο KZ-SUBS να προσθέτει βίντεο στη συλλογή σας από τις Ρυθμίσεις, για να αποθηκεύσετε το βίντεό σας."
+          }
+        }
+      }
+    },
+    "Alternative engine": {
+      "localizations": {
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Εναλλακτική μηχανή"
           }
         }
       }
@@ -605,6 +625,16 @@
         }
       }
     },
+    "Each engine downloads once, the first time you use it.": {
+      "localizations": {
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Κάθε μηχανή κατεβαίνει μία φορά, την πρώτη φορά που τη χρησιμοποιείτε."
+          }
+        }
+      }
+    },
     "Edit": {
       "localizations": {
         "el": {
@@ -794,6 +824,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Καραόκε"
+          }
+        }
+      }
+    },
+    "Kept, but the alternative engine cannot be told about words beforehand.": {
+      "localizations": {
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Διατηρείται, αλλά η εναλλακτική μηχανή δεν μπορεί να ενημερωθεί για λέξεις από πριν."
           }
         }
       }
@@ -1324,6 +1364,16 @@
         }
       }
     },
+    "Speech engine": {
+      "localizations": {
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Μηχανή αναγνώρισης"
+          }
+        }
+      }
+    },
     "Split in two": {
       "localizations": {
         "el": {
@@ -1380,6 +1430,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Κανονική"
+          }
+        }
+      }
+    },
+    "Standard engine": {
+      "localizations": {
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Βασική μηχανή"
           }
         }
       }
@@ -1614,6 +1674,16 @@
         }
       }
     },
+    "The one the app has always used. Accurate, and the only one that can use your vocabulary.": {
+      "localizations": {
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Αυτή που χρησιμοποιεί πάντα η εφαρμογή. Ακριβής, και η μόνη που αξιοποιεί το λεξιλόγιό σας."
+          }
+        }
+      }
+    },
     "The one-time setup could not finish. Check your connection and try again — after this, subtitles work offline.": {
       "localizations": {
         "el": {
@@ -1730,6 +1800,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Δοκιμή ξανά"
+          }
+        }
+      }
+    },
+    "Two ways of listening. They mishear different things, so try the other one if a video comes out badly.": {
+      "localizations": {
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Δύο τρόποι ακρόασης. Κάνουν διαφορετικά λάθη, οπότε δοκιμάστε την άλλη αν ένα βίντεο δεν βγει καλά."
           }
         }
       }

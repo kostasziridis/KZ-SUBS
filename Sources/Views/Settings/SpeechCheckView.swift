@@ -240,7 +240,11 @@ final class SpeechCheckViewModel {
             defer { self.task = nil }
 
             do {
-                try await WhisperService.shared.prepare { [weak self] preparation in
+                // Whichever engine is selected, so this screen doubles as the way to
+                // compare them: same clip, same expected text, different listener.
+                let engine = SpeechEngineChoice.current
+
+                let onPreparation: @Sendable (ModelPreparation) -> Void = { [weak self] preparation in
                     Task { @MainActor in
                         guard let self else { return }
                         switch preparation {
@@ -252,16 +256,34 @@ final class SpeechCheckViewModel {
                     }
                 }
 
+                switch engine {
+                case .whisper: try await WhisperService.shared.prepare(onProgress: onPreparation)
+                case .parakeet: try await ParakeetService.shared.prepare(onProgress: onPreparation)
+                }
+
                 try Task.checkCancellation()
                 self.state = .transcribing(progress: 0)
 
-                let result = try await WhisperService.shared.transcribe(
-                    audioURL: url,
-                    language: fixture.language
-                ) { [weak self] fraction in
+                let onTranscriptionProgress: @Sendable (Double) -> Void = { [weak self] fraction in
                     Task { @MainActor in
                         self?.state = .transcribing(progress: fraction)
                     }
+                }
+
+                let result: SpeechTranscript
+                switch engine {
+                case .whisper:
+                    result = try await WhisperService.shared.transcribe(
+                        audioURL: url,
+                        language: fixture.language,
+                        onProgress: onTranscriptionProgress
+                    )
+                case .parakeet:
+                    result = try await ParakeetService.shared.transcribe(
+                        audioURL: url,
+                        language: fixture.language,
+                        onProgress: onTranscriptionProgress
+                    )
                 }
 
                 self.transcript = result

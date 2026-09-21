@@ -171,6 +171,37 @@ fit is dropped from the bottom of the list, so the order on screen is the order 
 importance. `WhisperService.vocabularyPrompt` is separated from the tokenizer so the
 trimming rule can be tested without loading a 600 MB model.
 
+## Two engines
+
+Settings → Speech engine picks who listens. Both run entirely on the phone.
+
+- **Standard** is Whisper through WhisperKit, as before. It is the only one that can
+  use the vocabulary, because it is the only one that takes a prompt.
+- **Alternative** is NVIDIA's Parakeet TDT 0.6B v3, converted to Core ML, through
+  FluidAudio. Same 25 European languages including Greek. CC-BY-4.0 model, Apache 2.0
+  package.
+
+Measured on the bundled Greek clip, in the Simulator, which has no Neural Engine - so
+treat the times as a ratio between two CPU runs and nothing more:
+
+| | Standard (Whisper) | Alternative (Parakeet) |
+|---|---|---|
+| 5s Greek clip | 19.6s | 1.4s |
+| Errors | «καινούριο» for «καινούργιο» - both are valid spellings | «όλου» for «όλους», «υποτίτρησμένα» for «υποτιτλισμένα» |
+| Word timings | 12 | 12 |
+| Download | ~630 MB | ~470 MB |
+
+Parakeet writes `<unk>` where it cannot place a character, and Greek final sigma trips
+it - that is where «όλους» lost its ς. Those marks are stripped before anything reaches
+a caption, which leaves a word short rather than a caption with `<unk>` in it.
+
+`ParakeetService` is the only file that imports FluidAudio, exactly as `WhisperService`
+is the only one that imports WhisperKit. It returns the same `SpeechTranscript`, so
+nothing above the services knows which engine ran.
+
+FluidAudio is pinned to 0.13.7: from 0.14 it adds a binary xcframework target whose
+release archive does not download, which stops the whole project resolving.
+
 ## Privacy
 
 No account. No login. No backend. No cloud transcription. No analytics. No ads.

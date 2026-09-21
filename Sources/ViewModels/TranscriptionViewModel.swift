@@ -79,9 +79,8 @@ final class TranscriptionViewModel {
             }
 
             do {
-                // The model comes first: it is the slow, possibly-downloading step, and
-                // the user should see that named honestly before anything else happens.
-                try await WhisperService.shared.prepare { [weak self] preparation in
+                let engine = SpeechEngineChoice.current
+                let onPreparation: @Sendable (ModelPreparation) -> Void = { [weak self] preparation in
                     Task { @MainActor in
                         guard let self else { return }
                         self.preparation = preparation
@@ -96,6 +95,15 @@ final class TranscriptionViewModel {
                     }
                 }
 
+                // The model comes first: it is the slow, possibly-downloading step, and
+                // the user should see that named honestly before anything else happens.
+                switch engine {
+                case .whisper:
+                    try await WhisperService.shared.prepare(onProgress: onPreparation)
+                case .parakeet:
+                    try await ParakeetService.shared.prepare(onProgress: onPreparation)
+                }
+
                 try Task.checkCancellation()
                 self.state = .preparingAudio
 
@@ -105,15 +113,31 @@ final class TranscriptionViewModel {
                 try Task.checkCancellation()
                 self.state = .transcribing(progress: 0)
 
-                let transcript = try await WhisperService.shared.transcribe(
-                    audioURL: audioURL,
-                    language: self.language,
-                    vocabulary: VocabularyStore.shared.terms
-                ) { [weak self] fraction in
+                let onTranscriptionProgress: @Sendable (Double) -> Void = { [weak self] fraction in
                     Task { @MainActor in
                         guard let self, case .transcribing = self.state else { return }
                         self.state = .transcribing(progress: fraction)
                     }
+                }
+
+                let transcript: SpeechTranscript
+                switch engine {
+                case .whisper:
+                    transcript = try await WhisperService.shared.transcribe(
+                        audioURL: audioURL,
+                        language: self.language,
+                        vocabulary: VocabularyStore.shared.terms,
+                        onProgress: onTranscriptionProgress
+                    )
+                case .parakeet:
+                    // No vocabulary here: this engine has no way to be told about words
+                    // before it listens, and pretending otherwise would be a lie in the
+                    // settings screen.
+                    transcript = try await ParakeetService.shared.transcribe(
+                        audioURL: audioURL,
+                        language: self.language,
+                        onProgress: onTranscriptionProgress
+                    )
                 }
 
                 try Task.checkCancellation()

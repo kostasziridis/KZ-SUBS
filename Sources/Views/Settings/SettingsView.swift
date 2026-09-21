@@ -5,6 +5,7 @@ struct SettingsView: View {
 
     @State private var showsAcknowledgements = false
     @State private var showsVocabulary = false
+    @State private var engine = SpeechEngineChoice.current
 
     @Environment(\.dismiss) private var dismiss
     @State private var usedBytes: Int64?
@@ -17,7 +18,12 @@ struct SettingsView: View {
                 VStack(spacing: 20) {
                     PrivacyCard()
 
-                    accuracyCard
+                    engineCard
+
+                    // Only the standard engine has sizes to choose between.
+                    if engine == .whisper {
+                        accuracyCard
+                    }
 
                     vocabularyCard
 
@@ -52,6 +58,63 @@ struct SettingsView: View {
 
     /// Lets the user trade speed for accuracy. Every option is multilingual, so Greek
     /// keeps working whichever they pick.
+    private var engineCard: some View {
+        GlassCard(radius: AppTheme.controlRadius, padding: 18) {
+            VStack(alignment: .leading, spacing: 14) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Speech engine")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.white)
+                    Text("Two ways of listening. They mishear different things, so try the other one if a video comes out badly.")
+                        .font(.caption2)
+                        .foregroundStyle(AppTheme.secondaryText)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                ForEach(SpeechEngineChoice.allCases) { choice in
+                    Button {
+                        guard choice != engine else { return }
+                        withAnimation(.snappy(duration: 0.2)) { engine = choice }
+                        SpeechEngineChoice.current = choice
+                        Task { await refreshStorage() }
+                    } label: {
+                        HStack(alignment: .top, spacing: 12) {
+                            Image(systemName: choice == engine ? "largecircle.fill.circle" : "circle")
+                                .font(.body)
+                                .foregroundStyle(choice == engine ? AppTheme.accent : AppTheme.tertiaryText)
+
+                            VStack(alignment: .leading, spacing: 3) {
+                                HStack(spacing: 6) {
+                                    Text(choice.displayName)
+                                        .font(.footnote.weight(.semibold))
+                                        .foregroundStyle(.white)
+                                    Text(choice.approximateSize)
+                                        .font(.caption2)
+                                        .foregroundStyle(AppTheme.tertiaryText)
+                                }
+                                Text(choice.detail)
+                                    .font(.caption2)
+                                    .foregroundStyle(AppTheme.secondaryText)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+
+                            Spacer(minLength: 0)
+                        }
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                }
+
+                Label(
+                    "Each engine downloads once, the first time you use it.",
+                    systemImage: "arrow.down.circle"
+                )
+                .font(.caption2)
+                .foregroundStyle(AppTheme.tertiaryText)
+            }
+        }
+    }
+
     private var accuracyCard: some View {
         GlassCard(radius: AppTheme.controlRadius, padding: 18) {
             VStack(alignment: .leading, spacing: 14) {
@@ -121,7 +184,9 @@ struct SettingsView: View {
                         Text("Vocabulary")
                             .font(.subheadline.weight(.semibold))
                             .foregroundStyle(.white)
-                        Text("Teach it names it would otherwise guess at, so they come out spelled right.")
+                        Text(engine.supportsVocabulary
+                             ? "Teach it names it would otherwise guess at, so they come out spelled right."
+                             : "Kept, but the alternative engine cannot be told about words beforehand.")
                             .font(.caption2)
                             .foregroundStyle(AppTheme.secondaryText)
                             .fixedSize(horizontal: false, vertical: true)
