@@ -42,6 +42,7 @@ struct CaptionStyleView: View {
             }
         }
         .preferredColorScheme(.dark)
+        .sensoryFeedback(.selection, trigger: style.preset)
         .task { startPreviewLoop() }
         .onDisappear { previewTimer?.cancel() }
     }

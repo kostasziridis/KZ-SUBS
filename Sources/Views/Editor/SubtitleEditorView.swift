@@ -6,6 +6,7 @@ struct SubtitleEditorView: View {
     @Environment(AppState.self) private var appState
     @Environment(AppRouter.self) private var router
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     @State private var model: SubtitleEditorViewModel
     @State private var player = VideoPlayerViewModel()
@@ -171,6 +172,45 @@ struct SubtitleEditorView: View {
             .padding(.bottom, 12)
     }
 
+    /// The row above the list: how many subtitles, how to use them, and the two
+    /// actions.
+    ///
+    /// Laid out down the screen at accessibility text sizes rather than across it. Four
+    /// things in one row is comfortable at 17pt and impossible at 53pt, where it broke
+    /// "6 subtitles" into "6 subtitl…" and hyphenated the Add button.
+    private var listHeader: some View {
+        let layout = dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 12))
+            : AnyLayout(HStackLayout(alignment: .center, spacing: 12))
+
+        return layout {
+            VStack(alignment: .leading, spacing: 1) {
+                Text("\(model.segments.count) subtitles")
+                    .font(.footnote.weight(.medium))
+                    .foregroundStyle(AppTheme.secondaryText)
+                Text("Tap a subtitle to jump to it")
+                    .font(.caption2)
+                    .foregroundStyle(AppTheme.tertiaryText)
+            }
+            // Wrapping beats truncating: these say what the screen is and how to use it.
+            .fixedSize(horizontal: false, vertical: true)
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            HStack(spacing: 12) {
+                spellingButton
+
+                Button {
+                    let created = model.addSegment(at: player.currentTime, limit: max(player.duration, model.project.duration))
+                    editingSegment = created
+                } label: {
+                    Label("Add", systemImage: "plus.circle.fill")
+                        .font(.footnote.weight(.semibold))
+                }
+                .tint(AppTheme.accent)
+            }
+        }
+    }
+
     /// Says how many words want looking at, so a spelling pass is something the user
     /// is told about rather than something they have to think to run.
     @ViewBuilder
@@ -190,6 +230,8 @@ struct SubtitleEditorView: View {
                 .font(.footnote.weight(.semibold))
             }
             .tint(spelling.count > 0 ? .orange : AppTheme.accent)
+            .accessibilityLabel(Text("Check spelling"))
+            .accessibilityValue(spelling.count > 0 ? Text("\(spelling.count) words to look at") : Text("Nothing to look at"))
         }
     }
 
@@ -197,28 +239,7 @@ struct SubtitleEditorView: View {
 
     private var subtitleSection: some View {
         VStack(spacing: 0) {
-            HStack {
-                VStack(alignment: .leading, spacing: 1) {
-                    Text("\(model.segments.count) subtitles")
-                        .font(.footnote.weight(.medium))
-                        .foregroundStyle(AppTheme.secondaryText)
-                    Text("Tap a subtitle to jump to it")
-                        .font(.caption2)
-                        .foregroundStyle(AppTheme.tertiaryText)
-                }
-                Spacer()
-
-                spellingButton
-
-                Button {
-                    let created = model.addSegment(at: player.currentTime, limit: max(player.duration, model.project.duration))
-                    editingSegment = created
-                } label: {
-                    Label("Add", systemImage: "plus.circle.fill")
-                        .font(.footnote.weight(.semibold))
-                }
-                .tint(AppTheme.accent)
-            }
+            listHeader
             .padding(.horizontal, 20)
             .padding(.vertical, 10)
 

@@ -82,6 +82,7 @@ struct VideoPreviewView<Overlay: View>: View {
         }
         .buttonStyle(.plain)
         .disabled(!model.isReady)
+        .accessibilityLabel(model.isPlaying ? Text("Pause") : Text("Play"))
         .transition(.opacity.combined(with: .scale(scale: 0.9)))
     }
 

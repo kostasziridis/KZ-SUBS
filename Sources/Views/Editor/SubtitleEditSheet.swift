@@ -393,7 +393,9 @@ struct SubtitleEditSheet: View {
 
             HStack(spacing: 8) {
                 nudgeButton(symbol: "minus", action: { onChange(-nudge) })
+                    .accessibilityLabel(Text("Earlier"))
                 nudgeButton(symbol: "plus", action: { onChange(nudge) })
+                    .accessibilityLabel(Text("Later"))
             }
         }
     }

@@ -6,6 +6,10 @@ struct SpellReviewView: View {
     @Environment(\.dismiss) private var dismiss
 
     @Bindable var model: SpellReviewViewModel
+    /// Counted rather than flagged, so repeating the same action feels the same each
+    /// time - a Bool would only fire on the change to true.
+    @State private var corrections = 0
+    @State private var keeps = 0
     /// Applies a correction to the project. Returns nothing: the caller owns the
     /// subtitles and this view only says what to change.
     var onCorrect: (SpellFinding, String) -> Void
@@ -26,6 +30,9 @@ struct SpellReviewView: View {
                 }
         }
         .preferredColorScheme(.dark)
+        // A correction is a small success; keeping a word is just a choice.
+        .sensoryFeedback(.success, trigger: corrections)
+        .sensoryFeedback(.selection, trigger: keeps)
     }
 
     @ViewBuilder
@@ -97,6 +104,7 @@ struct SpellReviewView: View {
                             .font(.caption2.weight(.medium))
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel(Text("Go to subtitle \(finding.segmentNumber)"))
                     .tint(AppTheme.accent)
                     .foregroundStyle(AppTheme.accent)
                 }
@@ -117,6 +125,7 @@ struct SpellReviewView: View {
                             Button {
                                 onCorrect(finding, suggestion)
                                 model.remove(finding)
+                                corrections += 1
                             } label: {
                                 Text(suggestion)
                                     .font(.footnote.weight(.medium))
@@ -132,6 +141,7 @@ struct SpellReviewView: View {
 
                 Button {
                     model.keep(finding)
+                    keeps += 1
                 } label: {
                     Label("Keep as it is", systemImage: "checkmark")
                         .font(.caption.weight(.medium))
