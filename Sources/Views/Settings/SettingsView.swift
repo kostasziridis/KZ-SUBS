@@ -309,17 +309,20 @@ struct SettingsView: View {
     private var acknowledgements: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 14) {
-                    Text("Greek spelling dictionary")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.white)
-
-                    Text(Self.greekDictionaryNotice)
-                        .font(.footnote)
-                        .foregroundStyle(AppTheme.secondaryText)
-                        .textSelection(.enabled)
+                VStack(alignment: .leading, spacing: 22) {
+                    ForEach(Self.acknowledgementList, id: \.title) { entry in
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text(entry.title)
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(.white)
+                            Text(entry.notice)
+                                .font(.footnote)
+                                .foregroundStyle(AppTheme.secondaryText)
+                                .textSelection(.enabled)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(20)
             }
             .appBackground()
@@ -335,12 +338,40 @@ struct SettingsView: View {
         .preferredColorScheme(.dark)
     }
 
-    /// Left in English on purpose: it names a licence and its authors.
-    private static let greekDictionaryNotice = """
-        el_GR 0.9 by Steve Stavropoulos, based on earlier work by Evripidis Papakostas,         with contributions from Γιώργος Γέγος and Nick Demou.
+    private struct Acknowledgement {
+        let title: String
+        let notice: String
+    }
 
-        Used under the Mozilla Public License 1.1. The dictionary is tri-licensed         MPL 1.1 / GPL 2.0 / LGPL 2.1. Source: http://elspell.math.upatras.gr
-        """
+    /// Everything the app carries or fetches that someone else wrote.
+    ///
+    /// Left in English on purpose: these name licences and their authors, and a
+    /// translated licence is not the licence. The two models are here because they are
+    /// downloaded rather than bundled, which does not make the attribution optional -
+    /// Parakeet's licence asks for it by name.
+    private static let acknowledgementList: [Acknowledgement] = [
+        Acknowledgement(
+            title: "Greek spelling dictionary",
+            notice: "el_GR 0.9 by Steve Stavropoulos, based on earlier work by Evripidis Papakostas, with contributions from Γιώργος Γέγος and Nick Demou. Used under the Mozilla Public License 1.1; the dictionary is tri-licensed MPL 1.1 / GPL 2.0 / LGPL 2.1. Source: http://elspell.math.upatras.gr"
+        ),
+        Acknowledgement(
+            title: "WhisperKit",
+            notice: "Copyright (c) 2024 argmax, inc. Used under the MIT License. Source: https://github.com/argmaxinc/WhisperKit"
+        ),
+        Acknowledgement(
+            title: "FluidAudio",
+            notice: "Used under the Apache License 2.0. Source: https://github.com/FluidInference/FluidAudio"
+        ),
+        Acknowledgement(
+            title: "Whisper speech models",
+            notice: "Whisper by OpenAI, used under the MIT License, in the Core ML form published by Argmax."
+        ),
+        Acknowledgement(
+            title: "Parakeet speech model",
+            notice: "Parakeet TDT 0.6B v3 by NVIDIA, used under the Creative Commons Attribution 4.0 International License (CC-BY-4.0), in the Core ML form published by FluidInference."
+        ),
+    ]
+
 
     #if DEBUG
     /// Development only: a way to exercise the speech engine on a real device against
