@@ -1,0 +1,54 @@
+KZ-SUBS creates subtitles from the speech in a video, entirely on the device.
+
+No account, no sign-in and no demo credentials are needed. Every feature is
+available immediately after installing.
+
+PLEASE READ FIRST — THE ONE-TIME MODEL DOWNLOAD
+
+The first time you generate subtitles, the app downloads the speech recognition
+model it needs: roughly 600 MB, once, over the network. The screen names this
+plainly and shows its progress, and the app cannot produce subtitles until it
+finishes. On a slow connection this can take several minutes. Please allow it to
+complete on Wi-Fi before concluding that the app is not working — this is the only
+step that requires a network connection, and nothing else in the app uses one.
+
+The model files are hosted publicly and are downloaded anonymously:
+  - huggingface.co/argmaxinc/whisperkit-coreml          (Standard engine, default)
+  - huggingface.co/FluidInference/parakeet-tdt-0.6b-v3-coreml
+    (Alternative engine, selectable in Settings > Speech engine)
+
+HOW TO TEST
+
+1. Tap "Choose Video" and pick any video containing speech. Greek and English
+   both work; the sample videos in the Simulator have no audio, so please use a
+   device video with a voice in it.
+2. Choose an accuracy level and allow the one-time download to finish.
+3. Subtitles are generated and a style chooser appears. Pick any style.
+4. In the editor: tap "Style" for colours, size and position; drag the caption on
+   the video to move it and pinch to resize it; tap a subtitle to jump to it, or
+   "Edit" to change its words.
+5. Tap the share icon to export. "Create video with subtitles" writes a new video
+   file; "Create .srt file" writes a subtitle file. Both can be shared or saved.
+
+PRIVACY
+
+No data is collected, in any category. The video and audio are read and processed
+on the device and are never uploaded anywhere. There is no account system, no
+analytics, no advertising, no tracking and no server belonging to us. The App
+Privacy answers are "Data Not Collected" throughout, and that is literal.
+
+PHOTO LIBRARY ACCESS
+
+The app asks for add-only photo library permission, and only when the user taps
+"Save to Photos" for a finished export. It never reads the photo library: videos
+are brought in through the system picker, which hands over only the one file the
+user chose. The original video is never modified.
+
+THIRD-PARTY CONTENT
+
+Speech recognition uses WhisperKit (MIT) and FluidAudio (Apache 2.0). The Greek
+spelling dictionary is el_GR 0.9, used under the Mozilla Public License 1.1. All
+of these, and both speech models, are credited in the app under
+Settings > Acknowledgements.
+
+Contact: kziridis.com
