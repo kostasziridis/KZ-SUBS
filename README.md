@@ -224,6 +224,27 @@ Glass carries its own edge, so the hairline borders went with it. The style shee
 overriding its own background on iOS 26: setting it replaced the system's material with
 a flat copy of what it used to be.
 
+## Importing subtitles
+
+A video whose subtitles already exist does not need transcribing: the import screen
+offers "Import subtitle file" beside Generate, which skips the model download entirely.
+
+`.srt` files arrive in two quite different shapes under the same extension. Most hold a
+sentence or two per cue, which are captions already. Some hold a single word per cue -
+those are not captions at all, they are word timings, and they are exactly what the
+karaoke and spotlight styles need. `SRTImporter` tells them apart by the average words
+per cue and keeps the second kind as timings rather than flattening them into one-word
+captions, so an imported file can drive word-by-word highlighting the same way the
+speech engines do.
+
+Grouping timed words into subtitles is one rule in `SubtitleSegmenter.group`, shared
+with the engines - break on a pause, on the end of a sentence, or before a block would
+grow past two lines.
+
+The app also appears in Files, so a subtitle file can be dropped straight into it.
+Projects and videos live in Application Support, so the exposed folder holds only what
+the user puts there.
+
 ## Privacy
 
 No account. No login. No backend. No cloud transcription. No analytics. No ads.

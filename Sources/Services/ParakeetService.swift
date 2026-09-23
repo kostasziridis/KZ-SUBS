@@ -115,7 +115,11 @@ actor ParakeetService {
         #endif
 
         let words = Self.words(from: timings)
-        let segments = Self.segments(from: words, fallbackText: Self.readable(result.text), duration: result.duration)
+        let segments = SubtitleSegmenter.group(
+            words: words,
+            fallbackText: Self.readable(result.text),
+            duration: result.duration
+        )
 
         return SpeechTranscript(
             text: Self.readable(result.text),
@@ -165,62 +169,6 @@ actor ParakeetService {
         flush()
 
         return words
-    }
-
-    /// Gathers words into the blocks `SubtitleSegmenter` will then reshape.
-    ///
-    /// Whisper hands back its own decoding windows to start from; Parakeet hands back
-    /// one long stream, so the first break has to be found here. A pause is the honest
-    /// place to make it, and the end of a sentence a better one.
-    static func segments(
-        from words: [SubtitleWord],
-        fallbackText: String,
-        duration: TimeInterval
-    ) -> [SubtitleSegment] {
-        guard !words.isEmpty else {
-            // No timings at all: one block covering the clip is still better than
-            // throwing the words away, and the editor can be used to fix it.
-            let text = fallbackText.trimmingCharacters(in: .whitespacesAndNewlines)
-            guard !text.isEmpty else { return [] }
-            return [SubtitleSegment(startTime: 0, endTime: max(duration, 1), text: text)]
-        }
-
-        /// Long enough to be a breath rather than the ordinary gap between words.
-        let pause: TimeInterval = 0.6
-
-        var segments: [SubtitleSegment] = []
-        var current: [SubtitleWord] = []
-
-        func flush() {
-            guard let first = current.first, let last = current.last else { return }
-            segments.append(
-                SubtitleSegment(
-                    startTime: first.startTime,
-                    endTime: last.endTime,
-                    text: current.map(\.word).joined(separator: " "),
-                    words: current
-                )
-            )
-            current = []
-        }
-
-        for word in words {
-            if let previous = current.last {
-                if word.startTime - previous.endTime >= pause || endsSentence(previous.word) {
-                    flush()
-                }
-            }
-            current.append(word)
-        }
-        flush()
-
-        return segments
-    }
-
-    private static func endsSentence(_ word: String) -> Bool {
-        guard let last = word.trimmingCharacters(in: .whitespaces).last else { return false }
-        // Greek uses ";" as its question mark and "·" as a semicolon.
-        return ".!?;·…".contains(last)
     }
 
     /// The engine's own text, with the marks it makes for characters it could not

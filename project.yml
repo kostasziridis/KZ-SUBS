@@ -76,6 +76,11 @@ targets:
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         ITSAppUsesNonExemptEncryption: false
+        # Puts a KZ-SUBS folder in Files, so a subtitle file can be dropped straight in
+        # and picked up again. Safe to expose: projects and videos live in Application
+        # Support, and this folder starts empty.
+        UIFileSharingEnabled: true
+        LSSupportsOpeningDocumentsInPlace: true
         UILaunchScreen:
           UIColorName: LaunchBackground
         UIUserInterfaceStyle: Dark

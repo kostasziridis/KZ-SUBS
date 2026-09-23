@@ -145,6 +145,69 @@ enum SubtitleSegmenter {
         return result
     }
 
+    // MARK: - Words into subtitles
+
+    /// Gathers a stream of timed words into subtitle-shaped blocks.
+    ///
+    /// Some sources hand over subtitles already; others hand over nothing but words
+    /// with timings - a speech engine that decodes continuously, or a word-timed
+    /// subtitle file. For those, the first break has to be found here. A pause is the
+    /// honest place to make it, and the end of a sentence a better one.
+    ///
+    /// - Parameters:
+    ///   - fallbackText: used when there are no words at all, so text without timings
+    ///     still becomes something the editor can open.
+    static func group(
+        words: [SubtitleWord],
+        fallbackText: String = "",
+        duration: TimeInterval = 0,
+        rules: Rules = .default
+    ) -> [SubtitleSegment] {
+        guard !words.isEmpty else {
+            let text = fallbackText.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !text.isEmpty else { return [] }
+            return [SubtitleSegment(startTime: 0, endTime: max(duration, 1), text: text)]
+        }
+
+        /// Long enough to be a breath rather than the ordinary gap between words.
+        let pause: TimeInterval = 0.6
+
+        var segments: [SubtitleSegment] = []
+        var current: [SubtitleWord] = []
+
+        func flush() {
+            guard let first = current.first, let last = current.last else { return }
+            segments.append(
+                SubtitleSegment(
+                    startTime: first.startTime,
+                    endTime: last.endTime,
+                    text: current.map(\.word).joined(separator: " "),
+                    words: current
+                )
+            )
+            current = []
+        }
+
+        for word in words {
+            if let previous = current.last {
+                // Measured with the new word included, not without it: asking whether
+                // the block is already too long only notices after it has become so,
+                // and lets one word over the limit through every time.
+                let prospective = (current.map(\.word) + [word.word]).joined(separator: " ").count
+                let span = word.endTime - (current.first?.startTime ?? word.startTime)
+
+                let mustBreak = prospective > rules.maxCharacters || span > rules.maximumDuration
+                let shouldBreak = word.startTime - previous.endTime >= pause || endsSentence(previous.word)
+
+                if mustBreak || shouldBreak { flush() }
+            }
+            current.append(word)
+        }
+        flush()
+
+        return segments
+    }
+
     // MARK: - Word limit
 
     /// Splits subtitles so no more than `maxWords` show at once - the short, fast

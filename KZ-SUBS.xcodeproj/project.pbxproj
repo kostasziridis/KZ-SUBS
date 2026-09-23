@@ -79,6 +79,7 @@
 		E610427B32513F7E47F4209E /* ThumbnailGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93DDD874F16F66285646FD85 /* ThumbnailGenerator.swift */; };
 		E6DB435FF76DDA971409A40D /* CaptionFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = E247EAF876864EE731EEFDC1 /* CaptionFlowLayout.swift */; };
 		E7EA9499B1A49434EEC13D68 /* AppLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6614EE230D9E968E3E09C9E /* AppLanguage.swift */; };
+		E95025E989ECA892A9B01427 /* SRTImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F5109EC33669A008F8F5ACC /* SRTImporter.swift */; };
 		E952DCFB055C69610038A00E /* test-english.wav in Resources */ = {isa = PBXBuildFile; fileRef = 0AD7751E00BE245005F4DC29 /* test-english.wav */; };
 		E9A9407A98945B07FD5CC0DF /* SubtitleSegment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AF81F238339687AE6B0F33 /* SubtitleSegment.swift */; };
 		ED3EFA6699D0C4D280F30021 /* SubtitleListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60E157757014BF9E9B5D346F /* SubtitleListView.swift */; };
@@ -99,6 +100,7 @@
 		08B3615F28C1FBC47C5D7EA2 /* SubtitleEditorViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtitleEditorViewModel.swift; sourceTree = "<group>"; };
 		0953262834819B5A5DAEB365 /* CaptionStylePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionStylePickerView.swift; sourceTree = "<group>"; };
 		0AD7751E00BE245005F4DC29 /* test-english.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "test-english.wav"; sourceTree = "<group>"; };
+		0F5109EC33669A008F8F5ACC /* SRTImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SRTImporter.swift; sourceTree = "<group>"; };
 		11D27845E8523BAD37DC9251 /* FileHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileHelpers.swift; sourceTree = "<group>"; };
 		13FAA15E113E573701DC205E /* TimecodeFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimecodeFormatter.swift; sourceTree = "<group>"; };
 		17C23E44052F10C866DB6277 /* ModelSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelSetupView.swift; sourceTree = "<group>"; };
@@ -343,6 +345,7 @@
 				9805E863F35B45EE72158251 /* SpeechEngineChoice.swift */,
 				327617DC02B337AC2CA87291 /* SpellCheck.swift */,
 				B8638215871BBC74F908BE14 /* SRTExporter.swift */,
+				0F5109EC33669A008F8F5ACC /* SRTImporter.swift */,
 				243902D51A8A21F685419131 /* StorageManager.swift */,
 				EF84E4654CF403EAC067FBE9 /* SubtitleSegmenter.swift */,
 				93DDD874F16F66285646FD85 /* ThumbnailGenerator.swift */,
@@ -555,6 +558,7 @@
 				CAF0A2BF18833335E8A89AF4 /* ProjectCard.swift in Sources */,
 				F60D1AC8FBCDEECD7A3E04EF /* ProjectStore.swift in Sources */,
 				CBE152B2AF1689CD242FE20B /* SRTExporter.swift in Sources */,
+				E95025E989ECA892A9B01427 /* SRTImporter.swift in Sources */,
 				18AF085D66A91CBBDE22CCA7 /* SettingsView.swift in Sources */,
 				77231291AFFF2BDC266CE4DA /* SpeechCheckView.swift in Sources */,
 				89BA9B3D54722D10EFDB78BD /* SpeechEngineChoice.swift in Sources */,
