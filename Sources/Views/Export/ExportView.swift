@@ -178,7 +178,8 @@ struct ExportView: View {
     // MARK: - Subtitle file
 
     private var subtitleFileSection: some View {
-        GlassCard(radius: AppTheme.controlRadius, padding: 16) {
+        @Bindable var model = model
+        return GlassCard(radius: AppTheme.controlRadius, padding: 16) {
             VStack(alignment: .leading, spacing: 10) {
                 Text("Subtitle file")
                     .font(.subheadline.weight(.semibold))
@@ -187,6 +188,22 @@ struct ExportView: View {
                 Text("An .srt file works with YouTube, Premiere, VLC and most editors.")
                     .font(.caption)
                     .foregroundStyle(AppTheme.secondaryText)
+
+                // Only worth asking when there are word timings to keep or lose.
+                if model.hasWordTimings {
+                    Picker("Subtitle file", selection: $model.subtitleGranularity) {
+                        ForEach(SRTExporter.Granularity.allCases) { granularity in
+                            Text(granularity.displayName).tag(granularity)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .padding(.top, 2)
+
+                    Text(model.subtitleGranularity.detail)
+                        .font(.caption2)
+                        .foregroundStyle(AppTheme.tertiaryText)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
 
                 if let url = model.subtitleFileURL {
                     ShareLink(item: url) {

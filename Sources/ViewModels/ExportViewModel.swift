@@ -12,6 +12,20 @@ final class ExportViewModel {
     private(set) var state: ExportState = .idle
     private(set) var exportedVideoURL: URL?
     private(set) var subtitleFileURL: URL?
+
+    /// Which shape of subtitle file to write.
+    ///
+    /// Starts as whichever the project is actually using: a style that lights up words
+    /// one by one is being built from word timings, and a file of whole sentences would
+    /// throw exactly those away.
+    var subtitleGranularity: SRTExporter.Granularity {
+        didSet {
+            // The file on disk was written the other way; offering it under a new
+            // heading would hand the user the wrong one.
+            guard subtitleGranularity != oldValue else { return }
+            subtitleFileURL = nil
+        }
+    }
     /// True when the export had to draw one caption per subtitle instead of per word.
     private(set) var simplifiedHighlighting = false
     private(set) var savedToPhotos = false
@@ -22,6 +36,7 @@ final class ExportViewModel {
     @ObservationIgnored private var job: Task<Void, Never>?
 
     init(project: SubtitleProject) {
+        subtitleGranularity = project.captionStyle.highlightsSpokenWord ? .words : .subtitles
         self.project = project
     }
 
@@ -81,9 +96,19 @@ final class ExportViewModel {
 
     // MARK: - Subtitles file
 
+    /// Whether the subtitles carry word timings at all, which decides whether the
+    /// word-by-word file is even offered.
+    var hasWordTimings: Bool {
+        project.subtitles.contains { ($0.words?.count ?? 0) > 0 }
+    }
+
     func exportSubtitleFile() {
         do {
-            subtitleFileURL = try SRTExporter.write(project.subtitles, name: project.name)
+            subtitleFileURL = try SRTExporter.write(
+                project.subtitles,
+                name: project.name,
+                granularity: subtitleGranularity
+            )
         } catch let error as AppError {
             self.error = error
         } catch {

@@ -775,6 +775,16 @@
         }
       }
     },
+    "Every word with its own timing, for word-by-word captions elsewhere.": {
+      "localizations": {
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Κάθε λέξη με τον δικό της χρονισμό, για υπότιτλους λέξη προς λέξη αλλού."
+          }
+        }
+      }
+    },
     "Expected": {
       "localizations": {
         "el": {
@@ -1237,6 +1247,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Μία γραμμή"
+          }
+        }
+      }
+    },
+    "One word at a time": {
+      "localizations": {
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Μία λέξη τη φορά"
           }
         }
       }
@@ -2180,6 +2200,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Πάχος"
+          }
+        }
+      }
+    },
+    "What a player or editor expects.": {
+      "localizations": {
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Αυτό που περιμένει ένα πρόγραμμα αναπαραγωγής ή επεξεργασίας."
+          }
+        }
+      }
+    },
+    "Whole subtitles": {
+      "localizations": {
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ολόκληροι υπότιτλοι"
           }
         }
       }

@@ -250,6 +250,20 @@ The app also appears in Files, so a subtitle file can be dropped straight into i
 Projects and videos live in Application Support, so the exposed folder holds only what
 the user puts there.
 
+## Exporting subtitles
+
+The `.srt` file comes in the two shapes the format is used for. Whole subtitles is what
+a player expects. One word at a time keeps every word's own timing, which is the only
+form that survives into word-by-word captions somewhere else - and the same shape the
+importer reads back.
+
+The choice defaults to whichever the project is using: a style that lights up words one
+by one is built from word timings, and writing whole sentences would throw away exactly
+those. The two files are named apart, so both can be made and told apart afterwards.
+
+A subtitle written by hand has no word timings, so it is written as one cue in either
+shape rather than split on spaces with invented ones.
+
 ## Undo
 
 The editor keeps whole snapshots of the subtitles rather than an inverse of each
