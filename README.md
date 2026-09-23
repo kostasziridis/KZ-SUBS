@@ -229,6 +229,11 @@ a flat copy of what it used to be.
 A video whose subtitles already exist does not need transcribing: the import screen
 offers "Import subtitle file" beside Generate, which skips the model download entirely.
 
+The parser is written line by line rather than block by block, because the layout
+varies more than the format does: the textbook file puts the number, the timing and the
+text on three lines, and plenty of tools put all three on one. Both are read, along with
+files that have no blank lines between cues.
+
 `.srt` files arrive in two quite different shapes under the same extension. Most hold a
 sentence or two per cue, which are captions already. Some hold a single word per cue -
 those are not captions at all, they are word timings, and they are exactly what the
@@ -244,6 +249,18 @@ grow past two lines.
 The app also appears in Files, so a subtitle file can be dropped straight into it.
 Projects and videos live in Application Support, so the exposed folder holds only what
 the user puts there.
+
+## Undo
+
+The editor keeps whole snapshots of the subtitles rather than an inverse of each
+operation - a few hundred small structs cost almost nothing to copy, and a snapshot
+cannot drift out of step with the edits the way a hand-written undo eventually does.
+
+Edits that belong together share a coalescing key, so typing a word leaves one undo step
+rather than one per keystroke. A deletion or a spelling correction passes no key,
+because each of those is a decision of its own. Caption style is deliberately not
+covered: dragging and pinching are continuous, and snapshotting them would fill the
+stack with noise.
 
 ## Privacy
 

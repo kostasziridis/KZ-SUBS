@@ -225,6 +225,16 @@
         }
       }
     },
+    "Add subtitle": {
+      "localizations": {
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Προσθήκη υποτίτλου"
+          }
+        }
+      }
+    },
     "Adding subtitles to your video": {
       "localizations": {
         "el": {
@@ -551,6 +561,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Χρώμα"
+          }
+        }
+      }
+    },
+    "Correct spelling": {
+      "localizations": {
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Διόρθωση ορθογραφίας"
           }
         }
       }
@@ -2060,6 +2080,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Οι υπογραμμισμένες λέξεις δεν βρίσκονται στο λεξικό. Πατήστε μία για προτάσεις."
+          }
+        }
+      }
+    },
+    "Undo": {
+      "localizations": {
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Αναίρεση"
           }
         }
       }

@@ -76,6 +76,7 @@ struct SubtitleEditorView: View {
             player.observationInterval = 1.0 / 30.0
             player.load(url: model.project.videoURL, knownDuration: model.project.duration)
         }
+        .animation(.snappy(duration: 0.2), value: model.canUndo)
         .onChange(of: model.captionStyle.maxWordsOnScreen) { _, limit in
             model.applyWordLimit(limit)
         }
@@ -102,7 +103,13 @@ struct SubtitleEditorView: View {
                 segment: segment,
                 canGoPrevious: previousSegment(before: segment) != nil,
                 canGoNext: nextSegment(after: segment) != nil,
-                onChange: { model.update($0) },
+                onChange: { edited in
+                    model.remember(
+                        String(localized: "Edit subtitle"),
+                        coalescingKey: "edit-\(edited.id)"
+                    )
+                    model.update(edited)
+                },
                 onDelete: {
                     model.delete(segment)
                     editingSegment = nil
@@ -199,6 +206,8 @@ struct SubtitleEditorView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
 
             HStack(spacing: 12) {
+                undoButton
+
                 spellingButton
 
                 Button {
@@ -210,6 +219,26 @@ struct SubtitleEditorView: View {
                 }
                 .tint(AppTheme.accent)
             }
+        }
+    }
+
+    /// Puts the subtitles back the way they were.
+    ///
+    /// Only appears once there is something to undo, so it is never a dead control, and
+    /// it names what it will undo for anyone who has lost track.
+    @ViewBuilder
+    private var undoButton: some View {
+        if model.canUndo {
+            Button {
+                model.undo()
+            } label: {
+                Image(systemName: "arrow.uturn.backward")
+                    .font(.footnote.weight(.semibold))
+            }
+            .tint(AppTheme.accent)
+            .accessibilityLabel(Text("Undo"))
+            .accessibilityValue(model.undoLabel.map(Text.init) ?? Text(verbatim: ""))
+            .transition(.opacity.combined(with: .scale(scale: 0.8)))
         }
     }
 
@@ -306,6 +335,8 @@ struct SubtitleEditorView: View {
     private func correct(_ finding: SpellFinding, with replacement: String) {
         guard var segment = model.segments.first(where: { $0.id == finding.segmentID }) else { return }
 
+        model.remember(String(localized: "Correct spelling"))
+
         // Carrying over the capital and the punctuation the original word wore.
         let shaped = SpellCheck.shaped(replacement, like: finding.word)
 
@@ -390,6 +421,10 @@ private struct CaptionLayer: View {
                             wordsBeforeEditing = (segment.id, original)
                         }
 
+                        model.remember(
+                            String(localized: "Edit subtitle"),
+                            coalescingKey: "caption-\(segment.id)"
+                        )
                         edited.words = original.isEmpty ? nil : original
                         // Not `edited.text =`: the styles that light up words one by
                         // one are drawn from the words, so a correction written only

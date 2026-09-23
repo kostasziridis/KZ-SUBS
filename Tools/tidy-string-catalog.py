@@ -31,7 +31,11 @@ def compiler_keys(derived_data: pathlib.Path) -> set[str]:
         if "KZSubs.build" not in str(path):
             continue  # the package's own strings are not ours to translate
         data = json.loads(path.read_text())
-        for entries in data.get("tables", {}).values():
+        # Only this catalogue's own table: Info.plist keys belong to InfoPlist.xcstrings
+        # and would otherwise be reported as missing translations here forever.
+        for table, entries in data.get("tables", {}).items():
+            if table != "Localizable":
+                continue
             keys.update(entry["key"] for entry in entries)
     return keys
 

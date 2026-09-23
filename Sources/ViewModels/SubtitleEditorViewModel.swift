@@ -21,6 +21,29 @@ final class SubtitleEditorViewModel {
     /// The subtitle under the playhead.
     private(set) var activeSegmentID: SubtitleSegment.ID?
 
+    /// Somewhere to put the subtitles back.
+    ///
+    /// Snapshots rather than inverse operations: the subtitles of one video are a few
+    /// hundred small structs, so keeping whole copies costs almost nothing and cannot
+    /// drift out of step with the edits the way a hand-written undo for each operation
+    /// eventually does.
+    private struct Snapshot {
+        let label: String
+        let segments: [SubtitleSegment]
+        /// Edits that belong together carry the same key, so typing a word does not
+        /// leave one undo step per keystroke.
+        let coalescingKey: String?
+        let madeAt: Date
+    }
+
+    @ObservationIgnored private var undoStack: [Snapshot] = []
+    /// Deep enough to cover a session's worth of mistakes, shallow enough that nobody
+    /// notices the memory.
+    private static let undoDepth = 40
+
+    private(set) var undoLabel: String?
+    var canUndo: Bool { undoLabel != nil }
+
     @ObservationIgnored private var saveTask: Task<Void, Never>?
     @ObservationIgnored private let onSave: (SubtitleProject) async -> Void
 
@@ -77,6 +100,41 @@ final class SubtitleEditorViewModel {
         segments.firstIndex { $0.id == segment.id }
     }
 
+    // MARK: - Undo
+
+    /// Records the subtitles as they are, before whatever is about to change them.
+    ///
+    /// - Parameter coalescingKey: successive edits sharing a key within a couple of
+    ///   seconds are one step. Typing passes the subtitle's id; a deletion or a spelling
+    ///   correction passes nothing, because each of those is a decision of its own.
+    func remember(_ label: String, coalescingKey: String? = nil) {
+        if let key = coalescingKey, let last = undoStack.last,
+           last.coalescingKey == key, Date().timeIntervalSince(last.madeAt) < 2 {
+            return
+        }
+
+        undoStack.append(
+            Snapshot(label: label, segments: segments, coalescingKey: coalescingKey, madeAt: Date())
+        )
+        if undoStack.count > Self.undoDepth { undoStack.removeFirst() }
+        undoLabel = label
+    }
+
+    func undo() {
+        guard let snapshot = undoStack.popLast() else { return }
+        segments = snapshot.segments
+        undoLabel = undoStack.last?.label
+
+        // Whatever was selected may no longer exist, and the caption under the playhead
+        // is worked out again on the next tick anyway.
+        if let selectedSegmentID, !segments.contains(where: { $0.id == selectedSegmentID }) {
+            self.selectedSegmentID = nil
+        }
+        if let activeSegmentID, !segments.contains(where: { $0.id == activeSegmentID }) {
+            self.activeSegmentID = nil
+        }
+    }
+
     // MARK: - Editing
 
     func update(_ segment: SubtitleSegment) {
@@ -89,6 +147,7 @@ final class SubtitleEditorViewModel {
     }
 
     func delete(_ segment: SubtitleSegment) {
+        remember(String(localized: "Delete subtitle"))
         segments.removeAll { $0.id == segment.id }
         if selectedSegmentID == segment.id { selectedSegmentID = nil }
         if activeSegmentID == segment.id { activeSegmentID = nil }
@@ -97,6 +156,7 @@ final class SubtitleEditorViewModel {
     /// Inserts a new subtitle at the playhead, fitted into whatever gap is available.
     @discardableResult
     func addSegment(at time: TimeInterval, duration: TimeInterval = 2, limit: TimeInterval) -> SubtitleSegment {
+        remember(String(localized: "Add subtitle"))
         let start = min(max(0, time), max(0, limit - 0.4))
         // Stop at the next subtitle so a new one never overlaps its neighbour.
         let nextStart = segments.first { $0.startTime > start }?.startTime ?? limit
@@ -126,6 +186,7 @@ final class SubtitleEditorViewModel {
 
         let updated = limit.map { SubtitleSegmenter.limitWords(base, maxWords: $0) } ?? base
         guard updated != segments else { return }
+        remember(String(localized: "Words on screen"))
         segments = updated
         selectedSegmentID = nil
         activeSegmentID = nil

@@ -56,9 +56,14 @@ enum SRTImporter {
     }
 
     // MARK: - Parsing
-
-    /// Pulls the cues out of an SRT file, skipping anything malformed rather than
-    /// giving up on the whole file for one bad block.
+    /// Pulls the cues out of an SRT file.
+    ///
+    /// Written line by line rather than block by block, because the layout varies more
+    /// than the format suggests. The textbook file puts the number, the timing and the
+    /// text on three separate lines; plenty of tools write all three on one. Both are
+    /// read here, and so is a file with no blank lines between its cues.
+    ///
+    /// Anything malformed is skipped rather than failing the whole file for one bad cue.
     static func parse(_ text: String) -> [Cue] {
         let normalised = text
             .replacingOccurrences(of: "\r\n", with: "\n")
@@ -66,38 +71,59 @@ enum SRTImporter {
             .replacingOccurrences(of: "\u{FEFF}", with: "")
 
         var cues: [Cue] = []
+        var timing: (start: TimeInterval, end: TimeInterval)?
+        var body: [String] = []
 
-        for block in normalised.components(separatedBy: "\n\n") {
-            var lines = block.split(separator: "\n", omittingEmptySubsequences: false)
-                .map { $0.trimmingCharacters(in: .whitespaces) }
-            lines.removeAll { $0.isEmpty }
-            guard !lines.isEmpty else { continue }
+        func close() {
+            defer { timing = nil; body = [] }
+            guard let timing else { return }
 
-            // The index line is optional in practice, so find the timing line instead
-            // of assuming it is second.
-            guard let timingIndex = lines.firstIndex(where: { $0.contains("-->") }),
-                  let times = timings(in: lines[timingIndex])
-            else { continue }
+            // In files that give each cue its own number line, the *next* cue's number
+            // has just been collected as the last line of this one's text.
+            if let last = body.last, !last.isEmpty, last.allSatisfy(\.isNumber) {
+                body.removeLast()
+            }
 
-            let body = lines[(timingIndex + 1)...]
-                .joined(separator: "\n")
-                .trimmingCharacters(in: .whitespacesAndNewlines)
-            guard !body.isEmpty else { continue }
-
-            cues.append(Cue(start: times.start, end: max(times.end, times.start), text: body))
+            let text = body.joined(separator: "\n").trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !text.isEmpty else { return }
+            cues.append(Cue(start: timing.start, end: max(timing.end, timing.start), text: text))
         }
+
+        for line in normalised.components(separatedBy: "\n") {
+            let trimmed = line.trimmingCharacters(in: .whitespaces)
+
+            guard let found = splitTiming(trimmed) else {
+                if !trimmed.isEmpty { body.append(trimmed) }
+                continue
+            }
+
+            close()
+            timing = (found.start, found.end)
+            if !found.text.isEmpty { body.append(found.text) }
+        }
+        close()
 
         return cues.sorted { $0.start < $1.start }
     }
 
-    private static func timings(in line: String) -> (start: TimeInterval, end: TimeInterval)? {
-        let parts = line.components(separatedBy: "-->")
-        guard parts.count == 2,
-              let start = seconds(from: parts[0]),
-              let end = seconds(from: parts[1])
+    /// Reads a line containing `-->`, wherever the timings sit in it.
+    ///
+    /// The start stamp is whatever comes last before the arrow, so a cue number in
+    /// front of it is simply ignored. The end stamp is whatever comes first after it,
+    /// so any text sharing the line is what remains.
+    private static func splitTiming(_ line: String) -> (start: TimeInterval, end: TimeInterval, text: String)? {
+        guard let arrow = line.range(of: "-->") else { return nil }
+
+        guard let startStamp = line[..<arrow.lowerBound].split(whereSeparator: \.isWhitespace).last,
+              let start = seconds(from: String(startStamp))
         else { return nil }
-        return (start, end)
+
+        var after = line[arrow.upperBound...].split(whereSeparator: \.isWhitespace).map(String.init)
+        guard !after.isEmpty, let end = seconds(from: after.removeFirst()) else { return nil }
+
+        return (start, end, after.joined(separator: " "))
     }
+
 
     /// `HH:MM:SS,mmm`, and the several things people write instead: a full stop for the
     /// comma, no hours, no milliseconds.
