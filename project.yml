@@ -24,14 +24,6 @@ packages:
   WhisperKit:
     url: https://github.com/argmaxinc/WhisperKit.git
     from: 1.1.0
-  # A second engine to compare against: NVIDIA's Parakeet, converted to Core ML.
-  # Apache 2.0; the model it downloads is CC-BY-4.0.
-  FluidAudio:
-    url: https://github.com/FluidInference/FluidAudio.git
-    # Pinned below 0.14: later versions add a binary xcframework target whose release
-    # archive does not download, which stops the whole project resolving.
-    exactVersion: 0.13.7
-
 targets:
   KZSubs:
     type: application
@@ -41,8 +33,6 @@ targets:
     dependencies:
       - package: WhisperKit
         product: WhisperKit
-      - package: FluidAudio
-        product: FluidAudio
     settings:
       base:
         PRODUCT_NAME: KZ-SUBS

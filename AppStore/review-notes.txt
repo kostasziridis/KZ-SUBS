@@ -13,9 +13,7 @@ complete on Wi-Fi before concluding that the app is not working — this is the 
 step that requires a network connection, and nothing else in the app uses one.
 
 The model files are hosted publicly and are downloaded anonymously:
-  - huggingface.co/argmaxinc/whisperkit-coreml          (Standard engine, default)
-  - huggingface.co/FluidInference/parakeet-tdt-0.6b-v3-coreml
-    (Alternative engine, selectable in Settings > Speech engine)
+  - huggingface.co/argmaxinc/whisperkit-coreml
 
 HOW TO TEST
 
@@ -46,9 +44,8 @@ user chose. The original video is never modified.
 
 THIRD-PARTY CONTENT
 
-Speech recognition uses WhisperKit (MIT) and FluidAudio (Apache 2.0). The Greek
-spelling dictionary is el_GR 0.9, used under the Mozilla Public License 1.1. All
-of these, and both speech models, are credited in the app under
-Settings > Acknowledgements.
+Speech recognition uses WhisperKit (MIT). The Greek spelling dictionary is
+el_GR 0.9, used under the Mozilla Public License 1.1. All of these, and the
+speech model, are credited in the app under Settings > Acknowledgements.
 
 Contact: kziridis.com

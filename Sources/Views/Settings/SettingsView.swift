@@ -5,7 +5,6 @@ struct SettingsView: View {
 
     @State private var showsAcknowledgements = false
     @State private var showsVocabulary = false
-    @State private var engine = SpeechEngineChoice.current
 
     @Environment(\.dismiss) private var dismiss
     @State private var usedBytes: Int64?
@@ -18,12 +17,7 @@ struct SettingsView: View {
                 VStack(spacing: 20) {
                     PrivacyCard()
 
-                    engineCard
-
-                    // Only the standard engine has sizes to choose between.
-                    if engine == .whisper {
-                        accuracyCard
-                    }
+                    accuracyCard
 
                     vocabularyCard
 
@@ -54,65 +48,6 @@ struct SettingsView: View {
             .task { await refreshStorage() }
         }
         .preferredColorScheme(.dark)
-    }
-
-    /// Lets the user trade speed for accuracy. Every option is multilingual, so Greek
-    /// keeps working whichever they pick.
-    private var engineCard: some View {
-        GlassCard(radius: AppTheme.controlRadius, padding: 18) {
-            VStack(alignment: .leading, spacing: 14) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Speech engine")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.white)
-                    Text("Two ways of listening. They mishear different things, so try the other one if a video comes out badly.")
-                        .font(.caption2)
-                        .foregroundStyle(AppTheme.secondaryText)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-
-                ForEach(SpeechEngineChoice.allCases) { choice in
-                    Button {
-                        guard choice != engine else { return }
-                        withAnimation(.snappy(duration: 0.2)) { engine = choice }
-                        SpeechEngineChoice.current = choice
-                        Task { await refreshStorage() }
-                    } label: {
-                        HStack(alignment: .top, spacing: 12) {
-                            Image(systemName: choice == engine ? "largecircle.fill.circle" : "circle")
-                                .font(.body)
-                                .foregroundStyle(choice == engine ? AppTheme.accent : AppTheme.tertiaryText)
-
-                            VStack(alignment: .leading, spacing: 3) {
-                                HStack(spacing: 6) {
-                                    Text(choice.displayName)
-                                        .font(.footnote.weight(.semibold))
-                                        .foregroundStyle(.white)
-                                    Text(choice.approximateSize)
-                                        .font(.caption2)
-                                        .foregroundStyle(AppTheme.tertiaryText)
-                                }
-                                Text(choice.detail)
-                                    .font(.caption2)
-                                    .foregroundStyle(AppTheme.secondaryText)
-                                    .fixedSize(horizontal: false, vertical: true)
-                            }
-
-                            Spacer(minLength: 0)
-                        }
-                        .contentShape(Rectangle())
-                    }
-                    .buttonStyle(.plain)
-                }
-
-                Label(
-                    "Each engine downloads once, the first time you use it.",
-                    systemImage: "arrow.down.circle"
-                )
-                .font(.caption2)
-                .foregroundStyle(AppTheme.tertiaryText)
-            }
-        }
     }
 
     private var accuracyCard: some View {
@@ -184,9 +119,7 @@ struct SettingsView: View {
                         Text("Vocabulary")
                             .font(.subheadline.weight(.semibold))
                             .foregroundStyle(.white)
-                        Text(engine.supportsVocabulary
-                             ? "Teach it names it would otherwise guess at, so they come out spelled right."
-                             : "Kept, but the alternative engine cannot be told about words beforehand.")
+                        Text("Teach it names it would otherwise guess at, so they come out spelled right.")
                             .font(.caption2)
                             .foregroundStyle(AppTheme.secondaryText)
                             .fixedSize(horizontal: false, vertical: true)
@@ -346,9 +279,8 @@ struct SettingsView: View {
     /// Everything the app carries or fetches that someone else wrote.
     ///
     /// Left in English on purpose: these name licences and their authors, and a
-    /// translated licence is not the licence. The two models are here because they are
-    /// downloaded rather than bundled, which does not make the attribution optional -
-    /// Parakeet's licence asks for it by name.
+    /// translated licence is not the licence. The speech model is here because being
+    /// downloaded rather than bundled does not make the attribution optional.
     private static let acknowledgementList: [Acknowledgement] = [
         Acknowledgement(
             title: "Greek spelling dictionary",
@@ -359,22 +291,14 @@ struct SettingsView: View {
             notice: "Copyright (c) 2024 argmax, inc. Used under the MIT License. Source: https://github.com/argmaxinc/WhisperKit"
         ),
         Acknowledgement(
-            title: "FluidAudio",
-            notice: "Used under the Apache License 2.0. Source: https://github.com/FluidInference/FluidAudio"
-        ),
-        Acknowledgement(
             title: "Whisper speech models",
             notice: "Whisper by OpenAI, used under the MIT License, in the Core ML form published by Argmax."
-        ),
-        Acknowledgement(
-            title: "Parakeet speech model",
-            notice: "Parakeet TDT 0.6B v3 by NVIDIA, used under the Creative Commons Attribution 4.0 International License (CC-BY-4.0), in the Core ML form published by FluidInference."
         ),
     ]
 
 
     #if DEBUG
-    /// Development only: a way to exercise the speech engine on a real device against
+    /// Development only: a way to exercise the speech model on a real device against
     /// a clip whose words we already know.
     private var developerCard: some View {
         NavigationLink {

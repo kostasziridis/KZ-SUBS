@@ -240,10 +240,6 @@ final class SpeechCheckViewModel {
             defer { self.task = nil }
 
             do {
-                // Whichever engine is selected, so this screen doubles as the way to
-                // compare them: same clip, same expected text, different listener.
-                let engine = SpeechEngineChoice.current
-
                 let onPreparation: @Sendable (ModelPreparation) -> Void = { [weak self] preparation in
                     Task { @MainActor in
                         guard let self else { return }
@@ -256,10 +252,7 @@ final class SpeechCheckViewModel {
                     }
                 }
 
-                switch engine {
-                case .whisper: try await WhisperService.shared.prepare(onProgress: onPreparation)
-                case .parakeet: try await ParakeetService.shared.prepare(onProgress: onPreparation)
-                }
+                try await WhisperService.shared.prepare(onProgress: onPreparation)
 
                 try Task.checkCancellation()
                 self.state = .transcribing(progress: 0)
@@ -270,21 +263,11 @@ final class SpeechCheckViewModel {
                     }
                 }
 
-                let result: SpeechTranscript
-                switch engine {
-                case .whisper:
-                    result = try await WhisperService.shared.transcribe(
-                        audioURL: url,
-                        language: fixture.language,
-                        onProgress: onTranscriptionProgress
-                    )
-                case .parakeet:
-                    result = try await ParakeetService.shared.transcribe(
-                        audioURL: url,
-                        language: fixture.language,
-                        onProgress: onTranscriptionProgress
-                    )
-                }
+                let result = try await WhisperService.shared.transcribe(
+                    audioURL: url,
+                    language: fixture.language,
+                    onProgress: onTranscriptionProgress
+                )
 
                 self.transcript = result
                 self.state = .completed
