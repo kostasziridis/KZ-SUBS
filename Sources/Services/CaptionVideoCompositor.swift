@@ -95,7 +95,11 @@ final class CaptionVideoCompositor: NSObject, AVVideoCompositing {
         }
 
         let time = request.compositionTime.seconds
-        for caption in instruction.captions where time >= caption.start && time < caption.end {
+        // One caption, never a pile of them. The editor shows a single subtitle at any
+        // moment, and an export that stacks every subtitle whose time range covers this
+        // frame does not show what was designed - it prints two of them over each other.
+        // The newest wins, because a subtitle beginning is what ends the one before it.
+        if let caption = instruction.captions.last(where: { time >= $0.start && time < $0.end }) {
             image = caption.image.composited(over: image)
         }
 

@@ -42,13 +42,16 @@ enum CaptionRasterizer {
 
         var frames: [CaptionFrame] = []
 
-        for segment in segments {
+        for segment in separate(segments) {
             if useWordFrames, let words = segment.words, !words.isEmpty {
                 for (index, word) in words.enumerated() {
                     // Stretch the first and last word to the subtitle's own bounds so
                     // there is never a flicker of nothing between words.
-                    let start = index == 0 ? segment.startTime : word.startTime
-                    let end = index == words.count - 1 ? segment.endTime : words[index + 1].startTime
+                    let start = max(index == 0 ? segment.startTime : word.startTime, segment.startTime)
+                    let end = min(index == words.count - 1 ? segment.endTime : words[index + 1].startTime, segment.endTime)
+                    // A subtitle cut short where the next one begins takes the words it
+                    // no longer has time to speak with it.
+                    guard end > start else { continue }
 
                     if let frame = render(segment, style: style, at: word.startTime, renderSize: renderSize, start: start, end: end) {
                         frames.append(frame)
@@ -63,6 +66,46 @@ enum CaptionRasterizer {
         }
 
         return Output(frames: frames, simplifiedHighlighting: wantsWordFrames && !useWordFrames)
+    }
+
+    /// Stops a subtitle from still being on screen when the next one arrives.
+    ///
+    /// Subtitles run one after another, and the editor relies on it - it looks up the
+    /// single subtitle covering a moment and shows that one. Speech engines make no
+    /// such promise: a decoding window can hand back a subtitle whose end runs seconds
+    /// past its own words and straight through the three that follow. Burnt into the
+    /// video that was two subtitles printed over each other, in a file the editor had
+    /// shown as clean.
+    ///
+    /// Done here, over whole subtitles, rather than over the drawn word frames: cutting
+    /// the frames alone lets a long subtitle reclaim the screen between the words of
+    /// the one that replaced it, and the caption flicks back and forth between the two.
+    ///
+    /// Cut rather than dropped, because the words in a long subtitle were still spoken;
+    /// it is only its welcome that outstays. One that is left no time at all has been
+    /// wholly covered by its neighbour, and goes.
+    static func separate(_ segments: [SubtitleSegment]) -> [SubtitleSegment] {
+        let ordered = segments.sorted { $0.startTime < $1.startTime }
+        var result: [SubtitleSegment] = []
+
+        for (index, segment) in ordered.enumerated() {
+            guard index + 1 < ordered.count else {
+                result.append(segment)
+                continue
+            }
+
+            // Only the next one needs consulting: everything after it starts later
+            // still, so cutting each at its immediate successor leaves the run in order.
+            let next = ordered[index + 1]
+            // Two subtitles claiming the same instant - this one never gets to show.
+            guard next.startTime > segment.startTime else { continue }
+
+            var trimmed = segment
+            trimmed.endTime = min(segment.endTime, next.startTime)
+            result.append(trimmed)
+        }
+
+        return result
     }
 
     private static func render(

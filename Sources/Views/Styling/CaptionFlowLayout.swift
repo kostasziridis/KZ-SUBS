@@ -39,14 +39,31 @@ struct CaptionFlowLayout: Layout {
         return result
     }
 
+    /// The width the words are wrapped at.
+    ///
+    /// Read from the proposal in both passes, never from the bounds we are finally
+    /// given. The two have to agree: measuring at one width and placing at another is
+    /// how a caption reported the height of a single line and then drew two, the
+    /// second cut off by the edge of the rendered image. The bounds come back a
+    /// fraction narrower than the width we asked for - a rounding of a size this very
+    /// method returned - and that fraction is enough to push the last word onto a line
+    /// the height never allowed for.
+    private func wrapWidth(_ proposal: ProposedViewSize, sizes: [CGSize], bounds: CGFloat?) -> CGFloat {
+        if let width = proposal.width { return width }
+        // No width proposed: placing follows the space we were actually given, and
+        // measuring has nothing to go on but the words themselves.
+        return bounds ?? sizes.reduce(0) { $0 + $1.width }
+    }
+
     func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
         let sizes = subviews.map { $0.sizeThatFits(.unspecified) }
-        let maxWidth = proposal.width ?? sizes.reduce(0) { $0 + $1.width }
-        let laid = lines(sizes: sizes, maxWidth: maxWidth)
+        let laid = lines(sizes: sizes, maxWidth: wrapWidth(proposal, sizes: sizes, bounds: nil))
 
         let height = laid.reduce(0) { $0 + $1.height }
             + CGFloat(max(0, laid.count - 1)) * lineSpacing
-        let width = laid.map(\.width).max() ?? 0
+        // Rounded up, so a parent that works in whole pixels cannot hand back less
+        // room than the lines were measured in and change where they break.
+        let width = (laid.map(\.width).max() ?? 0).rounded(.up)
 
         // Not clamped to the proposal. A word wider than the line cannot be broken, so
         // it is placed at its full width whatever this says - and reporting less than
@@ -56,7 +73,7 @@ struct CaptionFlowLayout: Layout {
 
     func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
         let sizes = subviews.map { $0.sizeThatFits(.unspecified) }
-        let laid = lines(sizes: sizes, maxWidth: bounds.width)
+        let laid = lines(sizes: sizes, maxWidth: wrapWidth(proposal, sizes: sizes, bounds: bounds.width))
 
         var y = bounds.minY
         for line in laid {

@@ -269,6 +269,27 @@ The app also appears in Files, so a subtitle file can be dropped straight into i
 Projects and videos live in Application Support, so the exposed folder holds only what
 the user puts there.
 
+### What the export must match
+
+The exported file is drawn from `CaptionBlockView` - the very view the editor previews
+- so the design carries over. Two things still had to be made to agree with it.
+
+The editor looks up the *one* subtitle covering a moment and shows that one. The
+exporter drew every caption whose time range covered the frame, so a subtitle whose end
+ran past its own words - which a speech engine's decoding window will hand back - came
+out printed over the two that followed, in a project the editor had shown as clean.
+`CaptionRasterizer.separate` now ends each subtitle where the next begins, over whole
+subtitles rather than the drawn word frames: cutting the frames alone lets a long
+subtitle reclaim the screen between the words of the one replacing it, and the caption
+flicks back and forth. The compositor draws the newest matching caption and no more.
+
+`CaptionFlowLayout` measured the words at the width it was proposed and placed them at
+the width it was granted. Those differ by the rounding of a size the layout itself
+returned, and that fraction is enough to push the last word onto a second line - one the
+measured height made no room for, so the video showed it sliced through. Both passes now
+break the lines at the proposed width, and the reported width is rounded up so a parent
+working in whole pixels cannot hand back less room than the words were measured in.
+
 ## Exporting subtitles
 
 The `.srt` file comes in the two shapes the format is used for. Whole subtitles is what
