@@ -156,11 +156,14 @@ final class TranscriptionViewModel {
                     self.producedProject = project
                 }
 
-                self.state = transcript.segments.isEmpty
+                // Judged on what came out of the segmenter, not what went in: a
+                // recording whose only "speech" was an invented credit leaves nothing
+                // behind, and reporting that as a success hands back an empty project.
+                self.state = self.segments.isEmpty
                     ? .failed(AppError.unableToGenerateSubtitles)
                     : .completed
 
-                AppLog.speech.info("Produced \(transcript.segments.count, privacy: .public) subtitle(s) in \(Int(transcript.processingTime), privacy: .public)s")
+                AppLog.speech.info("Produced \(self.segments.count, privacy: .public) subtitle(s) in \(Int(transcript.processingTime), privacy: .public)s")
 
             } catch is CancellationError {
                 self.state = .cancelled

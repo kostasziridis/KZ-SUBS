@@ -29,6 +29,9 @@ enum SubtitleSegmenter {
     static func makeSubtitles(from raw: [SubtitleSegment], rules: Rules = .default) -> [SubtitleSegment] {
         let cleaned = raw
             .map { normalise($0) }
+            // Before anything is split or merged: a credit the engine invented is not
+            // speech, and reshaping it would only spread it across two subtitles.
+            .compactMap { HallucinatedCredits.strip($0) }
             .filter { !$0.text.isEmpty }
             .sorted { $0.startTime < $1.startTime }
 

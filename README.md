@@ -246,6 +246,25 @@ Grouping timed words into subtitles is one rule in `SubtitleSegmenter.group`, sh
 with the engines - break on a pause, on the end of a sentence, or before a block would
 grow past two lines.
 
+### Credits the engine invents
+
+Whisper learned from subtitle files, and most of those name whoever made them. Over
+silence or music it will write one of those lines out - "Υπότιτλοι AUTHORWAVE",
+"Subtitles by the Amara.org community" - as confidently as it writes real speech. That
+confidence is why the engine's own thresholds never catch it: to the model this is not
+a guess.
+
+`HallucinatedCredits` removes them on the way out of both engines, judging the text
+rather than the engine's confidence, and only recognising what appears in a credit and
+nowhere else: a subtitling house's name, or a short line that opens by announcing who
+did the subtitling. A sentence that merely mentions subtitles runs longer than a credit
+and stays.
+
+It cuts words, not whole subtitles, because the invented line does not always arrive
+alone - real output runs it straight into the sentence that follows. The word timings
+are cut with it and the subtitle pulled in around what is left, so nothing sits on
+screen through the silence the credit came from.
+
 The app also appears in Files, so a subtitle file can be dropped straight into it.
 Projects and videos live in Application Support, so the exposed folder holds only what
 the user puts there.
